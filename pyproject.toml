@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 nonebot2 = { version = "^2.1.1", extras = ["fastapi"] }
 nonebot-adapter-onebot = "^2.3.0"
 
@@ -53,7 +53,7 @@ target-version = "py38"
 
 [tool.pyright]
 pythonPlatform = "All"
-executionEnvironments = [{ root = "./", pythonVersion = "3.12" }]
+executionEnvironments = [{ root = "./", pythonVersion = "3.11" }]
 
 typeCheckingMode = "basic"
 reportShadowedImports = false
