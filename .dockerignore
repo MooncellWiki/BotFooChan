@@ -1,0 +1,10 @@
+.devcontainer/
+.github/
+.vscode/
+.dockerignore
+.editorconfig
+.gitignore
+.pre-commit-config.yaml
+.prettier*
+docker-compose.yml
+Dockerfile
