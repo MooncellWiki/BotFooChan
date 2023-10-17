@@ -6,11 +6,19 @@ import httpx
 import numpy as np
 import matplotlib.pyplot as plt
 from nonebot import on_command
+from nonebot.plugin import PluginMetadata
 from nonebot_plugin_saa import Text, Image, MessageFactory
 
 from src.plugins.aliyun import config
 from src.plugins.aliyun.config import CDNDomain
 from src.plugins.aliyun.utils import get_signed_params
+
+__plugin_meta__ = PluginMetadata(
+    "阿里云 CDN 查询",
+    "快速查看阿里云 CDN 侧统计回源实时带宽及 HTTP 状态码",
+    "/http_code, /404, /503: 查询 HTTP 状态码\n"
+    "/src_bandwidth, /带宽, /回源, /dk: 查询回源带宽",
+)
 
 http_code = on_command(
     "http_code",
