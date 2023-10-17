@@ -14,6 +14,7 @@ nonebot-adapter-red = "^0.5.2"
 nonebot-adapter-onebot = "^2.3.0"
 
 nonebot-plugin-apscheduler = "^0.3.0"
+nonebot-plugin-send-anything-anywhere = "^0.3.2"
 
 nonebot-plugin-status = "^0.7.1"
 
@@ -47,11 +48,12 @@ select = ["E", "W", "F", "UP", "C", "T", "PYI", "PT", "Q"]
 ignore = ["E402", "C901", "UP037"]
 
 line-length = 88
-target-version = "py38"
+target-version = "py311"
 
 [tool.pyright]
+pythonVersion = "3.11"
 pythonPlatform = "All"
-executionEnvironments = [{ root = "./", pythonVersion = "3.11" }]
+executionEnvironments = [{ root = "./" }]
 
 typeCheckingMode = "basic"
 reportShadowedImports = false

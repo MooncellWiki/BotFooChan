@@ -1,5 +1,5 @@
 import math
-from typing import Any, Dict, Optional
+from typing import Any
 
 import httpx
 
@@ -100,7 +100,7 @@ def bv2av(Bv: str):
     return sum ^ temp
 
 
-async def get_av_data(oid: str, is_bv: bool = False) -> Optional[Dict[str, Any]]:
+async def get_av_data(oid: str, is_bv: bool = False) -> dict[str, Any] | None:
     if is_bv:
         oid = str(bv2av(oid))
 

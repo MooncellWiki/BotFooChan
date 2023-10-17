@@ -719,6 +719,23 @@ apscheduler = ">=3.7.0,<4.0.0"
 nonebot2 = ">=2.0.0,<3.0.0"
 
 [[package]]
+name = "nonebot-plugin-send-anything-anywhere"
+version = "0.3.2"
+description = "An adaptor for nonebot2 adaptors"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "nonebot_plugin_send_anything_anywhere-0.3.2-py3-none-any.whl", hash = "sha256:2dac60653f49aa25f3a08eb75544ecb155e30b2496f1f7a16e27ddc76ff09796"},
+    {file = "nonebot_plugin_send_anything_anywhere-0.3.2.tar.gz", hash = "sha256:19a54c8f69d01f2000b1f2536eea4076acd8fe219f7f0d9060a8120bd7052d52"},
+]
+
+[package.dependencies]
+anyio = ">=3.6.2,<4.0.0"
+nonebot2 = ">=2.0.0,<3.0.0"
+pydantic = ">=1.10.5,<2.0.0"
+strenum = ">=0.4.8,<0.5.0"
+
+[[package]]
 name = "nonebot-plugin-status"
 version = "0.7.1"
 description = "Check your server status (CPU, Memory, Disk Usage) via nonebot"
@@ -1109,6 +1126,22 @@ anyio = ">=3.4.0,<5"
 
 [package.extras]
 full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart", "pyyaml"]
+
+[[package]]
+name = "strenum"
+version = "0.4.15"
+description = "An Enum that inherits from str."
+optional = false
+python-versions = "*"
+files = [
+    {file = "StrEnum-0.4.15-py3-none-any.whl", hash = "sha256:a30cda4af7cc6b5bf52c8055bc4bf4b2b6b14a93b574626da33df53cf7740659"},
+    {file = "StrEnum-0.4.15.tar.gz", hash = "sha256:878fb5ab705442070e4dd1929bb5e2249511c0bcf2b0eeacf3bcd80875c82eff"},
+]
+
+[package.extras]
+docs = ["myst-parser[linkify]", "sphinx", "sphinx-rtd-theme"]
+release = ["twine"]
+test = ["pylint", "pytest", "pytest-black", "pytest-cov", "pytest-pylint"]
 
 [[package]]
 name = "typing-extensions"
@@ -1524,4 +1557,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "c03515d3be9ff8b5aca04c41d81e900fc4e067d131bd67cd21981cc019d5851f"
+content-hash = "7c477a0084ef8d4ad8055f109e5ee864e5a0f5fce3028970ac82f896deb3ca03"
