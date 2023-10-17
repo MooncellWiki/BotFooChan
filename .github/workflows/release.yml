@@ -146,7 +146,8 @@ jobs:
       - name: Generate Image Name
         id: image
         run: |
-          echo "IMAGE=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+          REPO=starheart/${{ github.event.repository.name }}
+          echo "IMAGE=${REPO,,}" >> $GITHUB_OUTPUT
 
       - name: Generate Tags
         uses: docker/metadata-action@v5
