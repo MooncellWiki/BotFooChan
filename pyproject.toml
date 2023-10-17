@@ -53,6 +53,10 @@ ignore = ["E402", "C901", "UP037"]
 line-length = 88
 target-version = "py311"
 
+[tool.ruff.extend-per-file-ignores]
+"./scripts/*" = ["T201"]
+"./docker/*" = ["T201"]
+
 [tool.pyright]
 pythonVersion = "3.11"
 pythonPlatform = "All"
