@@ -1,6 +1,7 @@
+import asyncio
+
 import httpx
 from nonebot import on_command
-from nonebot_plugin_saa import Text, MessageFactory
 
 from src.plugins.aliyun import config
 from src.plugins.aliyun.config import CDNDomain
@@ -12,11 +13,53 @@ http_code = on_command(
     block=True,
 )
 
+src_bandwidth = on_command(
+    "src_bandwidth",
+    aliases={"带宽", "回源", "dk"},
+    block=True,
+)
 
-async def get_stats_by_domain(domain: CDNDomain):
+
+async def get_src_bandwidth_stats(domain: CDNDomain):
     async with httpx.AsyncClient(timeout=10) as client:
         r = await client.get(
-            f"{domain.api_url}",
+            domain.api_url,
+            params=get_signed_params(
+                domain.access_key_id,
+                domain.access_key_secret,
+                "GET",
+                {
+                    "Action": "DescribeDomainRealTimeSrcBpsData",
+                    "Version": "2018-05-10",
+                    "DomainName": ",".join(domain.domains),
+                },
+            ),
+        )
+
+        return r.json()
+
+
+async def resolve_src_bandwidth(domain: CDNDomain):
+    stats = await get_src_bandwidth_stats(domain)
+
+    data = stats["RealTimeSrcBpsDataPerInterval"]["DataModule"]
+    data_list = []
+    for k in data:
+        value = k["Value"]
+        if value != 0:
+            data_list.append(k)
+
+    value = data_list[-1]["Value"] / 1000000
+
+    await src_bandwidth.send(
+        f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"
+    )
+
+
+async def get_http_code_stats(domain: CDNDomain):
+    async with httpx.AsyncClient(timeout=10) as client:
+        r = await client.get(
+            domain.api_url,
             params=get_signed_params(
                 domain.access_key_id,
                 domain.access_key_secret,
@@ -32,26 +75,29 @@ async def get_stats_by_domain(domain: CDNDomain):
         return r.json()
 
 
+async def resolve_http_code(domain: CDNDomain):
+    stats = await get_http_code_stats(domain)
+    usage_data = stats["RealTimeHttpCodeData"]["UsageData"]
+
+    data_list = []
+    for k in usage_data:
+        proportion = k["Value"]["RealTimeCodeProportionData"]
+        if len(proportion) != 0:
+            data_list.append(proportion)
+
+    await http_code.send(
+        f"{domain.group_alias}统计：\n"
+        + "\n".join([f"{k['Code']}   {k['Proportion']:.2f}%" for k in data_list[-1]])
+    )
+
+
 @http_code.handle()
-async def handle_received_message():
-    for domain in config.cdn_domains:
-        stats = await get_stats_by_domain(domain)
-        usage_data = stats["RealTimeHttpCodeData"]["UsageData"]
+async def handle_http_code():
+    await asyncio.gather(*[resolve_http_code(domain) for domain in config.cdn_domains])
 
-        data_list = []
-        for k in usage_data:
-            proportion = k["Value"]["RealTimeCodeProportionData"]
-            if len(proportion) != 0:
-                data_list.append(proportion)
 
-        msg = MessageFactory(
-            [
-                Text(f"{domain.group_alias}统计："),
-                *[
-                    Text(f"\n{k['Code']}   {k['Proportion']:.2f}%")
-                    for k in data_list[-1]
-                ],
-            ]
-        )
-
-        await msg.send()
+@src_bandwidth.handle()
+async def handle_src_bandwidth():
+    await asyncio.gather(
+        *[resolve_src_bandwidth(domain) for domain in config.cdn_domains]
+    )
