@@ -175,3 +175,4 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           short-description: ${{ github.event.repository.description }}
+          repository: starheart/${{ github.event.repository.name }}
