@@ -10,6 +10,7 @@ readme = "README.md"
 python = "^3.11"
 
 matplotlib = "^3.8.0"
+playwright = "^1.38.0"
 
 nonebot2 = { version = "^2.1.1", extras = ["httpx", "fastapi", "websockets"] }
 nonebot-adapter-red = "^0.5.2"
