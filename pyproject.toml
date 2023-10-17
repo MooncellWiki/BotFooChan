@@ -17,6 +17,7 @@ nonebot-plugin-apscheduler = "^0.3.0"
 nonebot-plugin-send-anything-anywhere = "^0.3.2"
 
 nonebot-plugin-status = "^0.7.1"
+matplotlib = "^3.8.0"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.9.3"

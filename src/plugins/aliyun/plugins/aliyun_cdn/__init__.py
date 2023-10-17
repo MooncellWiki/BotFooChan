@@ -1,7 +1,12 @@
 import asyncio
+from io import BytesIO
+from typing import Any
 
 import httpx
+import numpy as np
+import matplotlib.pyplot as plt
 from nonebot import on_command
+from nonebot_plugin_saa import Image, MessageFactory
 
 from src.plugins.aliyun import config
 from src.plugins.aliyun.config import CDNDomain
@@ -39,6 +44,26 @@ async def get_src_bandwidth_stats(domain: CDNDomain):
         return r.json()
 
 
+async def generate_src_image(data: dict[str, Any]):
+    values = [
+        d["Value"] / 1000000
+        for d in data["RealTimeSrcBpsDataPerInterval"]["DataModule"]
+    ]
+    timestamps = np.arange(len(values))
+
+    plt.figure(figsize=(15, 10))
+    plt.plot(timestamps, values)
+    plt.xlabel("Timestamp (minutes)")
+    plt.ylabel("Value (Mbps)")
+    plt.title(f"RealTime Source Bps Data Per Minute ({data['DomainName']})")
+
+    buffer = BytesIO()
+    plt.savefig(buffer, bbox_inches="tight", dpi=150)
+    buffer.seek(0)
+
+    return buffer
+
+
 async def resolve_src_bandwidth(domain: CDNDomain):
     stats = await get_src_bandwidth_stats(domain)
 
@@ -54,6 +79,7 @@ async def resolve_src_bandwidth(domain: CDNDomain):
     await src_bandwidth.send(
         f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"
     )
+    await MessageFactory(Image(await generate_src_image(stats))).send()
 
 
 async def get_http_code_stats(domain: CDNDomain):
