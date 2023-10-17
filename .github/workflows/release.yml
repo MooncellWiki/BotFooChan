@@ -73,7 +73,8 @@ jobs:
       - name: Generate Image Name and Scope
         id: image
         run: |
-          echo "IMAGE=${starheart/${{ github.event.repository.name }},,}" >> $GITHUB_OUTPUT
+          REPO=starheart/${{ github.event.repository.name }}
+          echo "IMAGE=${REPO,,}" >> $GITHUB_OUTPUT
           echo "SCOPE=${{ env.GITHUB_REF_NAME }}-${{ matrix.platform }}" >> $GITHUB_OUTPUT
 
       - name: Generate Labels
