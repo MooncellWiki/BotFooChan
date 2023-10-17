@@ -6,7 +6,7 @@ import httpx
 import numpy as np
 import matplotlib.pyplot as plt
 from nonebot import on_command
-from nonebot_plugin_saa import Image, MessageFactory
+from nonebot_plugin_saa import Text, Image, MessageFactory
 
 from src.plugins.aliyun import config
 from src.plugins.aliyun.config import CDNDomain
@@ -76,10 +76,12 @@ async def resolve_src_bandwidth(domain: CDNDomain):
 
     value = data_list[-1]["Value"] / 1000000
 
-    await src_bandwidth.send(
-        f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"
-    )
-    await MessageFactory(Image(await generate_src_image(stats))).send()
+    await MessageFactory(
+        [
+            Text(f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"),
+            Image(await generate_src_image(stats)),
+        ]
+    ).send()
 
 
 async def get_http_code_stats(domain: CDNDomain):
