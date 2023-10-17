@@ -6,10 +6,11 @@ nonebot.init()
 app = nonebot.get_asgi()
 
 driver = nonebot.get_driver()
-driver.register_adapter(ONEBOT_V11Adapter)
-driver.register_adapter(REDAdapter)
-
 config = driver.config
+
+driver.register_adapter(ONEBOT_V11Adapter)
+if config.use_red:
+    driver.register_adapter(REDAdapter)
 
 nonebot.load_all_plugins(set(config.plugins), {"src/plugins"}.union(config.plugin_dirs))
 
