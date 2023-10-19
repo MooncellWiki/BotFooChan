@@ -6,6 +6,8 @@ from nonebot.matcher import Matcher
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, ArgPlainText
 
+from . import config
+
 nbnhhsh = on_command("hhsh", aliases={"nbnhhsh", "好好说话", "人话"}, priority=10)
 
 
@@ -40,7 +42,9 @@ async def guess(text: str) -> Any:
 
     async with httpx.AsyncClient(timeout=10) as client:
         r = await client.post(
-            "https://lab.magiconch.com/api/nbnhhsh/guess", headers=headers, json=json
+            f"{config.nbnhhsh_api_endpoint}/api/nbnhhsh/guess",
+            headers=headers,
+            json=json,
         )
         resp = r.json()
 
