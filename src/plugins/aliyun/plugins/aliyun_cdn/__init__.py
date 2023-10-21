@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from nonebot import on_command
 from nonebot.plugin import PluginMetadata
-from nonebot_plugin_saa import Text, Image, MessageFactory
+from nonebot_plugin_alconna import Text, Image, UniMessage, on_alconna
 
 from src.plugins.aliyun import config
 from src.plugins.aliyun.config import CDNDomain
@@ -26,9 +26,11 @@ http_code = on_command(
     block=True,
 )
 
-src_bandwidth = on_command(
+src_bandwidth = on_alconna(
     "src_bandwidth",
     aliases={"带宽", "回源", "dk"},
+    use_cmd_start=True,
+    use_cmd_sep=True,
     block=True,
 )
 
@@ -84,12 +86,16 @@ async def resolve_src_bandwidth(domain: CDNDomain):
 
     value = data_list[-1]["Value"] / 1000000
 
-    await MessageFactory(
-        [
-            Text(f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"),
-            Image(await generate_src_image(stats)),
-        ]
-    ).send()
+    await src_bandwidth.send(
+        UniMessage(
+            [
+                Text(
+                    f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"
+                ),
+                Image(raw={"data": await generate_src_image(stats)}),
+            ]
+        )
+    )
 
 
 async def get_http_code_stats(domain: CDNDomain):

@@ -13,11 +13,13 @@ matplotlib = "^3.8.0"
 playwright = "^1.38.0"
 
 nonebot2 = { version = "^2.1.1", extras = ["httpx", "fastapi", "websockets"] }
-nonebot-adapter-red = "^0.5.2"
+nonebot-adapter-qq = "^1.0.0"
+nonebot-adapter-satori = "^0.6.2"
+nonebot-adapter-feishu = "^2.0.2"
 nonebot-adapter-onebot = "^2.3.0"
 
+nonebot-plugin-alconna = { git = "https://github.com/nonebot/plugin-alconna.git" }
 nonebot-plugin-apscheduler = "^0.3.0"
-nonebot-plugin-send-anything-anywhere = "^0.3.2"
 
 nonebot-bison = "^0.8.2"
 nonebot-plugin-status = "^0.7.2"
