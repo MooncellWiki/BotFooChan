@@ -18,8 +18,6 @@ WORKDIR /wheel
 
 COPY --from=requirements-stage /tmp/requirements.txt /wheel/requirements.txt
 
-# RUN python3 -m pip config set global.index-url https://mirrors.aliyun.com/pypi/simple
-
 RUN pip wheel --wheel-dir=/wheel --no-cache-dir --requirement /wheel/requirements.txt
 
 FROM python:3.11-bookworm as metadata-stage
@@ -48,11 +46,6 @@ ENV PYTHONPATH=/app
 EXPOSE 8086
 
 ENV APP_MODULE bot:app
-
-# RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak &&\
-#   echo "deb http://mirrors.aliyun.com/debian/ buster main" >> /etc/apt/sources.list\
-#   && echo "deb http://mirrors.aliyun.com/debian/ buster-updates main" >> /etc/apt/sources.list\
-#   && echo "deb http://mirrors.aliyun.com/debian-security/ buster/updates main" >> /etc/apt/sources.list
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends curl p7zip-full fontconfig fonts-noto-color-emoji \
