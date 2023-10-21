@@ -3,7 +3,7 @@ from nonebot.plugin import PluginMetadata
 
 from .config import Config
 
-nbnhhsh_config = Config.parse_obj(nonebot.get_driver().config)
+nbnhhsh_config = Config.parse_obj(nonebot.get_driver().config.dict(exclude_none=True))
 
 __plugin_meta__ = PluginMetadata(
     "能不能好好说话",
