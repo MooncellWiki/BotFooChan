@@ -1429,24 +1429,20 @@ tinydb = ">=4.3.0,<5.0.0"
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.29.0"
+version = "0.28.0"
 description = "Alconna Adapter for Nonebot"
 optional = false
 python-versions = ">=3.8"
-files = []
-develop = false
+files = [
+    {file = "nonebot_plugin_alconna-0.28.0-py3-none-any.whl", hash = "sha256:d39ad67c412301f6931d0abfbc415dcc49bd1d6be2038b6d9ee082f9e8f8169a"},
+    {file = "nonebot_plugin_alconna-0.28.0.tar.gz", hash = "sha256:92039ae4c435865d346b21b8fc9511364c8312e076fe979b286447411cc5f71c"},
+]
 
 [package.dependencies]
-arclet-alconna = ">=1.7.31,<2.0.0"
+arclet-alconna = ">=1.7.28,<2.0.0"
 arclet-alconna-tools = ">=0.6.7,<0.7.0"
 nepattern = ">=0.5.14,<0.6.0"
 nonebot2 = ">=2.0.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/nonebot/plugin-alconna.git"
-reference = "HEAD"
-resolved_reference = "de32e233f1c2e317bd49189f1c2fdc2b71e8f102"
 
 [[package]]
 name = "nonebot-plugin-apscheduler"
@@ -2907,4 +2903,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "76fcd202c2d046d61063fb598d5d27483f9fe6cca0cb88e057d13474ff6bda91"
+content-hash = "817f97682958ffb53b7eaf063d021c9d4e904c546f6b8b42cd58d9dcb3273d96"
