@@ -92,7 +92,12 @@ async def resolve_src_bandwidth(domain: CDNDomain):
                 Text(
                     f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"
                 ),
-                Image(raw={"data": await generate_src_image(stats)}),
+                Image(
+                    raw={
+                        "data": await generate_src_image(stats),
+                        "mimetype": "image/png",
+                    }
+                ),
             ]
         )
     )

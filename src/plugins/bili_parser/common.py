@@ -65,21 +65,22 @@ async def _(
     data: dict[str, Any] = BiliData(),
     picture: tuple[BytesIO, str] | None = Depends(get_bili_cover),
 ):
-    await bili_parse.send(
-        UniMessage(
-            [
-                Text(f"{data['data']['title']}\n"),
-                (
-                    Image(
-                        raw={"data": picture[0], "mimetype": picture[1]},
-                    )
-                    if picture
-                    else Text("\n")
-                ),
-                Text(
-                    f"小程序：m.q.qq.com/a/p/{data['data']['program_id']}?s={data['data']['program_path']}\n"
-                ),
-                Text(f"网页：{data['data']['link']}"),
-            ]
+    bili_cover = (
+        Image(
+            raw={"data": picture[0], "mimetype": picture[1]},
         )
+        if picture
+        else Text("\n")
     )
+    message = UniMessage(
+        [
+            Text(f"{data['data']['title']}\n"),
+            bili_cover,
+            Text(
+                f"小程序：m.q.qq.com/a/p/{data['data']['program_id']}?s={data['data']['program_path']}\n"
+            ),
+            Text(f"网页：{data['data']['link']}"),
+        ]
+    )
+
+    await bili_parse.send(message)
