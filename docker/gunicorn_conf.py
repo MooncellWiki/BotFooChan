@@ -62,11 +62,11 @@ logconfig_dict = {
         },
         "httpx": {
             "handlers": ["default"],
-            "level": "DEBUG",
+            "level": "WARNING",
         },
         "httpcore": {
             "handlers": ["default"],
-            "level": "DEBUG",
+            "level": "WARNING",
         },
     },
 }
