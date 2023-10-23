@@ -11,6 +11,10 @@ on:
       - "main"
   workflow_dispatch:
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check-version:
     runs-on: ubuntu-latest
