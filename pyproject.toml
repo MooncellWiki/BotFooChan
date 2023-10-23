@@ -19,7 +19,7 @@ nonebot-adapter-satori = "^0.6.2"
 nonebot-adapter-feishu = "^2.1.1"
 nonebot-adapter-onebot = "^2.3.0"
 
-nonebot-plugin-alconna = "^0.28.0"
+nonebot-plugin-alconna = "^0.30.1"
 nonebot-plugin-apscheduler = "^0.3.0"
 
 nonebot-bison = "^0.8.2"

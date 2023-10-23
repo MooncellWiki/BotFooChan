@@ -1429,20 +1429,20 @@ tinydb = ">=4.3.0,<5.0.0"
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.28.0"
+version = "0.30.1"
 description = "Alconna Adapter for Nonebot"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "nonebot_plugin_alconna-0.28.0-py3-none-any.whl", hash = "sha256:d39ad67c412301f6931d0abfbc415dcc49bd1d6be2038b6d9ee082f9e8f8169a"},
-    {file = "nonebot_plugin_alconna-0.28.0.tar.gz", hash = "sha256:92039ae4c435865d346b21b8fc9511364c8312e076fe979b286447411cc5f71c"},
+    {file = "nonebot_plugin_alconna-0.30.1-py3-none-any.whl", hash = "sha256:097ec1eacdfda02a75d429b4ebe44848b4243ebb02afe94170e195420c73ad10"},
+    {file = "nonebot_plugin_alconna-0.30.1.tar.gz", hash = "sha256:6ac4f46b93d24d3532ae26c98ec637aba70d0bbefb49a8aa939092599fe889e0"},
 ]
 
 [package.dependencies]
-arclet-alconna = ">=1.7.28,<2.0.0"
+arclet-alconna = ">=1.7.31,<2.0.0"
 arclet-alconna-tools = ">=0.6.7,<0.7.0"
 nepattern = ">=0.5.14,<0.6.0"
-nonebot2 = ">=2.0.0"
+nonebot2 = ">=2.1.0"
 
 [[package]]
 name = "nonebot-plugin-apscheduler"
@@ -2900,4 +2900,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "789dd1f5f8a075e9cde739b74d48f94926a283b37aa9017b040b419b2904db5e"
+content-hash = "3561086b852b73f5e5a8a3912be9e6daf7eed4f8fc60e40538d088d6e1bac3cc"
