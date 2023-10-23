@@ -60,6 +60,14 @@ logconfig_dict = {
             "propagate": True,
             "qualname": "gunicorn.access",
         },
+        "httpx": {
+            "handlers": ["default"],
+            "level": "DEBUG",
+        },
+        "httpcore": {
+            "handlers": ["default"],
+            "level": "DEBUG",
+        },
     },
 }
 
