@@ -216,7 +216,7 @@ jobs:
             cd $DEPLOY_PATH
             docker compose pull
             docker compose up -d
-            docker system prune -a
+            docker system prune -a -f
 
       - name: update deployment status
         uses: bobheadxi/deployments@v1
