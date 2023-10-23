@@ -1339,13 +1339,13 @@ setuptools = "*"
 
 [[package]]
 name = "nonebot-adapter-feishu"
-version = "2.1.1"
+version = "2.1.2"
 description = "feishu(larksuite) adapter for nonebot2"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "nonebot_adapter_feishu-2.1.1-py3-none-any.whl", hash = "sha256:e7e3b5375f87c6d72460310e01278ba9060ee560ae9959736012c479b11dee2f"},
-    {file = "nonebot_adapter_feishu-2.1.1.tar.gz", hash = "sha256:e61f367d3ba2bb7626986b8cabaad07dd7a5cf19bdeca06401c648104dd725ca"},
+    {file = "nonebot_adapter_feishu-2.1.2-py3-none-any.whl", hash = "sha256:b506978daf434830c7654a6516942757ebefec876e95844f4c1c332320f58c34"},
+    {file = "nonebot_adapter_feishu-2.1.2.tar.gz", hash = "sha256:89fcf9fad023f895b6a37c0b39d05b370cd658be57fe5e935debf5dd285c12d1"},
 ]
 
 [package.dependencies]
@@ -1429,13 +1429,13 @@ tinydb = ">=4.3.0,<5.0.0"
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.30.1"
+version = "0.30.2"
 description = "Alconna Adapter for Nonebot"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "nonebot_plugin_alconna-0.30.1-py3-none-any.whl", hash = "sha256:097ec1eacdfda02a75d429b4ebe44848b4243ebb02afe94170e195420c73ad10"},
-    {file = "nonebot_plugin_alconna-0.30.1.tar.gz", hash = "sha256:6ac4f46b93d24d3532ae26c98ec637aba70d0bbefb49a8aa939092599fe889e0"},
+    {file = "nonebot_plugin_alconna-0.30.2-py3-none-any.whl", hash = "sha256:648a239576df44b9bdff7d37bcf21a04e0e6ceb0b8d7a124b5516eebfba347ac"},
+    {file = "nonebot_plugin_alconna-0.30.2.tar.gz", hash = "sha256:6f39cc6db54a824e7350e0d94f62acec6e0188d528ae69e4a045c4a29c68606c"},
 ]
 
 [package.dependencies]
@@ -2900,4 +2900,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3561086b852b73f5e5a8a3912be9e6daf7eed4f8fc60e40538d088d6e1bac3cc"
+content-hash = "3b8eb789eef389e1d2b726e88594307fd158f6e1b3fc114fba36c05cf68f0b7c"
