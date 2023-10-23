@@ -1339,13 +1339,13 @@ setuptools = "*"
 
 [[package]]
 name = "nonebot-adapter-feishu"
-version = "2.1.2"
+version = "2.2.0"
 description = "feishu(larksuite) adapter for nonebot2"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "nonebot_adapter_feishu-2.1.2-py3-none-any.whl", hash = "sha256:b506978daf434830c7654a6516942757ebefec876e95844f4c1c332320f58c34"},
-    {file = "nonebot_adapter_feishu-2.1.2.tar.gz", hash = "sha256:89fcf9fad023f895b6a37c0b39d05b370cd658be57fe5e935debf5dd285c12d1"},
+    {file = "nonebot_adapter_feishu-2.2.0-py3-none-any.whl", hash = "sha256:2ad3c827cd883eef31838ff200a67b43d7ece49e3dca3437b8ae1104db0b3d9c"},
+    {file = "nonebot_adapter_feishu-2.2.0.tar.gz", hash = "sha256:ea816d8a118fbd7be2c37966585b481cf842c5e999108abe3fb44a3d95716b3c"},
 ]
 
 [package.dependencies]
