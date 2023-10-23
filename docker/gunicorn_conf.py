@@ -45,6 +45,7 @@ keyfile = os.getenv("KEYFILE", None)
 certfile = os.getenv("CERTFILE", None)
 
 logconfig_dict = {
+    "root": {"level": "INFO", "handlers": ["default"]},
     "handlers": {"default": {"class": "nonebot.log.LoguruHandler"}},
     "loggers": {
         "gunicorn.error": {
