@@ -22,14 +22,14 @@ async def got_text(text: str = ArgPlainText()):
     result = await guess(text)
 
     msg_seq = [
-        f"原文：{r['name']}\n"
-        f"翻译：{','.join(r.get('trans', []) or r.get('inputting',[])) or '暂无翻译'}"
+        f"原文：{r.get('name')}\n"
+        f"翻译：{','.join(r.get('trans') or r.get('inputting') or []) or '暂无翻译'}"
         for r in result
     ]
     await nbnhhsh.finish("\n".join(msg_seq))
 
 
-async def guess(text: str) -> Any:
+async def guess(text: str) -> list[dict[str, Any]]:
     headers = {
         "user-agent": (
             "Mozilla/5.0 (Linux; Android 10; MIX 3) AppleWebKit/537.36 (KHTML, like"
