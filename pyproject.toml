@@ -16,7 +16,7 @@ nonebot2 = { version = "^2.1.1", extras = ["httpx", "fastapi", "websockets"] }
 
 nonebot-adapter-qq = "^1.0.0"
 nonebot-adapter-satori = "^0.6.2"
-nonebot-adapter-feishu = "^2.1.2"
+nonebot-adapter-feishu = "^2.2.1"
 nonebot-adapter-onebot = "^2.3.0"
 
 nonebot-plugin-sentry = "^0.5.0"
