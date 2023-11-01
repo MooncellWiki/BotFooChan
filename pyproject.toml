@@ -15,13 +15,13 @@ playwright = "^1.38.0"
 nonebot2 = { version = "^2.1.1", extras = ["httpx", "fastapi", "websockets"] }
 
 nonebot-adapter-qq = "^1.0.0"
-nonebot-adapter-red = "^0.6.1"
+nonebot-adapter-red = "^0.7.3"
 nonebot-adapter-satori = "^0.6.2"
-nonebot-adapter-feishu = "^2.2.1"
+nonebot-adapter-feishu = "^2.3.0"
 nonebot-adapter-onebot = "^2.3.0"
 
 nonebot-plugin-sentry = "^0.5.0"
-nonebot-plugin-alconna = "^0.30.1"
+nonebot-plugin-alconna = "^0.31.2"
 nonebot-plugin-apscheduler = "^0.3.0"
 
 nonebot-bison = "^0.8.2"
