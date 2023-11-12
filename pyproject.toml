@@ -21,7 +21,7 @@ nonebot-adapter-feishu = "^2.3.0"
 nonebot-adapter-onebot = "^2.3.0"
 
 nonebot-plugin-sentry = "^0.5.0"
-nonebot-plugin-alconna = "^0.31.2"
+nonebot-plugin-alconna = "^0.33.3"
 nonebot-plugin-apscheduler = "^0.3.0"
 
 nonebot-bison = "^0.8.2"

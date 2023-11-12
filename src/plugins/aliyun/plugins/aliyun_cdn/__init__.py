@@ -87,19 +87,10 @@ async def resolve_src_bandwidth(domain: CDNDomain):
     value = data_list[-1]["Value"] / 1000000
 
     await src_bandwidth.send(
-        UniMessage(
-            [
-                Text(
-                    f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"
-                ),
-                Image(
-                    raw={
-                        "data": await generate_src_image(stats),
-                        "mimetype": "image/png",
-                    }
-                ),
-            ]
-        )
+        UniMessage([
+            Text(f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"),
+            Image(raw=await generate_src_image(stats)),
+        ])
     )
 
 
@@ -145,6 +136,6 @@ async def handle_http_code():
 
 @src_bandwidth.handle()
 async def handle_src_bandwidth():
-    await asyncio.gather(
-        *[resolve_src_bandwidth(domain) for domain in config.cdn_domains]
-    )
+    await asyncio.gather(*[
+        resolve_src_bandwidth(domain) for domain in config.cdn_domains
+    ])
