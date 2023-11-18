@@ -358,6 +358,29 @@ docs = ["ipython", "matplotlib", "numpydoc", "sphinx"]
 tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
+name = "diro-py"
+version = "0.1.1"
+description = "A Dice expression parser"
+optional = false
+python-versions = "*"
+files = [
+    {file = "diro_py-0.1.1-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:62d5d89150e65178dc06e0da7c9367582fbba6e17bdcb23d27b36688858513f6"},
+    {file = "diro_py-0.1.1-cp310-none-win_amd64.whl", hash = "sha256:6d974420a88c8e119d919b5839aed825d5a59f0e438c312ab2b464a36d745430"},
+    {file = "diro_py-0.1.1-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ee021619d93d276e6e74ed3e113be9b6d4cb5050848e2c0780302c1e8435da4d"},
+    {file = "diro_py-0.1.1-cp37-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:33d0f7423895a820d8814c402cb569a5eef8a66cf41b5350fb462dd9b2a0153e"},
+    {file = "diro_py-0.1.1-cp37-abi3-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f304f3a5c488ac3c866a367ec124cc00e207737926a71f8f6e3560eded5fcbb9"},
+    {file = "diro_py-0.1.1-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:06f08bcd522005832d51755e6aa91a26c4a2f25f90b0315685a6e447b9a7fa0a"},
+    {file = "diro_py-0.1.1-cp37-abi3-win_amd64.whl", hash = "sha256:21744ed1490bf521de5a041c8363050e302a70acc3269779e13772c9a8154514"},
+    {file = "diro_py-0.1.1-cp37-cp37m-manylinux_2_28_x86_64.whl", hash = "sha256:23195138167fbd58aea49b35a57b674fb59436d6344d0c3ed559fd8ba8d284a3"},
+    {file = "diro_py-0.1.1-cp37-none-win_amd64.whl", hash = "sha256:c43bc10a2498b44c4ad0b3509a52825c8bc83fba439f3b17f1b9b67cecd0927c"},
+    {file = "diro_py-0.1.1-cp38-cp38-manylinux_2_28_x86_64.whl", hash = "sha256:699e7d2d2673a41d1cdbcbdaf25196ea8850d7e1a2934bc7efed92e66440460f"},
+    {file = "diro_py-0.1.1-cp38-none-win_amd64.whl", hash = "sha256:5ecfd9b110158316179ff254c5044349001ac50fae753a20e688d0ec5d48efb4"},
+    {file = "diro_py-0.1.1-cp39-cp39-manylinux_2_28_x86_64.whl", hash = "sha256:f20aca59ff76c15f053e6a105ebab64bb787d40485d9332937b67786ad4be410"},
+    {file = "diro_py-0.1.1-cp39-none-win_amd64.whl", hash = "sha256:b769e3683b35b23a65c3f84947cb0298f3b787f93099cdf72656688b7e0de409"},
+    {file = "diro_py-0.1.1.tar.gz", hash = "sha256:30c6fa683f29ae411319ef083d9ee203bad79f72bafb62154622d5bd59e2c03c"},
+]
+
+[[package]]
 name = "distlib"
 version = "0.3.7"
 description = "Distribution utilities"
@@ -2927,4 +2950,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d9e36c5b8eaa4bf9cfac4aa995933cf96c8a573e4c9b426230d37b6d65163169"
+content-hash = "c29563fea14e0d77d152323226787c393a3fc3bcc5d3825485465e5a447ff3cb"
