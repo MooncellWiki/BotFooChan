@@ -95,13 +95,13 @@ zookeeper = ["kazoo"]
 
 [[package]]
 name = "arclet-alconna"
-version = "1.7.34"
+version = "1.7.35"
 description = "A High-performance, Generality, Humane Command Line Arguments Parser Library."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "arclet_alconna-1.7.34-py3-none-any.whl", hash = "sha256:2c9999fc1ae6c690e4ff79c8ba1134eb782b61bd9c5fe7b7a4a3b92ec4be2f36"},
-    {file = "arclet_alconna-1.7.34.tar.gz", hash = "sha256:ff409c34fdf934cbb10e8ff9ab9fad0ff05530cccab697050ecada091b2bdf93"},
+    {file = "arclet_alconna-1.7.35-py3-none-any.whl", hash = "sha256:1b3c5ae6419a86d46a9636222fd8dd15425d57edff6e2ae5cb70386715657ae0"},
+    {file = "arclet_alconna-1.7.35.tar.gz", hash = "sha256:cb12104133e49786d664910efea59e2999dc9ec33e70b7bed253fc7b76ebbab5"},
 ]
 
 [package.dependencies]
@@ -234,13 +234,13 @@ tests = ["hypothesis", "pytest", "pytest-asyncio"]
 
 [[package]]
 name = "certifi"
-version = "2023.7.22"
+version = "2023.11.17"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "certifi-2023.7.22-py3-none-any.whl", hash = "sha256:92d6037539857d8206b8f6ae472e8b77db8058fec5937a1ef3f54304089edbb9"},
-    {file = "certifi-2023.7.22.tar.gz", hash = "sha256:539cc1d13202e33ca466e88b2807e29f4c13049d6d87031a3c110744495cb082"},
+    {file = "certifi-2023.11.17-py3-none-any.whl", hash = "sha256:e036ab49d5b79556f99cfc2d9320b34cfbe5be05c5871b51de9329f0603b0474"},
+    {file = "certifi-2023.11.17.tar.gz", hash = "sha256:9b469f3a900bf28dc19b8cfbf8019bf47f7fdd1a65a1d4ffb98fc14166beb4d1"},
 ]
 
 [[package]]
@@ -1387,13 +1387,13 @@ tinydb = ">=4.3.0,<5.0.0"
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.33.3"
+version = "0.33.5"
 description = "Alconna Adapter for Nonebot"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "nonebot_plugin_alconna-0.33.3-py3-none-any.whl", hash = "sha256:f04baa7b97a431c815b070bf12abfd5590d2763531eec4464798af2a1e907608"},
-    {file = "nonebot_plugin_alconna-0.33.3.tar.gz", hash = "sha256:8be755008fcd7277b23f9594135c9f5c2de3bf0856cede60f5baee6f22053afc"},
+    {file = "nonebot_plugin_alconna-0.33.5-py3-none-any.whl", hash = "sha256:57414d52fbe586479c6a372a58213346ceeccf7aeec261a18df5351f9a489069"},
+    {file = "nonebot_plugin_alconna-0.33.5.tar.gz", hash = "sha256:ecb5213402cff4cd93a04e7a8c618d434972ca144eb2a6010df6e85b47f520fa"},
 ]
 
 [package.dependencies]
@@ -2927,4 +2927,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "1ea55d3d4e28cbf78439243c4cc4658a85d8fc0724197520739b3685b9a0da25"
+content-hash = "d9e36c5b8eaa4bf9cfac4aa995933cf96c8a573e4c9b426230d37b6d65163169"

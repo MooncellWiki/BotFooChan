@@ -14,7 +14,7 @@ playwright = "^1.38.0"
 
 nonebot2 = { version = "^2.1.1", extras = ["httpx", "fastapi", "websockets"] }
 
-nonebot-adapter-qq = "^1.0.0"
+nonebot-adapter-qq = "^1.1.1"
 nonebot-adapter-red = "^0.7.3"
 nonebot-adapter-satori = "^0.8.0"
 nonebot-adapter-feishu = "^2.3.0"
