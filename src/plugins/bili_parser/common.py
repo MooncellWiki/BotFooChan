@@ -18,10 +18,13 @@ from nonebot_plugin_alconna import (
 from .data_source import get_av_data
 
 bili_parse = on_alconna(
-    Alconna("bili_parse", Args["type", ["av", "BV"]], Args["code", str])
+    Alconna("bili_parse", Args["type", ["av", "BV"]], Args["code", str]),
+    use_cmd_start=True,
 )
-bili_parse.shortcut(r"av(\d{1,12})", {"args": ["av", "{0}"]})
-bili_parse.shortcut(r"BV(1[A-Za-z0-9]{2}4.1.7[A-Za-z0-9]{2})", {"args": ["BV", "{0}"]})
+bili_parse.shortcut(r".*av(\d{1,12}).*", {"args": ["av", "{0}"]})
+bili_parse.shortcut(
+    r".*BV(1[A-Za-z0-9]{2}4.1.7[A-Za-z0-9]{2}).*", {"args": ["BV", "{0}"]}
+)
 
 BILI_DATA = "_bili_data"
 
@@ -34,16 +37,14 @@ def BiliData() -> dict[str, Any]:
     return Depends(_bili_data, use_cache=False)
 
 
-async def get_bili_cover(
-    data: dict[str, Any] = BiliData()
-) -> tuple[BytesIO, str] | None:
+async def get_bili_cover(data: dict[str, Any] = BiliData()) -> BytesIO | None:
     async with httpx.AsyncClient(timeout=10) as client:
         if not data.get("data", {}).get("picture", ""):
             return
 
         r = await client.get(data["data"]["picture"])
 
-        return BytesIO(r.content), r.headers["Content-Type"]
+        return BytesIO(r.content)
 
 
 async def get_bili_data(
@@ -63,9 +64,9 @@ async def get_bili_data(
 @bili_parse.handle(parameterless=[Depends(get_bili_data)])
 async def _(
     data: dict[str, Any] = BiliData(),
-    picture: tuple[BytesIO, str] | None = Depends(get_bili_cover),
+    picture: BytesIO | None = Depends(get_bili_cover),
 ):
-    bili_cover = Image(raw=picture[0]) if picture else Text("\n")
+    bili_cover = Image(raw=picture) if picture else Text("\n")
     message = UniMessage([
         Text(f"{data['data']['title']}\n"),
         bili_cover,
