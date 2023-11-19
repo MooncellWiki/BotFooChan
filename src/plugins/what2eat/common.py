@@ -5,10 +5,12 @@ from nonebot_plugin_alconna import Alconna, on_alconna
 from .constant import drinks, eatings
 
 eat_matcher = on_alconna(
-    Alconna("re:(今天|[早中午晚][上饭餐午]|早上|夜宵|今晚)吃(什么|啥|点啥)(帮助)?")
+    Alconna("re:(今天|[早中午晚][上饭餐午]|夜宵|今晚)吃(什么|啥|点啥)(帮助)?"),
+    use_cmd_start=True,
 )
 drink_matcher = on_alconna(
-    Alconna("re:(今天|[早中午晚][上饭餐午]|早上|夜宵|今晚)喝(什么|啥|点啥)(帮助)?")
+    Alconna("re:(今天|[早中午晚][上饭餐午]|夜宵|今晚)喝(什么|啥|点啥)(帮助)?"),
+    use_cmd_start=True,
 )
 
 
