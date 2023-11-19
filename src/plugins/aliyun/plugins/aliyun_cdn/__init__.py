@@ -74,7 +74,7 @@ async def generate_src_image(data: dict[str, Any]):
     return buffer
 
 
-async def resolve_src_bandwidth(domain: CDNDomain):
+async def resolve_src_bandwidth(domain: CDNDomain) -> UniMessage:
     stats = await get_src_bandwidth_stats(domain)
 
     data = stats["RealTimeSrcBpsDataPerInterval"]["DataModule"]
@@ -86,12 +86,10 @@ async def resolve_src_bandwidth(domain: CDNDomain):
 
     value = data_list[-1]["Value"] / 1000000
 
-    await src_bandwidth.send(
-        UniMessage([
-            Text(f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"),
-            Image(raw=await generate_src_image(stats)),
-        ])
-    )
+    return UniMessage([
+        Text(f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"),
+        Image(raw=await generate_src_image(stats)),
+    ])
 
 
 async def get_http_code_stats(domain: CDNDomain):
@@ -123,19 +121,22 @@ async def resolve_http_code(domain: CDNDomain):
         if len(proportion) != 0:
             data_list.append(proportion)
 
-    await http_code.send(
-        f"{domain.group_alias}统计：\n"
-        + "\n".join([f"{k['Code']}   {k['Proportion']:.2f}%" for k in data_list[-1]])
-    )
+    return f"{domain.group_alias}统计：\n" + "\n".join([
+        f"{k['Code']}   {k['Proportion']:.2f}%" for k in data_list[-1]
+    ])
 
 
 @http_code.handle()
 async def handle_http_code():
-    await asyncio.gather(*[resolve_http_code(domain) for domain in config.cdn_domains])
+    result: list[str] = await asyncio.gather(*[
+        resolve_http_code(domain) for domain in config.cdn_domains
+    ])
+    await http_code.finish("\n\n".join(result))
 
 
 @src_bandwidth.handle()
 async def handle_src_bandwidth():
-    await asyncio.gather(*[
+    result: list[UniMessage] = await asyncio.gather(*[
         resolve_src_bandwidth(domain) for domain in config.cdn_domains
     ])
+    await src_bandwidth.finish(UniMessage([*result]))
