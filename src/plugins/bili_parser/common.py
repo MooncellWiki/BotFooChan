@@ -18,7 +18,7 @@ from nonebot_plugin_alconna import (
 from .data_source import get_av_data
 
 bili_parse = on_alconna(
-    Alconna("bili_parse", Args["type", ["av", "BV"]], Args["code", str]),
+    Alconna("bv", Args["type", ["av", "BV"]], Args["code", str]),
     use_cmd_start=True,
 )
 bili_parse.shortcut(r".*av(\d{1,12}).*", {"args": ["av", "{0}"]})
@@ -66,7 +66,9 @@ async def _(
     data: dict[str, Any] = BiliData(),
     picture: BytesIO | None = Depends(get_bili_cover),
 ):
-    bili_cover = Image(raw=picture) if picture else Text("\n")
+    bili_cover = (
+        Image(url=data["data"]["picture"], raw=picture) if picture else Text("\n")
+    )
     message = UniMessage([
         Text(f"{data['data']['title']}\n"),
         bili_cover,
