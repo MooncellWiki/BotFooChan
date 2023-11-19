@@ -15,17 +15,19 @@ from .dice.rd import rd0
 rdhelp_matcher = on_startswith(".help")
 rd_matcher = on_alconna(
     Alconna(
-        ".r( )?{dabp}",
+        "r( )?{dabp}",
         Args["a_number", int | None],
         meta=CommandMeta(compact=True),
     ),
+    use_cmd_start=True,
 )
 rh_matcher = on_alconna(
     Alconna(
-        ".rh( )?{dabp}",
+        "rh( )?{dabp}",
         Args["a_number", int | None],
         meta=CommandMeta(compact=True),
     ),
+    use_cmd_start=True,
 )
 
 
