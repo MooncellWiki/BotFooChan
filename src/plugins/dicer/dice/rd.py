@@ -160,7 +160,14 @@ def en(arg: int) -> str:
 def expr(d: diro.Diro, anum: int | None, rule: int = 0) -> str:
     d.roll()
     result = d.calc()
-    s = f"{d}=({d.detail_expr()})={result}"
+
+    if "+" in (detail_expr := d.detail_expr()):
+        detail_expr = f"({detail_expr})"
+
+    s = f"{d}={detail_expr}"
+    if detail_expr != str(result):
+        s += f"={result}"
+
     if anum:
         sl = roll_success_level(result, anum, rule)
         s += f"\n检定值 {anum}, {success_level[sl]}"
@@ -174,7 +181,12 @@ def rd0(pattern: str, anum: int | None = None, rule: int = 0) -> str:
     if d_str:
         with contextlib.suppress(ValueError):
             time = int(d_str[0])
-    r = expr(rd, anum, rule)
+
+    r = f"{time}次投掷："
+    if time > 1:
+        r += "\n"
+
+    r += expr(rd, anum, rule)
     for _ in range(time - 1):
         r += "\n"
         r += expr(rd, anum)
