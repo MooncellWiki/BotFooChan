@@ -18,7 +18,7 @@ from nonebot_plugin_alconna import (
 from .data_source import get_av_data
 
 bili_parse = on_alconna(
-    Alconna("bv", Args["type", ["av", "BV"]], Args["code", str]),
+    Alconna("bvideo", Args["type", ["av", "BV"]], Args["code", str]),
     use_cmd_start=True,
 )
 bili_parse.shortcut(r".*av(\d{1,12}).*", {"args": ["av", "{0}"]})

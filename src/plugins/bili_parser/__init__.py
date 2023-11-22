@@ -8,6 +8,6 @@ __plugin_meta__ = PluginMetadata(
     (
         r"av(\d{1,12})|BV(1[A-Za-z0-9]{2}4.1.7[A-Za-z0-9]{2})"
         "：解析哔哩哔哩视频 AV/BV 号\n"
-        "/bili_parse av/BV 123456：解析哔哩哔哩视频 av/BV 123456\n"
+        "/bvideo av/BV 123456：解析哔哩哔哩视频 av/BV 123456\n"
     ),
 )
