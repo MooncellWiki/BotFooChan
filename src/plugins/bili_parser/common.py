@@ -76,8 +76,8 @@ async def _(
     message = UniMessage([
         Text(f"{data['data']['title']}\n"),
         bili_cover,
-        Text(f"小程序：{ShortURL(mini_program_url).to_url()}\n"),
-        Text(f"网页：{ShortURL(data['data']['link']).to_url()}"),
+        Text(f"小程序：{await ShortURL(mini_program_url).to_url()}\n"),
+        Text(f"网页：{await ShortURL(data['data']['link']).to_url()}"),
     ])
 
     await bili_parse.send(message)
