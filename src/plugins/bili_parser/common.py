@@ -4,6 +4,7 @@ from typing import Any
 import httpx
 from nonebot.params import Depends
 from nonebot.typing import T_State
+from nonebot_plugin_shorturl import ShortURL
 from nonebot_plugin_alconna import (
     Args,
     Text,
@@ -69,13 +70,14 @@ async def _(
     bili_cover = (
         Image(url=data["data"]["picture"], raw=picture) if picture else Text("\n")
     )
+    mini_program_url = (
+        f"m.q.qq.com/a/p/{data['data']['program_id']}?s={data['data']['program_path']}"
+    )
     message = UniMessage([
         Text(f"{data['data']['title']}\n"),
         bili_cover,
-        Text(
-            f"小程序：m.q.qq.com/a/p/{data['data']['program_id']}?s={data['data']['program_path']}\n"
-        ),
-        Text(f"网页：{data['data']['link']}"),
+        Text(f"小程序：{ShortURL(mini_program_url).to_url()}\n"),
+        Text(f"网页：{ShortURL(data['data']['link']).to_url()}"),
     ])
 
     await bili_parse.send(message)

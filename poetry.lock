@@ -1528,6 +1528,26 @@ nonebot2 = ">=2.0.0,<3.0.0"
 sentry-sdk = {version = ">=1.23.0,<2.0.0", extras = ["loguru"]}
 
 [[package]]
+name = "nonebot-plugin-shorturl"
+version = "0.2.2"
+description = "Generate short url by bot for bypassing censorship"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "nonebot_plugin_shorturl-0.2.2-py3-none-any.whl", hash = "sha256:810b52018121a0367105cfefcceac1fddfa20dd5b2a9790daded8870f093b8b3"},
+    {file = "nonebot_plugin_shorturl-0.2.2.tar.gz", hash = "sha256:cdfc5602c906e0031ddba4139d2e334702865fec50def1c3b3f91453486c7a50"},
+]
+
+[package.dependencies]
+nonebot2 = {version = ">=2.0.0,<3.0.0", extras = ["fastapi"]}
+pybase62 = ">=1.0.0,<2.0.0"
+
+[package.extras]
+all = ["diskcache (>=5.6.3,<6.0.0)", "redis[hiredis] (>=5.0.0,<6.0.0)"]
+diskcache = ["diskcache (>=5.6.3,<6.0.0)"]
+redis = ["redis[hiredis] (>=5.0.0,<6.0.0)"]
+
+[[package]]
 name = "nonebot-plugin-status"
 version = "0.7.2"
 description = "Check your server status (CPU, Memory, Disk Usage) via nonebot"
@@ -1847,6 +1867,16 @@ files = [
 
 [package.extras]
 test = ["enum34", "ipaddress", "mock", "pywin32", "wmi"]
+
+[[package]]
+name = "pybase62"
+version = "1.0.0"
+description = "Python module for base62 encoding"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pybase62-1.0.0-py3-none-any.whl", hash = "sha256:60539ad956ec9e9de091bc7ae88c9550bc2fa17f503050cf34d021b75e73cb27"},
+]
 
 [[package]]
 name = "pycryptodome"
@@ -2962,4 +2992,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "c29563fea14e0d77d152323226787c393a3fc3bcc5d3825485465e5a447ff3cb"
+content-hash = "3f7610caf0d66fb867afc035750968d27256eea7ffebc695ad606ea9f3e1e8a0"
