@@ -1329,13 +1329,13 @@ typing-extensions = ">=4.0.0,<5.0.0"
 
 [[package]]
 name = "nonebot-adapter-qq"
-version = "1.2.0"
+version = "1.3.0"
 description = "QQ adapter for nonebot2"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "nonebot_adapter_qq-1.2.0-py3-none-any.whl", hash = "sha256:19f9535df19672ccc9cc2c4903cec25a882041202f27b653fe50a38055843fb0"},
-    {file = "nonebot_adapter_qq-1.2.0.tar.gz", hash = "sha256:caac94eef843a337a8ddd7e24577727aaac6e0f131b27a30514aae9633f7eac5"},
+    {file = "nonebot_adapter_qq-1.3.0-py3-none-any.whl", hash = "sha256:f2e5117fc2451f4054699a797b6df7eae19e8b105b277f5b87bc1a0c4e189cab"},
+    {file = "nonebot_adapter_qq-1.3.0.tar.gz", hash = "sha256:625009e440cda7a994df71ac946f748dc620a6f79f6435e1c66bc0d0dca13029"},
 ]
 
 [package.dependencies]
@@ -1529,13 +1529,13 @@ sentry-sdk = {version = ">=1.23.0,<2.0.0", extras = ["loguru"]}
 
 [[package]]
 name = "nonebot-plugin-shorturl"
-version = "0.2.2"
+version = "0.2.3"
 description = "Generate short url by bot for bypassing censorship"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "nonebot_plugin_shorturl-0.2.2-py3-none-any.whl", hash = "sha256:810b52018121a0367105cfefcceac1fddfa20dd5b2a9790daded8870f093b8b3"},
-    {file = "nonebot_plugin_shorturl-0.2.2.tar.gz", hash = "sha256:cdfc5602c906e0031ddba4139d2e334702865fec50def1c3b3f91453486c7a50"},
+    {file = "nonebot_plugin_shorturl-0.2.3-py3-none-any.whl", hash = "sha256:bef97266f6ce3ffa0a0de1968d173f8b8518df822d041111b302dcc28502b31e"},
+    {file = "nonebot_plugin_shorturl-0.2.3.tar.gz", hash = "sha256:c9066db19d32e16e954719e6860873b22d081e0d8a68c24e7f19a8d74e86f599"},
 ]
 
 [package.dependencies]
