@@ -1,4 +1,3 @@
-from nonebot import on_startswith
 from nonebot_plugin_alconna import (
     Args,
     Match,
@@ -12,7 +11,6 @@ from nonebot_plugin_alconna import (
 
 from .dice.rd import rd0
 
-rdhelp_matcher = on_startswith(".help")
 rd_matcher = on_alconna(
     Alconna(
         "r( )?{dabp}",
@@ -21,7 +19,7 @@ rd_matcher = on_alconna(
     ),
     use_cmd_start=True,
 )
-rh_matcher = on_alconna(
+rhd_matcher = on_alconna(
     Alconna(
         "rh( )?{dabp}",
         Args["a_number", int | None],
