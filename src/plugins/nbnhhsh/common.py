@@ -1,9 +1,10 @@
 from typing import Any
 
 import httpx
+from nonebot import logger
 from nonebot_plugin_alconna import Args, Match, Alconna, on_alconna
 
-from . import config
+from . import config, __plugin_meta__
 
 nbnhhsh = on_alconna(
     Alconna("hhsh", Args["text?", str]),
@@ -26,6 +27,9 @@ async def set_text(text: Match[str]) -> None:
         try:
             result = await guess(text.result)
         except httpx.HTTPError as e:
+            logger.opt(colors=True, exception=e).error(
+                "failed to fetch guess from nbnhhsh api"
+            )
             await nbnhhsh.finish(f"查询出错，请稍后重试：\n{e}")
 
         if not result:
@@ -37,7 +41,7 @@ async def set_text(text: Match[str]) -> None:
         await nbnhhsh.finish("\n".join(msg_seq))
 
     else:
-        await nbnhhsh.finish("未提供要查询的拼音字母缩写，试试 /hhsh jk？")
+        await nbnhhsh.finish(__plugin_meta__.usage)
 
 
 async def guess(text: str) -> list[dict[str, Any]]:

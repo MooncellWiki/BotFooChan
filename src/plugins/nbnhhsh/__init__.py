@@ -6,9 +6,10 @@ from .config import Config
 config = Config.parse_obj(get_driver().config)
 
 __plugin_meta__ = PluginMetadata(
-    "能不能好好说话",
-    "提供拼音首字母缩写查询",
-    "/hhsh, /nbnhhsh, /好好说话, /人话 [缩写]：查询拼音首字母缩写",
+    name="能不能好好说话",
+    description="提供拼音首字母缩写查询",
+    usage="/hhsh, /nbnhhsh, /好好说话, /人话 [缩写]：查询拼音首字母缩写",
+    config=Config,
 )
 
 from . import common as common

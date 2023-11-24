@@ -5,7 +5,7 @@ from typing import Any
 import httpx
 import numpy as np
 import matplotlib.pyplot as plt
-from nonebot import on_command
+from nonebot import logger, on_command
 from nonebot.plugin import PluginMetadata
 from nonebot_plugin_filehost import FileHost
 from nonebot_plugin_alconna import Text, Image, UniMessage, on_alconna
@@ -101,6 +101,7 @@ async def resolve_src_bandwidth(domain: CDNDomain):
         )
 
     except Exception as e:
+        logger.opt(colors=True, exception=e).error("Failed to send message")
         await src_bandwidth.send(f"发送结果时出现错误：{e}")
 
 

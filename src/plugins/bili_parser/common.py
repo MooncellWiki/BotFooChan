@@ -2,6 +2,7 @@ from io import BytesIO
 from typing import Any
 
 import httpx
+from nonebot import logger
 from nonebot.params import Depends
 from nonebot.typing import T_State
 from nonebot_plugin_shorturl import ShortURL
@@ -59,6 +60,9 @@ async def get_bili_data(
         try:
             data = await get_av_data(code.result, is_bv)
         except httpx.HTTPError as e:
+            logger.opt(colors=True, exception=e).error(
+                "Failed to fetch video metadata from bilibili api"
+            )
             await bili_parse.finish(f"请求 Bilibili API 时发生错误：{e}")
 
         if data:
@@ -93,4 +97,5 @@ async def _(
         await bili_parse.send(message)
 
     except Exception as e:
+        logger.opt(colors=True, exception=e).error("Failed to send message")
         await bili_parse.send(f"发送结果时出现错误：{e}")
