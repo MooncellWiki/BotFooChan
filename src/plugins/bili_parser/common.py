@@ -19,7 +19,7 @@ from nonebot_plugin_alconna import (
 from .data_source import get_av_data
 
 bili_parse = on_alconna(
-    Alconna("bvideo", Args["type", ["av", "BV"]], Args["code", str]),
+    Alconna("bvideo", Args["type?", ["av", "BV"]], Args["code?", str]),
     use_cmd_start=True,
 )
 bili_parse.shortcut(r".*av(\d{1,12}).*", {"args": ["av", "{0}"]})
@@ -53,13 +53,22 @@ async def get_bili_data(
     type_: Match[str] = AlconnaMatch("type"),
     code: Match[str] = AlconnaMatch("code"),
 ):
-    if data := await get_av_data(
-        code.result,
-        type_.result == "BV",
-    ):
-        state[BILI_DATA] = data
+    if type_.available and code.available:
+        is_bv = type_.result == "BV"
+
+        try:
+            data = await get_av_data(code.result, is_bv)
+        except httpx.HTTPError as e:
+            await bili_parse.finish(f"请求 Bilibili API 时发生错误：{e}")
+
+        if data:
+            state[BILI_DATA] = data
+
+        else:
+            await bili_parse.finish("未找到相关的视频信息")
+
     else:
-        await bili_parse.finish()
+        await bili_parse.finish("请输入正确的视频类型及视频号，例如：/bvideo av 1024")
 
 
 @bili_parse.handle(parameterless=[Depends(get_bili_data)])
@@ -80,4 +89,8 @@ async def _(
         Text(f"网页：{await ShortURL(url=data['data']['link']).to_url()}"),
     ])
 
-    await bili_parse.send(message)
+    try:
+        await bili_parse.send(message)
+
+    except Exception as e:
+        await bili_parse.send(f"发送结果时出现错误：{e}")

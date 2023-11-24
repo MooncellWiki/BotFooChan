@@ -90,12 +90,18 @@ async def resolve_src_bandwidth(domain: CDNDomain):
     file_bytes = await generate_src_image(stats)
     file_url = await FileHost(file_bytes).to_url()
 
-    await src_bandwidth.send(
-        UniMessage([
-            Text(f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"),
-            Image(url=file_url, raw=file_bytes),
-        ])
-    )
+    try:
+        await src_bandwidth.send(
+            UniMessage([
+                Text(
+                    f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"
+                ),
+                Image(url=file_url, raw=file_bytes),
+            ])
+        )
+
+    except Exception as e:
+        await src_bandwidth.send(f"发送结果时出现错误：{e}")
 
 
 async def get_http_code_stats(domain: CDNDomain):

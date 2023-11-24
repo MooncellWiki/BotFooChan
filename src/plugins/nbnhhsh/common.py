@@ -1,32 +1,43 @@
 from typing import Any
 
 import httpx
-from nonebot import on_command
-from nonebot.matcher import Matcher
-from nonebot.adapters import Message
-from nonebot.params import CommandArg, ArgPlainText
+from nonebot_plugin_alconna import Args, Match, Alconna, on_alconna
 
-from . import nbnhhsh_config
+from . import config
 
-nbnhhsh = on_command("hhsh", aliases={"nbnhhsh", "好好说话", "人话"}, priority=10)
+nbnhhsh = on_alconna(
+    Alconna("hhsh", Args["text?", str]),
+    aliases={"nbnhhsh", "好好说话", "人话"},
+    priority=10,
+    use_cmd_start=True,
+)
+
+
+def get_splitted_text(r):
+    translates = r.get("trans")
+    guesses = r.get("inputting")
+
+    return ",".join(translates or guesses or []) or "暂无翻译"
 
 
 @nbnhhsh.handle()
-async def set_text(matcher: Matcher, args: Message = CommandArg()) -> None:
-    if args.extract_plain_text():
-        matcher.set_arg("text", args)
+async def set_text(text: Match[str]) -> None:
+    if text.available:
+        try:
+            result = await guess(text.result)
+        except httpx.HTTPError as e:
+            await nbnhhsh.finish(f"查询出错，请稍后重试：\n{e}")
 
+        if not result:
+            await nbnhhsh.finish("未找到相关结果")
 
-@nbnhhsh.got("text", prompt="请重新输入缩写")
-async def got_text(text: str = ArgPlainText()):
-    result = await guess(text)
+        msg_seq = [
+            f"原文：{r.get('name')}\n翻译：{get_splitted_text(r)}" for r in result
+        ]
+        await nbnhhsh.finish("\n".join(msg_seq))
 
-    msg_seq = [
-        f"原文：{r.get('name')}\n"
-        f"翻译：{','.join(r.get('trans') or r.get('inputting') or []) or '暂无翻译'}"
-        for r in result
-    ]
-    await nbnhhsh.finish("\n".join(msg_seq))
+    else:
+        await nbnhhsh.finish("未提供要查询的拼音字母缩写，试试 /hhsh jk？")
 
 
 async def guess(text: str) -> list[dict[str, Any]]:
@@ -40,9 +51,9 @@ async def guess(text: str) -> list[dict[str, Any]]:
 
     json = {"text": text}
 
-    async with httpx.AsyncClient(timeout=10) as client:
+    async with httpx.AsyncClient() as client:
         r = await client.post(
-            f"{nbnhhsh_config.nbnhhsh_api_endpoint}/api/nbnhhsh/guess",
+            f"{config.nbnhhsh_api_endpoint}/api/nbnhhsh/guess",
             headers=headers,
             json=json,
         )

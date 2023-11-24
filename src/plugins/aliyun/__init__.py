@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import nonebot
+from nonebot import get_driver
 from nonebot.plugin import PluginMetadata
 
 from .config import Config
@@ -12,7 +13,7 @@ __plugin_meta__ = PluginMetadata(
 )
 
 # load all aliyun plugin config from global config
-config = Config.parse_obj(nonebot.get_driver().config)
+config = Config.parse_obj(get_driver().config)
 
 # load all aliyun subplugins
 _sub_plugins = set()
