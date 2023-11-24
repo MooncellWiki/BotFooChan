@@ -7,10 +7,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from nonebot import on_command
 from nonebot.plugin import PluginMetadata
+from nonebot_plugin_filehost import FileHost
 from nonebot_plugin_alconna import Text, Image, UniMessage, on_alconna
 
 from src.plugins.aliyun import config
-from src.plugins.filehost import FileHost
 from src.plugins.aliyun.config import CDNDomain
 from src.plugins.aliyun.utils import get_signed_params
 
@@ -88,11 +88,12 @@ async def resolve_src_bandwidth(domain: CDNDomain):
     value = data_list[-1]["Value"] / 1000000
 
     file_bytes = await generate_src_image(stats)
+    file_url = await FileHost(file_bytes).to_url()
 
     await src_bandwidth.send(
         UniMessage([
             Text(f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"),
-            Image(url=FileHost.new(file_bytes).to_url(), raw=file_bytes),
+            Image(url=file_url, raw=file_bytes),
         ])
     )
 
