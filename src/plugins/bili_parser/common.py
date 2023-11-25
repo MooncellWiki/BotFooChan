@@ -6,7 +6,6 @@ from nonebot import logger
 from nonebot.adapters import Bot
 from nonebot.params import Depends
 from nonebot.typing import T_State
-from nonebot_plugin_filehost import FileHost
 from nonebot_plugin_shorturl import ShortURL
 from nonebot_plugin_alconna import (
     Args,
@@ -44,9 +43,15 @@ def BiliData() -> dict[str, Any]:
 async def get_bili_cover(data: dict[str, Any] = BiliData()):
     async with httpx.AsyncClient(timeout=10) as client:
         if not data.get("data", {}).get("picture", ""):
-            return BytesIO()
+            return None
 
-        r = await client.get(data["data"]["picture"])
+        try:
+            r = await client.get(data["data"]["picture"])
+        except httpx.HTTPError as e:
+            logger.opt(colors=True, exception=e).error(
+                "Failed to fetch video cover from bilibili api"
+            )
+            return None
 
         return BytesIO(r.content)
 
@@ -81,9 +86,9 @@ async def get_bili_data(
 async def _(
     bot: Bot,
     data: dict[str, Any] = BiliData(),
-    picture: BytesIO = Depends(get_bili_cover),
+    cover_bytes: BytesIO | None = Depends(get_bili_cover),
 ):
-    bili_cover_url = data["data"]["picture"]
+    cover_url = data["data"]["picture"]
     mini_program_url = (
         f"m.q.qq.com/a/p/{data['data']['program_id']}?s={data['data']['program_path']}"
     )
@@ -92,12 +97,11 @@ async def _(
     if bot.adapter.get_name() == "QQ":
         mini_program_url = await ShortURL(url=mini_program_url).to_url()
         webpage_link = await ShortURL(url=webpage_link).to_url()
-        bili_cover_url = await FileHost(picture).to_url()
 
-    bili_cover = Image(url=bili_cover_url, raw=picture)
+    bili_cover = Image(url=cover_url, raw=cover_bytes)
     message = UniMessage([
         Text(f"{data['data']['title']}\n"),
-        bili_cover if picture else Text("\n"),
+        bili_cover,
         Text(f"小程序：{mini_program_url}\n"),
         Text(f"网页：{webpage_link}"),
     ])
