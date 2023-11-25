@@ -5,6 +5,8 @@ from typing import Any
 import httpx
 import numpy as np
 import matplotlib.pyplot as plt
+from nonebot.adapters import Bot
+from nonebot.utils import run_sync
 from nonebot import logger, on_command
 from nonebot.plugin import PluginMetadata
 from nonebot_plugin_filehost import FileHost
@@ -55,7 +57,8 @@ async def get_src_bandwidth_stats(domain: CDNDomain):
         return r.json()
 
 
-async def generate_src_image(data: dict[str, Any]):
+@run_sync
+def generate_src_image(data: dict[str, Any]):
     values = [
         d["Value"] / 1000000
         for d in data["RealTimeSrcBpsDataPerInterval"]["DataModule"]
@@ -75,7 +78,7 @@ async def generate_src_image(data: dict[str, Any]):
     return buffer
 
 
-async def resolve_src_bandwidth(domain: CDNDomain):
+async def resolve_src_bandwidth(domain: CDNDomain, bot: Bot):
     stats = await get_src_bandwidth_stats(domain)
 
     data = stats["RealTimeSrcBpsDataPerInterval"]["DataModule"]
@@ -88,7 +91,9 @@ async def resolve_src_bandwidth(domain: CDNDomain):
     value = data_list[-1]["Value"] / 1000000
 
     file_bytes = await generate_src_image(stats)
-    file_url = await FileHost(file_bytes).to_url()
+    file_url: str | None = None
+    if bot.adapter.get_name() == "QQ":
+        file_url = await FileHost(file_bytes).to_url()
 
     try:
         await src_bandwidth.send(
@@ -102,7 +107,7 @@ async def resolve_src_bandwidth(domain: CDNDomain):
 
     except Exception as e:
         logger.opt(colors=True, exception=e).error("Failed to send message")
-        await src_bandwidth.send(f"发送结果时出现错误：{e}")
+        await src_bandwidth.send(f"进行平台侧调用时出现错误：{e}")
 
 
 async def get_http_code_stats(domain: CDNDomain):
@@ -146,7 +151,7 @@ async def handle_http_code():
 
 
 @src_bandwidth.handle()
-async def handle_src_bandwidth():
+async def handle_src_bandwidth(bot: Bot):
     await asyncio.gather(*[
-        resolve_src_bandwidth(domain) for domain in config.cdn_domains
+        resolve_src_bandwidth(domain, bot) for domain in config.cdn_domains
     ])

@@ -3,8 +3,10 @@ from typing import Any
 
 import httpx
 from nonebot import logger
+from nonebot.adapters import Bot
 from nonebot.params import Depends
 from nonebot.typing import T_State
+from nonebot_plugin_filehost import FileHost
 from nonebot_plugin_shorturl import ShortURL
 from nonebot_plugin_alconna import (
     Args,
@@ -39,10 +41,10 @@ def BiliData() -> dict[str, Any]:
     return Depends(_bili_data, use_cache=False)
 
 
-async def get_bili_cover(data: dict[str, Any] = BiliData()) -> BytesIO | None:
+async def get_bili_cover(data: dict[str, Any] = BiliData()):
     async with httpx.AsyncClient(timeout=10) as client:
         if not data.get("data", {}).get("picture", ""):
-            return
+            return BytesIO()
 
         r = await client.get(data["data"]["picture"])
 
@@ -77,20 +79,27 @@ async def get_bili_data(
 
 @bili_parse.handle(parameterless=[Depends(get_bili_data)])
 async def _(
+    bot: Bot,
     data: dict[str, Any] = BiliData(),
-    picture: BytesIO | None = Depends(get_bili_cover),
+    picture: BytesIO = Depends(get_bili_cover),
 ):
-    bili_cover = (
-        Image(url=data["data"]["picture"], raw=picture) if picture else Text("\n")
-    )
+    bili_cover_url = data["data"]["picture"]
     mini_program_url = (
         f"m.q.qq.com/a/p/{data['data']['program_id']}?s={data['data']['program_path']}"
     )
+    webpage_link = data["data"]["link"]
+
+    if bot.adapter.get_name() == "QQ":
+        mini_program_url = await ShortURL(url=mini_program_url).to_url()
+        webpage_link = await ShortURL(url=webpage_link).to_url()
+        bili_cover_url = await FileHost(picture).to_url()
+
+    bili_cover = Image(url=bili_cover_url, raw=picture)
     message = UniMessage([
         Text(f"{data['data']['title']}\n"),
-        bili_cover,
-        Text(f"小程序：{await ShortURL(url=mini_program_url).to_url()}\n"),
-        Text(f"网页：{await ShortURL(url=data['data']['link']).to_url()}"),
+        bili_cover if picture else Text("\n"),
+        Text(f"小程序：{mini_program_url}\n"),
+        Text(f"网页：{webpage_link}"),
     ])
 
     try:
@@ -98,4 +107,4 @@ async def _(
 
     except Exception as e:
         logger.opt(colors=True, exception=e).error("Failed to send message")
-        await bili_parse.send(f"发送结果时出现错误：{e}")
+        await bili_parse.send(f"进行平台侧调用时出现错误：{e}")
