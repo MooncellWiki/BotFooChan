@@ -2,13 +2,18 @@ version: "3"
 services:
   nonebot:
     image: starheart/botfoochan:latest
-    env_file:
-      - .env
     environment:
       - ENVIRONMENT=prod
+      - LOG_LEVEL=INFO
       - HOST=${HOST:-0.0.0.0}
       - PORT=${PORT:-8086}
+      - SUPERUSERS=[]
       - MAX_WORKERS=1 # maximum workers
+    ports:
+      - "8086:${PORT:-8086}"
+    volumes:
+      - ".env.prod:/app/.env.prod"
+      - "./data:/app/data"
     deploy:
       resources:
         limits:
