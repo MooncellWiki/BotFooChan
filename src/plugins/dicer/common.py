@@ -13,19 +13,19 @@ from .dice.rd import rd0
 
 rd_matcher = on_alconna(
     Alconna(
+        [".", "/"],
         "r( )?{dabp}",
         Args["a_number", int | None],
         meta=CommandMeta(compact=True),
     ),
-    use_cmd_start=True,
 )
 rhd_matcher = on_alconna(
     Alconna(
+        [".", "/"],
         "rh( )?{dabp}",
         Args["a_number", int | None],
         meta=CommandMeta(compact=True),
     ),
-    use_cmd_start=True,
 )
 
 
