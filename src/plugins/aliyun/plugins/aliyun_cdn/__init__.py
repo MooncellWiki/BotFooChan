@@ -152,6 +152,6 @@ async def handle_http_code():
 
 @src_bandwidth.handle()
 async def handle_src_bandwidth(bot: Bot):
-    await asyncio.gather(*[
-        resolve_src_bandwidth(domain, bot) for domain in config.cdn_domains
-    ])
+    await asyncio.gather(
+        *[resolve_src_bandwidth(domain, bot) for domain in config.cdn_domains]
+    )
