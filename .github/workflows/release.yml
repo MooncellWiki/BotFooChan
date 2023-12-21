@@ -53,9 +53,11 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
+        include:
+          - platform: linux/amd64
+            platform-artifact: linux-amd64
+          - platform: linux/arm64
+            platform-artifact: linux-arm64
 
     steps:
       - name: Checkout
@@ -109,7 +111,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.image.outputs.ARTIFACT }}
+          name: ${{ matrix.platform-artifact }}-digests
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
