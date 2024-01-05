@@ -105,13 +105,13 @@ async def get_av_data(oid: str, is_bv: bool = False) -> dict[str, Any] | None:
         oid = str(bv2av(oid))
 
     data = {
-        "build": 6060600,
+        "build": "6060600",
         "buvid": "0",
         "oid": oid,
         "platform": "android",
         "share_channel": "QQ",
         "share_id": "main.ugc-video-detail.0.0.pv",
-        "share_mode": 7,
+        "share_mode": "7",
     }
 
     async with httpx.AsyncClient(timeout=10) as client:
