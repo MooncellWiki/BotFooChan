@@ -16,13 +16,13 @@ playwright = "^1.38.0"
 nonebot2 = { version = "^2.1.1", extras = ["httpx", "fastapi", "websockets"] }
 
 nonebot-adapter-qq = "^1.1.1"
-nonebot-adapter-red = "^0.7.3"
-nonebot-adapter-satori = "^0.8.0"
+nonebot-adapter-red = "^0.9.0"
+nonebot-adapter-satori = "^0.9.1"
 nonebot-adapter-feishu = "^2.3.0"
 nonebot-adapter-onebot = "^2.3.0"
 
 nonebot-plugin-sentry = "^1.0.0"
-nonebot-plugin-alconna = "^0.33.3"
+nonebot-plugin-alconna = "^0.37.0"
 nonebot-plugin-filehost = "^1.0.1"
 nonebot-plugin-shorturl = "^0.3.0"
 nonebot-plugin-apscheduler = "^0.3.0"
@@ -32,13 +32,13 @@ nonebot-plugin-status = "^0.7.2"
 nonebot-plugin-treehelp = "^0.3.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.1.0"
+ruff = "^0.2.0"
 isort = "^5.9.3"
-black = "^23.9.1"
+black = "^24.0.0"
 pre-commit = "^3.1.0"
 
 [tool.poetry.group.deploy.dependencies]
-gunicorn = "^20.1.0"
+gunicorn = "^21.1.0"
 uvicorn = ">=0.18.3,<1.0.0"
 
 [tool.black]
@@ -70,7 +70,6 @@ target-version = "py311"
 [tool.pyright]
 pythonVersion = "3.11"
 pythonPlatform = "All"
-executionEnvironments = [{ root = "./" }]
 
 typeCheckingMode = "basic"
 reportShadowedImports = false
