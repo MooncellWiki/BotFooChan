@@ -218,13 +218,13 @@ beautifulsoup4 = "*"
 
 [[package]]
 name = "cashews"
-version = "6.4.0"
+version = "7.0.0"
 description = "cache tools with async power"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "cashews-6.4.0-py3-none-any.whl", hash = "sha256:6b7121a0629a17aa72d22bf4007462a9fbcdcd418b8ec1083f2806950c265e58"},
-    {file = "cashews-6.4.0.tar.gz", hash = "sha256:0f5ec89b4e8d2944e9403c5fc24fb2947003d279e338de40f2fd3ebc9145c4e3"},
+    {file = "cashews-7.0.0-py3-none-any.whl", hash = "sha256:0a54b6ed5f718da2f74509f67770e8741350e5e8bdff7f1ffba9e950451613fa"},
+    {file = "cashews-7.0.0.tar.gz", hash = "sha256:43bf2b0a1acf89206a0f8166657dbafcaa948b2c8e00471746e9a647c21d9fd6"},
 ]
 
 [package.extras]
@@ -1313,17 +1313,17 @@ setuptools = "*"
 
 [[package]]
 name = "nonebot-adapter-feishu"
-version = "2.4.0"
+version = "2.4.1"
 description = "feishu(larksuite) adapter for nonebot2"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "nonebot_adapter_feishu-2.4.0-py3-none-any.whl", hash = "sha256:b7fdbecbf545231d106299df38617568f8ebf1094f545e4cce22ceaef71af89c"},
-    {file = "nonebot_adapter_feishu-2.4.0.tar.gz", hash = "sha256:ebfdd23257282f5717f6d42df28f4c44a2bb139ea1fefd61d49ea9c0975b0e9b"},
+    {file = "nonebot_adapter_feishu-2.4.1-py3-none-any.whl", hash = "sha256:4b4e38c92903518eba2e7c69e0bb319d9169303a78dd2ff92b2549209a25ea75"},
+    {file = "nonebot_adapter_feishu-2.4.1.tar.gz", hash = "sha256:387af65195e4800a6c91bf7a4f85914dd07a22ecca289b166787b24f0b5919de"},
 ]
 
 [package.dependencies]
-cashews = ">=6.0.0,<7.0.0"
+cashews = ">=7.0.0,<8.0.0"
 nonebot2 = ">=2.2.0,<3.0.0"
 pycryptodome = ">=3.18.0,<4.0.0"
 
