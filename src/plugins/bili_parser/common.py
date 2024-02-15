@@ -99,12 +99,14 @@ async def _(
         webpage_link = await ShortURL(url=webpage_link).to_url()
 
     bili_cover = Image(url=cover_url, raw=cover_bytes)
-    message = UniMessage([
-        Text(f"{data['data']['title']}\n"),
-        bili_cover,
-        Text(f"小程序：{mini_program_url}\n"),
-        Text(f"网页：{webpage_link}"),
-    ])
+    message = UniMessage(
+        [
+            Text(f"{data['data']['title']}\n"),
+            bili_cover,
+            Text(f"小程序：{mini_program_url}\n"),
+            Text(f"网页：{webpage_link}"),
+        ]
+    )
 
     try:
         await bili_parse.send(message)

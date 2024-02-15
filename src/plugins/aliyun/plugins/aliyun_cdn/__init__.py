@@ -97,12 +97,14 @@ async def resolve_src_bandwidth(domain: CDNDomain, bot: Bot):
 
     try:
         await src_bandwidth.send(
-            UniMessage([
-                Text(
-                    f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"
-                ),
-                Image(url=file_url, raw=file_bytes),
-            ])
+            UniMessage(
+                [
+                    Text(
+                        f"{domain.group_alias}统计：\n当前CDN回源带宽数据为：{value:.2f}Mbps"
+                    ),
+                    Image(url=file_url, raw=file_bytes),
+                ]
+            )
         )
 
     except Exception as e:
