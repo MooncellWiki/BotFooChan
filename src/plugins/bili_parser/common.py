@@ -24,10 +24,8 @@ bili_parse = on_alconna(
     Alconna("bvideo", Args["code?", str]),
     use_cmd_start=True,
 )
-bili_parse.shortcut(r".*av(\d{1,12}).*", {"args": ["av", "{0}"]})
-bili_parse.shortcut(
-    r".*BV(1[A-Za-z0-9]{2}4.1.7[A-Za-z0-9]{2}).*", {"args": ["BV", "{0}"]}
-)
+bili_parse.shortcut(r".*av(\d{1,12}).*", {"args": ["{0}"]})
+bili_parse.shortcut(r".*BV(1[A-Za-z0-9]{2}4.1.7[A-Za-z0-9]{2}).*", {"args": ["{0}"]})
 
 BILI_DATA = "_bili_data"
 
