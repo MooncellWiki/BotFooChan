@@ -21,7 +21,7 @@ from nonebot_plugin_alconna import (
 from .data_source import get_av_data
 
 bili_parse = on_alconna(
-    Alconna("bvideo", Args["type?", ["av", "BV"]], Args["code?", str]),
+    Alconna("bvideo", Args["code?", str]),
     use_cmd_start=True,
 )
 bili_parse.shortcut(r".*av(\d{1,12}).*", {"args": ["av", "{0}"]})
@@ -58,14 +58,12 @@ async def get_bili_cover(data: dict[str, Any] = BiliData()):
 
 async def get_bili_data(
     state: T_State,
-    type_: Match[str] = AlconnaMatch("type"),
     code: Match[str] = AlconnaMatch("code"),
 ):
-    if type_.available and code.available:
-        is_bv = type_.result == "BV"
-
+    if code.available:
         try:
-            data = await get_av_data(code.result, is_bv)
+            data = await get_av_data(code.result, code.result.startswith("BV"))
+
         except httpx.HTTPError as e:
             logger.opt(colors=True, exception=e).error(
                 "Failed to fetch video metadata from bilibili api"
@@ -74,10 +72,8 @@ async def get_bili_data(
 
         if data:
             state[BILI_DATA] = data
-
         else:
             await bili_parse.finish("未找到相关的视频信息")
-
     else:
         await bili_parse.finish("请输入正确的视频类型及视频号，例如：/bvideo av 1024")
 
