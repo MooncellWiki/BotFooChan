@@ -1,5 +1,4 @@
 from io import BytesIO
-from typing import Any
 
 import httpx
 from nonebot import logger
@@ -19,39 +18,36 @@ from nonebot_plugin_alconna import (
 )
 
 from .data_source import get_av_data
+from .models import ShareClickResponseData
+from .consts import AV_REGEX, BV_REGEX, BILI_DATA
 
 bili_parse = on_alconna(
     Alconna("bvideo", Args["code?", str]),
     use_cmd_start=True,
 )
-bili_parse.shortcut(r".*(av\d{1,12}).*", {"args": ["{0}"]})
-bili_parse.shortcut(r".*(BV1[A-Za-z0-9]{2}4.1.7[A-Za-z0-9]{2}).*", {"args": ["{0}"]})
-
-BILI_DATA = "_bili_data"
+bili_parse.shortcut(AV_REGEX, {"args": ["{0}"]})
+bili_parse.shortcut(BV_REGEX, {"args": ["{0}"]})
 
 
-def _bili_data(state: T_State) -> dict[str, Any]:
+def _bili_data(state: T_State) -> ShareClickResponseData:
     return state[BILI_DATA]
 
 
-def BiliData() -> dict[str, Any]:
+def BiliData() -> ShareClickResponseData:
     return Depends(_bili_data, use_cache=False)
 
 
-async def get_bili_cover(data: dict[str, Any] = BiliData()):
+async def get_bili_cover(data: ShareClickResponseData = BiliData()):
     async with httpx.AsyncClient(timeout=10) as client:
-        if not data.get("data", {}).get("picture", ""):
-            return None
-
         try:
-            r = await client.get(data["data"]["picture"])
+            r = await client.get(data.picture)
+
+            return BytesIO(r.content)
+
         except httpx.HTTPError as e:
             logger.opt(colors=True, exception=e).error(
                 "Failed to fetch video cover from bilibili api"
             )
-            return None
-
-        return BytesIO(r.content)
 
 
 async def get_bili_data(
@@ -66,10 +62,10 @@ async def get_bili_data(
             logger.opt(colors=True, exception=e).error(
                 "Failed to fetch video metadata from bilibili api"
             )
-            await bili_parse.finish(f"请求 Bilibili API 时发生错误：{e}")
+            await bili_parse.finish(f"请求 Bilibili API 时发生错误：{e!r}")
 
         if data:
-            state[BILI_DATA] = data
+            state[BILI_DATA] = data.data
         else:
             await bili_parse.finish("未找到相关的视频信息")
     else:
@@ -79,14 +75,12 @@ async def get_bili_data(
 @bili_parse.handle(parameterless=[Depends(get_bili_data)])
 async def _(
     bot: Bot,
-    data: dict[str, Any] = BiliData(),
+    data: ShareClickResponseData = BiliData(),
     cover_bytes: BytesIO | None = Depends(get_bili_cover),
 ):
-    cover_url = data["data"]["picture"]
-    mini_program_url = (
-        f"m.q.qq.com/a/p/{data['data']['program_id']}?s={data['data']['program_path']}"
-    )
-    webpage_link = data["data"]["link"]
+    cover_url = data.picture
+    mini_program_url = f"m.q.qq.com/a/p/{data.program_id}?s={data.program_path}"
+    webpage_link = data.link
 
     if bot.adapter.get_name() == "QQ":
         mini_program_url = await ShortURL(url=mini_program_url).to_url()
@@ -95,7 +89,7 @@ async def _(
     bili_cover = Image(url=cover_url, raw=cover_bytes)
     message = UniMessage(
         [
-            Text(f"{data['data']['title']}\n"),
+            Text(f"{data.title}\n"),
             bili_cover,
             Text(f"小程序：{mini_program_url}\n"),
             Text(f"网页：{webpage_link}"),
@@ -107,4 +101,4 @@ async def _(
 
     except Exception as e:
         logger.opt(colors=True, exception=e).error("Failed to send message")
-        await bili_parse.send(f"进行平台侧调用时出现错误：{e}")
+        await bili_parse.send(f"发送消息时出现错误：{e!r}")

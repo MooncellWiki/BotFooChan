@@ -1,13 +1,12 @@
-from typing import Any
-
 import httpx
+from pydantic import parse_obj_as
 
 from .utils import bv2av
+from .models import ShareClickResponse
+from .consts import SHARE_CLICK_ENDPOINT
 
-url = "https://api.biliapi.net/x/share/click"
 
-
-async def get_av_data(oid: str, is_bv: bool = False) -> dict[str, Any] | None:
+async def get_av_data(oid: str, is_bv: bool = False) -> ShareClickResponse:
     if is_bv:
         oid = str(bv2av(oid))
 
@@ -31,10 +30,7 @@ async def get_av_data(oid: str, is_bv: bool = False) -> dict[str, Any] | None:
             )
         },
     ) as client:
-        r = await client.post(url, data=data)
-        data = r.json()
-
-    if data["code"] == "0" and not data["data"]:
-        return None
+        r = await client.post(SHARE_CLICK_ENDPOINT, data=data)
+        data = parse_obj_as(ShareClickResponse, r.json())
 
     return data
