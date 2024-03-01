@@ -41,7 +41,7 @@ src_bandwidth = on_alconna(
 async def get_src_bandwidth_stats(domain: CDNDomain):
     async with httpx.AsyncClient(timeout=10) as client:
         r = await client.get(
-            domain.api_url,
+            str(domain.api_url),
             params=get_signed_params(
                 domain.access_key_id,
                 domain.access_key_secret,
@@ -115,7 +115,7 @@ async def resolve_src_bandwidth(domain: CDNDomain, bot: Bot):
 async def get_http_code_stats(domain: CDNDomain):
     async with httpx.AsyncClient(timeout=10) as client:
         r = await client.get(
-            domain.api_url,
+            str(domain.api_url),
             params=get_signed_params(
                 domain.access_key_id,
                 domain.access_key_secret,

@@ -1,7 +1,7 @@
-from pydantic import Extra, Field, HttpUrl, BaseModel
+from pydantic import Field, HttpUrl, BaseModel
 
 
-class CDNDomain(BaseModel, extra=Extra.ignore):
+class CDNDomain(BaseModel):
     api_url: HttpUrl = Field("https://cdn.aliyuncs.com")
     access_key_secret: str
     access_key_id: str
@@ -9,5 +9,5 @@ class CDNDomain(BaseModel, extra=Extra.ignore):
     group_alias: str
 
 
-class Config(BaseModel, extra=Extra.ignore):
+class Config(BaseModel):
     cdn_domains: list[CDNDomain]

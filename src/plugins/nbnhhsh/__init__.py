@@ -1,9 +1,9 @@
-from nonebot import get_driver
+from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 
 from .config import Config
 
-config = Config.parse_obj(get_driver().config)
+config = get_plugin_config(Config)
 
 __plugin_meta__ = PluginMetadata(
     name="能不能好好说话",

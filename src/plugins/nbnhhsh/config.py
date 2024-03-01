@@ -1,5 +1,5 @@
-from pydantic import Extra, Field, HttpUrl, BaseModel
+from pydantic import Field, HttpUrl, BaseModel
 
 
-class Config(BaseModel, extra=Extra.ignore):
+class Config(BaseModel):
     nbnhhsh_api_endpoint: HttpUrl = Field("https://lab.magiconch.com")
