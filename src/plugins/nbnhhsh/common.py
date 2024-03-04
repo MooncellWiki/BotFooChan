@@ -57,7 +57,7 @@ async def guess(text: str) -> list[dict[str, Any]]:
 
     async with httpx.AsyncClient(timeout=10) as client:
         r = await client.post(
-            f"{config.nbnhhsh_api_endpoint}/api/nbnhhsh/guess",
+            httpx.URL(str(config.nbnhhsh_api_endpoint)).join("/api/nbnhhsh/guess"),
             headers=headers,
             json=json,
         )
