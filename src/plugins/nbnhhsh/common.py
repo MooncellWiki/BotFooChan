@@ -18,7 +18,7 @@ def get_splitted_text(r):
     translates = r.get("trans")
     guesses = r.get("inputting")
 
-    return ",".join(translates or guesses or []) or "暂无翻译"
+    return config.nbnhhsh_split_char.join(translates or guesses or []) or "暂无翻译"
 
 
 @nbnhhsh.handle()
