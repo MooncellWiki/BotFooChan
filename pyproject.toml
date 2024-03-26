@@ -69,7 +69,7 @@ target-version = "py311"
 pythonVersion = "3.11"
 pythonPlatform = "All"
 
-typeCheckingMode = "basic"
+typeCheckingMode = "standard"
 reportShadowedImports = false
 disableBytesTypePromotions = true
 
