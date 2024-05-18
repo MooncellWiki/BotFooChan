@@ -30,6 +30,6 @@ async def get_av_data(oid: str, is_bv: bool = False) -> ShareClickResponse:
         },
     ) as client:
         r = await client.post(SHARE_CLICK_ENDPOINT, data=data)
-        data = ShareClickResponse.model_validate_json(r.json())
+        data = ShareClickResponse.model_validate_json(r.text)
 
     return data
