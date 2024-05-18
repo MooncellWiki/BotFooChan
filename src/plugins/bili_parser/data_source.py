@@ -1,5 +1,4 @@
 import httpx
-from pydantic import parse_obj_as
 
 from .utils import bv2av
 from .models import ShareClickResponse
@@ -31,6 +30,6 @@ async def get_av_data(oid: str, is_bv: bool = False) -> ShareClickResponse:
         },
     ) as client:
         r = await client.post(SHARE_CLICK_ENDPOINT, data=data)
-        data = parse_obj_as(ShareClickResponse, r.json())
+        data = ShareClickResponse.model_validate_json(r.json())
 
     return data
