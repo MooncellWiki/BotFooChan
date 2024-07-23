@@ -19,6 +19,6 @@
 
 在 QQ 等平台查询阿里云业务状态，查询 FGO/明日方舟 相关动态及推送
 
-
 ## License
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FMooncellWiki%2FBotFooChan.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FMooncellWiki%2FBotFooChan?ref=badge_large)
