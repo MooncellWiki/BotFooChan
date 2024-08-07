@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "botfoochan"
-version = "0.2.7"
+version = "0.2.8"
 description = "Multi channel Mooncell bot"
 authors = ["StarHeartHunt <starheart233@gmail.com>"]
 license = "MIT"
