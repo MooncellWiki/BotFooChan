@@ -30,7 +30,7 @@ async def set_text(text: Match[str]) -> None:
             logger.opt(colors=True, exception=e).error(
                 "failed to fetch guess from nbnhhsh api"
             )
-            await nbnhhsh.finish(f"查询出错，请稍后重试：\n{e}")
+            await nbnhhsh.finish(f"查询出错，请稍后重试：\n{e!r}")
 
         if not result:
             await nbnhhsh.finish("未找到相关结果")
