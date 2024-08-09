@@ -26,9 +26,7 @@ async def handle_default(type: Match[str]) -> None:
         try:
             result = await fetch_status(type.result)
         except httpx.HTTPError as e:
-            logger.opt(colors=True, exception=e).error(
-                "failed to fetch guess from nbnhhsh api"
-            )
+            logger.opt(colors=True, exception=e).error("请求服务器出错")
             await server_status.finish(f"查询出错，请稍后重试：\n{e}")
 
         if not result:
