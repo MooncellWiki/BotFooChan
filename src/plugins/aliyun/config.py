@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel
 
 
 class CDNDomain(BaseModel):
-    api_url: HttpUrl = Field("https://cdn.aliyuncs.com")
+    api_url: str = "https://cdn.aliyuncs.com"
     access_key_secret: str
     access_key_id: str
     domains: list[str]

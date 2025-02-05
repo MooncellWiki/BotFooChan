@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel
 
 
 class Config(BaseModel):
-    nbnhhsh_api_endpoint: HttpUrl = Field("https://lab.magiconch.com")
+    nbnhhsh_api_endpoint: str = "https://lab.magiconch.com"
     nbnhhsh_split_char: str = "，"

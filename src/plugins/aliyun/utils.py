@@ -1,8 +1,8 @@
 import base64
+from datetime import UTC, datetime
 import hashlib
 import hmac
 import time
-from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import quote
 
@@ -25,9 +25,7 @@ def get_default_params(access_key_id: str) -> dict[str, str]:
     return {
         "AccessKeyId": access_key_id,
         "SignatureNonce": str(int(time.time() * 1000)),
-        "Timestamp": (
-            f"{datetime.now(timezone.utc).replace(microsecond=0).isoformat()}Z"
-        ),
+        "Timestamp": (f"{datetime.now(UTC).replace(microsecond=0).isoformat()}Z"),
         "SignatureMethod": "HMAC-SHA1",
         "Format": "JSON",
         "SignatureVersion": "1.0",
