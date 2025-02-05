@@ -26,8 +26,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install poetry
-        run: pipx install poetry
+      - name: Set up PDM
+        uses: pdm-project/setup-pdm@v4
 
       - name: Get Version
         id: version
