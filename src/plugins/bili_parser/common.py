@@ -5,21 +5,21 @@ from nonebot import logger
 from nonebot.adapters import Bot
 from nonebot.params import Depends
 from nonebot.typing import T_State
-from nonebot_plugin_shorturl import ShortURL
 from nonebot_plugin_alconna import (
+    Alconna,
+    AlconnaMatch,
     Args,
-    Text,
     Image,
     Match,
-    Alconna,
+    Text,
     UniMessage,
-    AlconnaMatch,
     on_alconna,
 )
+from nonebot_plugin_shorturl import ShortURL
 
+from .consts import AV_REGEX, BILI_DATA, BV_REGEX
 from .data_source import get_av_data
 from .models import ShareClickResponseData
-from .consts import AV_REGEX, BV_REGEX, BILI_DATA
 
 bili_parse = on_alconna(
     Alconna("bvideo", Args["code?", str]),

@@ -1,7 +1,7 @@
 import nonebot
-from nonebot.adapters.qq import Adapter as QQAdapter
 from nonebot.adapters.feishu import Adapter as FeishuAdapter
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
+from nonebot.adapters.qq import Adapter as QQAdapter
 
 nonebot.init()
 app = nonebot.get_asgi()

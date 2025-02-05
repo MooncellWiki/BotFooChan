@@ -3,14 +3,14 @@ from io import BytesIO
 from typing import Any
 
 import httpx
-import numpy as np
 import matplotlib.pyplot as plt
-from nonebot.adapters import Bot
-from nonebot.utils import run_sync
 from nonebot import logger, on_command
+from nonebot.adapters import Bot
 from nonebot.plugin import PluginMetadata
+from nonebot.utils import run_sync
+from nonebot_plugin_alconna import Image, Text, UniMessage, on_alconna
 from nonebot_plugin_filehost import FileHost
-from nonebot_plugin_alconna import Text, Image, UniMessage, on_alconna
+import numpy as np
 
 from src.plugins.aliyun import config
 from src.plugins.aliyun.config import CDNDomain

@@ -1,4 +1,4 @@
-from pydantic import Field, HttpUrl, BaseModel
+from pydantic import BaseModel, Field, HttpUrl
 
 
 class Config(BaseModel):

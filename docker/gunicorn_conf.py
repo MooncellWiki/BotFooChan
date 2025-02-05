@@ -1,6 +1,5 @@
-import os
-import json
 import multiprocessing
+import os
 
 host = os.getenv("HOST", "0.0.0.0")
 port = os.getenv("PORT", "80")
@@ -87,4 +86,3 @@ log_data = {
     "host": host,
     "port": port,
 }
-print(json.dumps(log_data))

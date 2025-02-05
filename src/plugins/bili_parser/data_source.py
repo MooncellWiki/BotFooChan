@@ -1,8 +1,8 @@
 import httpx
 
-from .utils import bv2av
-from .models import ShareClickResponse
 from .consts import SHARE_CLICK_ENDPOINT
+from .models import ShareClickResponse
+from .utils import bv2av
 
 
 async def get_av_data(oid: str, is_bv: bool = False) -> ShareClickResponse:

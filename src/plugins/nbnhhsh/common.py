@@ -2,9 +2,9 @@ from typing import Any
 
 import httpx
 from nonebot import logger
-from nonebot_plugin_alconna import Args, Match, Alconna, on_alconna
+from nonebot_plugin_alconna import Alconna, Args, Match, on_alconna
 
-from . import config, __plugin_meta__
+from . import __plugin_meta__, config
 
 nbnhhsh = on_alconna(
     Alconna("hhsh", Args["text?", str]),

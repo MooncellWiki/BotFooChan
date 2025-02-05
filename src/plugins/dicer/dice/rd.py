@@ -1,10 +1,10 @@
 # 参考[OlivaDiceDocs](https://oliva.dicer.wiki/userdoc)实现的nonebot2骰娘插件
-import random
 import contextlib
+import random
 
 import diro
 
-from ..constant import success_level
+from src.plugins.dicer.constant import success_level
 
 
 def to_circled(num: int, c: int) -> str:
