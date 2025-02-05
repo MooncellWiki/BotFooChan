@@ -1,18 +1,18 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.11-bookworm as requirements-stage
+FROM python:3.12-bookworm as requirements-stage
 
 WORKDIR /tmp
 
-RUN curl -sSL https://install.python-poetry.org | python -
+RUN curl -sSL https://pdm-project.org/install-pdm.py | python -
 
 ENV PATH="${PATH}:/root/.local/bin"
 
-COPY ./pyproject.toml ./poetry.lock* /tmp/
+COPY ./pyproject.toml ./pdm.lock* /tmp/
 
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes --with deploy
+RUN pdm export -o requirements.txt --output requirements.txt --without-hashes --with deploy
 
-FROM python:3.11-bookworm as build-stage
+FROM python:3.12-bookworm as build-stage
 
 WORKDIR /wheel
 
@@ -20,7 +20,7 @@ COPY --from=requirements-stage /tmp/requirements.txt /wheel/requirements.txt
 
 RUN pip wheel --wheel-dir=/wheel --no-cache-dir --requirement /wheel/requirements.txt
 
-FROM python:3.11-bookworm as metadata-stage
+FROM python:3.12-bookworm as metadata-stage
 
 WORKDIR /tmp
 
@@ -29,7 +29,7 @@ RUN --mount=type=bind,source=./.git/,target=/tmp/.git/ \
   || git rev-parse --short HEAD > /tmp/VERSION \
   && echo "Building version: $(cat /tmp/VERSION)"
 
-FROM python:3.11-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 WORKDIR /app
 
