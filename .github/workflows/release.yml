@@ -32,7 +32,7 @@ jobs:
       - name: Get Version
         id: version
         run: |
-          echo "VERSION=$(poetry version -s)" >> $GITHUB_OUTPUT
+          echo "VERSION=$(pdm show --version)" >> $GITHUB_OUTPUT
           echo "TAG=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Check Version
@@ -81,7 +81,7 @@ jobs:
         run: |
           REPO=starheart/${{ github.event.repository.name }}
           echo "IMAGE=${REPO,,}" >> $GITHUB_OUTPUT
-          echo "SCOPE=${{ hashFiles('**/poetry.lock') }}-${{ matrix.platform }}" >> $GITHUB_OUTPUT
+          echo "SCOPE=${{ hashFiles('**/pdm.lock') }}-${{ matrix.platform }}" >> $GITHUB_OUTPUT
           PLATFORM="${{ matrix.platform }}"
           echo "ARTIFACT=${PLATFORM/\//-}-digests" >> $GITHUB_OUTPUT
 
