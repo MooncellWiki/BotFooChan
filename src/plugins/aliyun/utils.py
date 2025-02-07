@@ -25,7 +25,7 @@ def get_default_params(access_key_id: str) -> dict[str, str]:
     return {
         "AccessKeyId": access_key_id,
         "SignatureNonce": str(int(time.time() * 1000)),
-        "Timestamp": (f"{datetime.now(UTC).replace(microsecond=0).isoformat()}Z"),
+        "Timestamp": f"{datetime.now(UTC).replace(microsecond=0).isoformat()}Z",
         "SignatureMethod": "HMAC-SHA1",
         "Format": "JSON",
         "SignatureVersion": "1.0",
