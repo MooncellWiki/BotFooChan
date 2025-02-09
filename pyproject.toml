@@ -21,6 +21,7 @@ dependencies = [
   "nonebot-plugin-apscheduler ~=0.4",
   "nonebot-bison >=0.9.6rc2, <1.0",
   "nonebot-plugin-treehelp ~=0.3",
+  "nonebot-plugin-deepseek>=0.1.7",
 ]
 
 [dependency-groups]
