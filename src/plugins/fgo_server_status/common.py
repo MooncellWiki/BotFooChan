@@ -2,8 +2,6 @@ import httpx
 from nonebot import logger
 from nonebot_plugin_alconna import Alconna, Args, Match, on_alconna
 
-from . import __plugin_meta__
-
 server_status = on_alconna(
     Alconna("server_status", Args["type?", str]),
     aliases={"服务器状态"},
@@ -35,4 +33,4 @@ async def handle_default(type: Match[str]) -> None:
         await server_status.finish(result)
 
     else:
-        await server_status.finish(__plugin_meta__.usage)
+        await server_status.finish("请输入正确的服务器类型，例如：/服务器状态 国服")
