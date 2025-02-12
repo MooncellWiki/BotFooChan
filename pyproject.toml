@@ -14,14 +14,14 @@ dependencies = [
   "nonebot-adapter-qq ~=1.1",
   "nonebot-adapter-feishu ~=2.3",
   "nonebot-adapter-onebot ~=2.3",
-  "nonebot-plugin-sentry ~=2.0",
-  "nonebot-plugin-alconna ~=0.38",
-  "nonebot-plugin-filehost ~=1.1",
-  "nonebot-plugin-shorturl ~=0.4",
-  "nonebot-plugin-apscheduler ~=0.4",
   "nonebot-bison >=0.9.6rc2, <1.0",
+  "nonebot-plugin-alconna ~=0.38",
+  "nonebot-plugin-apscheduler ~=0.4",
+  "nonebot-plugin-deepseek ~=0.1",
+  "nonebot-plugin-filehost ~=1.1",
+  "nonebot-plugin-sentry ~=2.0",
+  "nonebot-plugin-shorturl ~=0.4",
   "nonebot-plugin-treehelp ~=0.3",
-  "openai ~=1.61",
 ]
 
 [dependency-groups]
