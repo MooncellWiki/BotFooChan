@@ -5,7 +5,7 @@
 groups = ["default", "deploy", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:4e0edbb25c2c267cfbe7cef54dcbbcf51bd65ab14117d2b56156fd5ea191982a"
+content_hash = "sha256:94973b015d956369395697186b380f2dd1801b7133656daba1fc701f26685f50"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -1292,7 +1292,10 @@ files = [
 [[package]]
 name = "nonebot-plugin-llmchat"
 version = "0.1.2"
-requires_python = "<4.0,>=3.9"
+requires_python = ">=3.9,<4.0"
+git = "https://github.com/StarHeartHunt/nonebot-plugin-llmchat.git"
+ref = "main"
+revision = "7f284ec4c43b712d360213c7308c975e8385af67"
 summary = "Nonebot AI group chat plugin supporting multiple API preset configurations"
 groups = ["default"]
 dependencies = [
@@ -1302,10 +1305,6 @@ dependencies = [
     "nonebot-plugin-localstore<0.8.0,>=0.7.3",
     "nonebot2<3.0.0,>=2.2.0",
     "openai>=1.0.0",
-]
-files = [
-    {file = "nonebot_plugin_llmchat-0.1.2-py3-none-any.whl", hash = "sha256:6d5d3080706e5ee8a2674837c751a0960eacf27aeeed14bc6a53140031f73d9a"},
-    {file = "nonebot_plugin_llmchat-0.1.2.tar.gz", hash = "sha256:2a3fbfbc186290e5492ccf6500bfa5ce8cd0613730a655eaff8cdbfc28601dbf"},
 ]
 
 [[package]]

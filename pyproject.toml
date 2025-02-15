@@ -19,7 +19,7 @@ dependencies = [
   "nonebot-plugin-apscheduler ~=0.4",
   "nonebot-plugin-deepseek ~=0.1",
   "nonebot-plugin-filehost ~=1.1",
-  "nonebot-plugin-llmchat ~=0.1",
+  "nonebot-plugin-llmchat @ git+https://github.com/StarHeartHunt/nonebot-plugin-llmchat.git@main",
   "nonebot-plugin-sentry ~=2.0",
   "nonebot-plugin-shorturl ~=0.4",
   "nonebot-plugin-treehelp ~=0.3",
