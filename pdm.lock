@@ -5,10 +5,10 @@
 groups = ["default", "deploy", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:94973b015d956369395697186b380f2dd1801b7133656daba1fc701f26685f50"
+content_hash = "sha256:1a250c0bceaa4c4dc76e7114b4e03612ba1fd810b48eead705788a5424c687da"
 
 [[metadata.targets]]
-requires_python = ">=3.12"
+requires_python = "~=3.12"
 
 [[package]]
 name = "aiofiles"
@@ -1295,7 +1295,7 @@ version = "0.1.2"
 requires_python = ">=3.9,<4.0"
 git = "https://github.com/StarHeartHunt/nonebot-plugin-llmchat.git"
 ref = "main"
-revision = "7f284ec4c43b712d360213c7308c975e8385af67"
+revision = "620245f420e702a924f5f93842571d8e00b4b368"
 summary = "Nonebot AI group chat plugin supporting multiple API preset configurations"
 groups = ["default"]
 dependencies = [
