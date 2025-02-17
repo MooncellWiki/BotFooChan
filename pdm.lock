@@ -1291,7 +1291,7 @@ files = [
 
 [[package]]
 name = "nonebot-plugin-llmchat"
-version = "0.1.6"
+version = "0.1.7"
 requires_python = "<4.0,>=3.9"
 summary = "Nonebot AI group chat plugin supporting multiple API preset configurations"
 groups = ["default"]
@@ -1304,8 +1304,8 @@ dependencies = [
     "openai>=1.0.0",
 ]
 files = [
-    {file = "nonebot_plugin_llmchat-0.1.6-py3-none-any.whl", hash = "sha256:298df5e57944cfb8e66b9ae98d264e66706e6cea33507978c4737998e4bb586c"},
-    {file = "nonebot_plugin_llmchat-0.1.6.tar.gz", hash = "sha256:bdb9cb8a826fab46b656df0dfa68558058f91a983b28b02f05d063a415f7ab2a"},
+    {file = "nonebot_plugin_llmchat-0.1.7-py3-none-any.whl", hash = "sha256:240e62c8a407084818e50366a206ae51c5e89f26812e95977fb6bc99cb7ccfcc"},
+    {file = "nonebot_plugin_llmchat-0.1.7.tar.gz", hash = "sha256:190ce094b23e522247462901ab4629fa1494dd950c6787c759c39b2c81bfec0d"},
 ]
 
 [[package]]
