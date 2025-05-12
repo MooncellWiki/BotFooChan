@@ -655,6 +655,17 @@ files = [
 ]
 
 [[package]]
+name = "httpx-sse"
+version = "0.4.0"
+requires_python = ">=3.8"
+summary = "Consume Server-Sent Event (SSE) messages with HTTPX."
+groups = ["default"]
+files = [
+    {file = "httpx-sse-0.4.0.tar.gz", hash = "sha256:1e81a3a3070ce322add1d3529ed42eb5f70817f45ed6ec915ab753f961139721"},
+    {file = "httpx_sse-0.4.0-py3-none-any.whl", hash = "sha256:f329af6eae57eaa2bdfd962b42524764af68075ea87370a2de920af5341e318f"},
+]
+
+[[package]]
 name = "httpx"
 version = "0.28.1"
 extras = ["http2"]
@@ -975,7 +986,7 @@ files = [
 
 [[package]]
 name = "matplotlib"
-version = "3.10.0"
+version = "3.10.3"
 requires_python = ">=3.10"
 summary = "Python plotting package"
 groups = ["default"]
@@ -991,25 +1002,47 @@ dependencies = [
     "python-dateutil>=2.7",
 ]
 files = [
-    {file = "matplotlib-3.10.0-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:4659665bc7c9b58f8c00317c3c2a299f7f258eeae5a5d56b4c64226fca2f7c59"},
-    {file = "matplotlib-3.10.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:d44cb942af1693cced2604c33a9abcef6205601c445f6d0dc531d813af8a2f5a"},
-    {file = "matplotlib-3.10.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a994f29e968ca002b50982b27168addfd65f0105610b6be7fa515ca4b5307c95"},
-    {file = "matplotlib-3.10.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9b0558bae37f154fffda54d779a592bc97ca8b4701f1c710055b609a3bac44c8"},
-    {file = "matplotlib-3.10.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:503feb23bd8c8acc75541548a1d709c059b7184cde26314896e10a9f14df5f12"},
-    {file = "matplotlib-3.10.0-cp312-cp312-win_amd64.whl", hash = "sha256:c40ba2eb08b3f5de88152c2333c58cee7edcead0a2a0d60fcafa116b17117adc"},
-    {file = "matplotlib-3.10.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:96f2886f5c1e466f21cc41b70c5a0cd47bfa0015eb2d5793c88ebce658600e25"},
-    {file = "matplotlib-3.10.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:12eaf48463b472c3c0f8dbacdbf906e573013df81a0ab82f0616ea4b11281908"},
-    {file = "matplotlib-3.10.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2fbbabc82fde51391c4da5006f965e36d86d95f6ee83fb594b279564a4c5d0d2"},
-    {file = "matplotlib-3.10.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ad2e15300530c1a94c63cfa546e3b7864bd18ea2901317bae8bbf06a5ade6dcf"},
-    {file = "matplotlib-3.10.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:3547d153d70233a8496859097ef0312212e2689cdf8d7ed764441c77604095ae"},
-    {file = "matplotlib-3.10.0-cp313-cp313-win_amd64.whl", hash = "sha256:c55b20591ced744aa04e8c3e4b7543ea4d650b6c3c4b208c08a05b4010e8b442"},
-    {file = "matplotlib-3.10.0-cp313-cp313t-macosx_10_13_x86_64.whl", hash = "sha256:9ade1003376731a971e398cc4ef38bb83ee8caf0aee46ac6daa4b0506db1fd06"},
-    {file = "matplotlib-3.10.0-cp313-cp313t-macosx_11_0_arm64.whl", hash = "sha256:95b710fea129c76d30be72c3b38f330269363fbc6e570a5dd43580487380b5ff"},
-    {file = "matplotlib-3.10.0-cp313-cp313t-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5cdbaf909887373c3e094b0318d7ff230b2ad9dcb64da7ade654182872ab2593"},
-    {file = "matplotlib-3.10.0-cp313-cp313t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d907fddb39f923d011875452ff1eca29a9e7f21722b873e90db32e5d8ddff12e"},
-    {file = "matplotlib-3.10.0-cp313-cp313t-musllinux_1_2_x86_64.whl", hash = "sha256:3b427392354d10975c1d0f4ee18aa5844640b512d5311ef32efd4dd7db106ede"},
-    {file = "matplotlib-3.10.0-cp313-cp313t-win_amd64.whl", hash = "sha256:5fd41b0ec7ee45cd960a8e71aea7c946a28a0b8a4dcee47d2856b2af051f334c"},
-    {file = "matplotlib-3.10.0.tar.gz", hash = "sha256:b886d02a581b96704c9d1ffe55709e49b4d2d52709ccebc4be42db856e511278"},
+    {file = "matplotlib-3.10.3-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:0ab1affc11d1f495ab9e6362b8174a25afc19c081ba5b0775ef00533a4236eea"},
+    {file = "matplotlib-3.10.3-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:2a818d8bdcafa7ed2eed74487fdb071c09c1ae24152d403952adad11fa3c65b4"},
+    {file = "matplotlib-3.10.3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:748ebc3470c253e770b17d8b0557f0aa85cf8c63fd52f1a61af5b27ec0b7ffee"},
+    {file = "matplotlib-3.10.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ed70453fd99733293ace1aec568255bc51c6361cb0da94fa5ebf0649fdb2150a"},
+    {file = "matplotlib-3.10.3-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:dbed9917b44070e55640bd13419de83b4c918e52d97561544814ba463811cbc7"},
+    {file = "matplotlib-3.10.3-cp312-cp312-win_amd64.whl", hash = "sha256:cf37d8c6ef1a48829443e8ba5227b44236d7fcaf7647caa3178a4ff9f7a5be05"},
+    {file = "matplotlib-3.10.3-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:9f2efccc8dcf2b86fc4ee849eea5dcaecedd0773b30f47980dc0cbeabf26ec84"},
+    {file = "matplotlib-3.10.3-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:3ddbba06a6c126e3301c3d272a99dcbe7f6c24c14024e80307ff03791a5f294e"},
+    {file = "matplotlib-3.10.3-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:748302b33ae9326995b238f606e9ed840bf5886ebafcb233775d946aa8107a15"},
+    {file = "matplotlib-3.10.3-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a80fcccbef63302c0efd78042ea3c2436104c5b1a4d3ae20f864593696364ac7"},
+    {file = "matplotlib-3.10.3-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:55e46cbfe1f8586adb34f7587c3e4f7dedc59d5226719faf6cb54fc24f2fd52d"},
+    {file = "matplotlib-3.10.3-cp313-cp313-win_amd64.whl", hash = "sha256:151d89cb8d33cb23345cd12490c76fd5d18a56581a16d950b48c6ff19bb2ab93"},
+    {file = "matplotlib-3.10.3-cp313-cp313t-macosx_10_13_x86_64.whl", hash = "sha256:c26dd9834e74d164d06433dc7be5d75a1e9890b926b3e57e74fa446e1a62c3e2"},
+    {file = "matplotlib-3.10.3-cp313-cp313t-macosx_11_0_arm64.whl", hash = "sha256:24853dad5b8c84c8c2390fc31ce4858b6df504156893292ce8092d190ef8151d"},
+    {file = "matplotlib-3.10.3-cp313-cp313t-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:68f7878214d369d7d4215e2a9075fef743be38fa401d32e6020bab2dfabaa566"},
+    {file = "matplotlib-3.10.3-cp313-cp313t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f6929fc618cb6db9cb75086f73b3219bbb25920cb24cee2ea7a12b04971a4158"},
+    {file = "matplotlib-3.10.3-cp313-cp313t-musllinux_1_2_x86_64.whl", hash = "sha256:6c7818292a5cc372a2dc4c795e5c356942eb8350b98ef913f7fda51fe175ac5d"},
+    {file = "matplotlib-3.10.3-cp313-cp313t-win_amd64.whl", hash = "sha256:4f23ffe95c5667ef8a2b56eea9b53db7f43910fa4a2d5472ae0f72b64deab4d5"},
+    {file = "matplotlib-3.10.3.tar.gz", hash = "sha256:2f82d2c5bb7ae93aaaa4cd42aca65d76ce6376f83304fa3a630b569aca274df0"},
+]
+
+[[package]]
+name = "mcp"
+version = "1.8.0"
+requires_python = ">=3.10"
+summary = "Model Context Protocol SDK"
+groups = ["default"]
+dependencies = [
+    "anyio>=4.5",
+    "httpx-sse>=0.4",
+    "httpx>=0.27",
+    "pydantic-settings>=2.5.2",
+    "pydantic<3.0.0,>=2.7.2",
+    "python-multipart>=0.0.9",
+    "sse-starlette>=1.6.1",
+    "starlette>=0.27",
+    "uvicorn>=0.23.1; sys_platform != \"emscripten\"",
+]
+files = [
+    {file = "mcp-1.8.0-py3-none-any.whl", hash = "sha256:889d9d3b4f12b7da59e7a3933a0acadae1fce498bfcd220defb590aa291a1334"},
+    {file = "mcp-1.8.0.tar.gz", hash = "sha256:263dfb700540b726c093f0c3e043f66aded0730d0b51f04eb0a3eb90055fe49b"},
 ]
 
 [[package]]
@@ -1149,7 +1182,7 @@ files = [
 
 [[package]]
 name = "nonebot-adapter-qq"
-version = "1.6.2"
+version = "1.6.3"
 requires_python = "<4.0,>=3.9"
 summary = "QQ adapter for nonebot2"
 groups = ["default"]
@@ -1161,13 +1194,13 @@ dependencies = [
     "yarl<2.0.0,>=1.9.0",
 ]
 files = [
-    {file = "nonebot_adapter_qq-1.6.2-py3-none-any.whl", hash = "sha256:6ee7a7ae19a2efd2a9f83437c71f9849c23d4a71d01b6b3fb63177eb791440eb"},
-    {file = "nonebot_adapter_qq-1.6.2.tar.gz", hash = "sha256:5674a4df4e5c98a0d59b1ec484735e6b6e891673c1773f48041b395090cbc319"},
+    {file = "nonebot_adapter_qq-1.6.3-py3-none-any.whl", hash = "sha256:66164b6d3d46fc3aa2480e6366cd103a894f8f3c18a1436fa6713d3d63c3da2a"},
+    {file = "nonebot_adapter_qq-1.6.3.tar.gz", hash = "sha256:44a21f18802a0596779f933d511de61d19bba17e6690fc4f00a45ee4f05f7ba5"},
 ]
 
 [[package]]
 name = "nonebot-bison"
-version = "0.9.6rc2"
+version = "0.9.7"
 requires_python = "<4.0.0,>=3.10"
 summary = "Subscribe message from social medias"
 groups = ["default"]
@@ -1194,13 +1227,13 @@ dependencies = [
     "yarl>=1.11.1",
 ]
 files = [
-    {file = "nonebot_bison-0.9.6rc2-py3-none-any.whl", hash = "sha256:937d3d6df85ca936c84625f8f62ccc99f0db8c8943c875352693883350975687"},
-    {file = "nonebot_bison-0.9.6rc2.tar.gz", hash = "sha256:ccf1a8472af07d7491c1e1bf4aa6d42b55fedf454c8ae522d70cb419700adfeb"},
+    {file = "nonebot_bison-0.9.7-py3-none-any.whl", hash = "sha256:903b333869d14a0ae72baab019ceddb27afa852a6482446b94194579dae7fe7c"},
+    {file = "nonebot_bison-0.9.7.tar.gz", hash = "sha256:88084b5fb7dee2822e41169ae6a29b8898954ab8fd46ef8e1666358b49094413"},
 ]
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.55.1"
+version = "0.57.6"
 requires_python = ">=3.9"
 summary = "Alconna Adapter for Nonebot"
 groups = ["default"]
@@ -1214,8 +1247,8 @@ dependencies = [
     "tarina<0.7,>=0.6.8",
 ]
 files = [
-    {file = "nonebot_plugin_alconna-0.55.1-py3-none-any.whl", hash = "sha256:36162613b84d6196c33914e6d3efb6387423fa4acdb502a9104f456232c3b4c4"},
-    {file = "nonebot_plugin_alconna-0.55.1.tar.gz", hash = "sha256:fb8c9e1898918fc949f6294ebffbcd22699a1974b3bd486862c0f81a41dc0044"},
+    {file = "nonebot_plugin_alconna-0.57.6-py3-none-any.whl", hash = "sha256:7690f4f1bfc1be8755080eea3554582cafe9cb44c1a1f270e30922d3d1f8358d"},
+    {file = "nonebot_plugin_alconna-0.57.6.tar.gz", hash = "sha256:f22357cf784358205b8ae76707627fd28d1a73b594e38b239619be4eea9fe6ae"},
 ]
 
 [[package]]
@@ -1308,12 +1341,13 @@ files = [
 
 [[package]]
 name = "nonebot-plugin-llmchat"
-version = "0.1.8"
-requires_python = "<4.0,>=3.9"
+version = "0.2.2"
+requires_python = "<4.0,>=3.10"
 summary = "Nonebot AI group chat plugin supporting multiple API preset configurations"
 groups = ["default"]
 dependencies = [
     "aiofiles>=24.0.0",
+    "mcp<2.0.0,>=1.6.0",
     "nonebot-adapter-onebot<3.0.0,>=2.0.0",
     "nonebot-plugin-apscheduler<0.6.0,>=0.5.0",
     "nonebot-plugin-localstore<0.8.0,>=0.7.3",
@@ -1321,8 +1355,8 @@ dependencies = [
     "openai>=1.0.0",
 ]
 files = [
-    {file = "nonebot_plugin_llmchat-0.1.8-py3-none-any.whl", hash = "sha256:116bdb27b6e458f21608ee6c95393a6c678ff89a78763633674edefcb027791f"},
-    {file = "nonebot_plugin_llmchat-0.1.8.tar.gz", hash = "sha256:57bb8390f89eae47dce5fb1f2f5edf4b1db566a44dc10f72fa931d508c1d8483"},
+    {file = "nonebot_plugin_llmchat-0.2.2-py3-none-any.whl", hash = "sha256:7f9eefef1d8017c412d9f152c5c2a496bc8a4ec42fe7966f462eb48e10dbe0f2"},
+    {file = "nonebot_plugin_llmchat-0.2.2.tar.gz", hash = "sha256:f4d2fc88e18a66909deaf4f50430034009c9a2e658313b383e3885669be3a195"},
 ]
 
 [[package]]
@@ -1420,7 +1454,7 @@ files = [
 
 [[package]]
 name = "nonebot2"
-version = "2.4.1"
+version = "2.4.2"
 requires_python = "<4.0,>=3.9"
 summary = "An asynchronous python bot framework."
 groups = ["default"]
@@ -1436,13 +1470,13 @@ dependencies = [
     "yarl<2.0.0,>=1.7.2",
 ]
 files = [
-    {file = "nonebot2-2.4.1-py3-none-any.whl", hash = "sha256:fec95f075efc89dbe9ce148618b413b02f46ba284200367749b035e794695111"},
-    {file = "nonebot2-2.4.1.tar.gz", hash = "sha256:8fea364318501ed79721403a8ecd76587bc884d58c356260f691a8bbda9b05e6"},
+    {file = "nonebot2-2.4.2-py3-none-any.whl", hash = "sha256:ed3e970cdb6c885fb23349b65a045c08cf3ac7f43e28564ae0c72d3671ecda74"},
+    {file = "nonebot2-2.4.2.tar.gz", hash = "sha256:cf72d5920503ff373ba1d7963f3ddf573db913eb504e3b68ee347efb937db27d"},
 ]
 
 [[package]]
 name = "nonebot2"
-version = "2.4.1"
+version = "2.4.2"
 extras = ["fastapi", "httpx", "websockets"]
 requires_python = "<4.0,>=3.9"
 summary = "An asynchronous python bot framework."
@@ -1450,46 +1484,46 @@ groups = ["default"]
 dependencies = [
     "fastapi<1.0.0,>=0.93.0",
     "httpx[http2]<1.0.0,>=0.26.0",
-    "nonebot2==2.4.1",
+    "nonebot2==2.4.2",
     "uvicorn[standard]<1.0.0,>=0.20.0",
     "websockets>=10.0",
 ]
 files = [
-    {file = "nonebot2-2.4.1-py3-none-any.whl", hash = "sha256:fec95f075efc89dbe9ce148618b413b02f46ba284200367749b035e794695111"},
-    {file = "nonebot2-2.4.1.tar.gz", hash = "sha256:8fea364318501ed79721403a8ecd76587bc884d58c356260f691a8bbda9b05e6"},
+    {file = "nonebot2-2.4.2-py3-none-any.whl", hash = "sha256:ed3e970cdb6c885fb23349b65a045c08cf3ac7f43e28564ae0c72d3671ecda74"},
+    {file = "nonebot2-2.4.2.tar.gz", hash = "sha256:cf72d5920503ff373ba1d7963f3ddf573db913eb504e3b68ee347efb937db27d"},
 ]
 
 [[package]]
 name = "nonebot2"
-version = "2.4.1"
+version = "2.4.2"
 extras = ["fastapi"]
 requires_python = "<4.0,>=3.9"
 summary = "An asynchronous python bot framework."
 groups = ["default"]
 dependencies = [
     "fastapi<1.0.0,>=0.93.0",
-    "nonebot2==2.4.1",
+    "nonebot2==2.4.2",
     "uvicorn[standard]<1.0.0,>=0.20.0",
 ]
 files = [
-    {file = "nonebot2-2.4.1-py3-none-any.whl", hash = "sha256:fec95f075efc89dbe9ce148618b413b02f46ba284200367749b035e794695111"},
-    {file = "nonebot2-2.4.1.tar.gz", hash = "sha256:8fea364318501ed79721403a8ecd76587bc884d58c356260f691a8bbda9b05e6"},
+    {file = "nonebot2-2.4.2-py3-none-any.whl", hash = "sha256:ed3e970cdb6c885fb23349b65a045c08cf3ac7f43e28564ae0c72d3671ecda74"},
+    {file = "nonebot2-2.4.2.tar.gz", hash = "sha256:cf72d5920503ff373ba1d7963f3ddf573db913eb504e3b68ee347efb937db27d"},
 ]
 
 [[package]]
 name = "nonebot2"
-version = "2.4.1"
+version = "2.4.2"
 extras = ["httpx"]
 requires_python = "<4.0,>=3.9"
 summary = "An asynchronous python bot framework."
 groups = ["default"]
 dependencies = [
     "httpx[http2]<1.0.0,>=0.26.0",
-    "nonebot2==2.4.1",
+    "nonebot2==2.4.2",
 ]
 files = [
-    {file = "nonebot2-2.4.1-py3-none-any.whl", hash = "sha256:fec95f075efc89dbe9ce148618b413b02f46ba284200367749b035e794695111"},
-    {file = "nonebot2-2.4.1.tar.gz", hash = "sha256:8fea364318501ed79721403a8ecd76587bc884d58c356260f691a8bbda9b05e6"},
+    {file = "nonebot2-2.4.2-py3-none-any.whl", hash = "sha256:ed3e970cdb6c885fb23349b65a045c08cf3ac7f43e28564ae0c72d3671ecda74"},
+    {file = "nonebot2-2.4.2.tar.gz", hash = "sha256:cf72d5920503ff373ba1d7963f3ddf573db913eb504e3b68ee347efb937db27d"},
 ]
 
 [[package]]
@@ -1628,27 +1662,28 @@ files = [
 
 [[package]]
 name = "playwright"
-version = "1.50.0"
+version = "1.52.0"
 requires_python = ">=3.9"
 summary = "A high-level API to automate web browsers"
 groups = ["default"]
 dependencies = [
     "greenlet<4.0.0,>=3.1.1",
-    "pyee<13,>=12",
+    "pyee<14,>=13",
 ]
 files = [
-    {file = "playwright-1.50.0-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:f36d754a6c5bd9bf7f14e8f57a2aea6fd08f39ca4c8476481b9c83e299531148"},
-    {file = "playwright-1.50.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:40f274384591dfd27f2b014596250b2250c843ed1f7f4ef5d2960ecb91b4961e"},
-    {file = "playwright-1.50.0-py3-none-macosx_11_0_universal2.whl", hash = "sha256:9922ef9bcd316995f01e220acffd2d37a463b4ad10fd73e388add03841dfa230"},
-    {file = "playwright-1.50.0-py3-none-manylinux1_x86_64.whl", hash = "sha256:8fc628c492d12b13d1f347137b2ac6c04f98197ff0985ef0403a9a9ee0d39131"},
-    {file = "playwright-1.50.0-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ffcff35f72db2689a79007aee78f1b0621a22e6e3d6c1f58aaa9ac805bf4497c"},
-    {file = "playwright-1.50.0-py3-none-win32.whl", hash = "sha256:3b906f4d351260016a8c5cc1e003bb341651ae682f62213b50168ed581c7558a"},
-    {file = "playwright-1.50.0-py3-none-win_amd64.whl", hash = "sha256:1859423da82de631704d5e3d88602d755462b0906824c1debe140979397d2e8d"},
+    {file = "playwright-1.52.0-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:19b2cb9d4794062008a635a99bd135b03ebb782d460f96534a91cb583f549512"},
+    {file = "playwright-1.52.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:0797c0479cbdc99607412a3c486a3a2ec9ddc77ac461259fd2878c975bcbb94a"},
+    {file = "playwright-1.52.0-py3-none-macosx_11_0_universal2.whl", hash = "sha256:7223960b7dd7ddeec1ba378c302d1d09733b8dac438f492e9854c85d3ca7144f"},
+    {file = "playwright-1.52.0-py3-none-manylinux1_x86_64.whl", hash = "sha256:d010124d24a321e0489a8c0d38a3971a7ca7656becea7656c9376bfea7f916d4"},
+    {file = "playwright-1.52.0-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4173e453c43180acc60fd77ffe1ebee8d0efbfd9986c03267007b9c3845415af"},
+    {file = "playwright-1.52.0-py3-none-win32.whl", hash = "sha256:cd0bdf92df99db6237a99f828e80a6a50db6180ef8d5352fc9495df2c92f9971"},
+    {file = "playwright-1.52.0-py3-none-win_amd64.whl", hash = "sha256:dcbf75101eba3066b7521c6519de58721ea44379eb17a0dafa94f9f1b17f59e4"},
+    {file = "playwright-1.52.0-py3-none-win_arm64.whl", hash = "sha256:9d0085b8de513de5fb50669f8e6677f0252ef95a9a1d2d23ccee9638e71e65cb"},
 ]
 
 [[package]]
 name = "pre-commit"
-version = "4.1.0"
+version = "4.2.0"
 requires_python = ">=3.9"
 summary = "A framework for managing and maintaining multi-language pre-commit hooks."
 groups = ["dev"]
@@ -1660,8 +1695,8 @@ dependencies = [
     "virtualenv>=20.10.0",
 ]
 files = [
-    {file = "pre_commit-4.1.0-py2.py3-none-any.whl", hash = "sha256:d29e7cb346295bcc1cc75fc3e92e343495e3ea0196c9ec6ba53f49f10ab6ae7b"},
-    {file = "pre_commit-4.1.0.tar.gz", hash = "sha256:ae3f018575a588e30dfddfab9a05448bfbd6b73d78709617b5a2b853549716d4"},
+    {file = "pre_commit-4.2.0-py2.py3-none-any.whl", hash = "sha256:a009ca7205f1eb497d10b845e52c838a98b6cdd2102a6c8e4540e94ee75c58bd"},
+    {file = "pre_commit-4.2.0.tar.gz", hash = "sha256:601283b9757afd87d40c4c4a9b2b5de9637a8ea02eaff7adc2d0fb4e04841146"},
 ]
 
 [[package]]
@@ -1797,8 +1832,24 @@ files = [
 ]
 
 [[package]]
+name = "pydantic-settings"
+version = "2.9.1"
+requires_python = ">=3.9"
+summary = "Settings management using Pydantic"
+groups = ["default"]
+dependencies = [
+    "pydantic>=2.7.0",
+    "python-dotenv>=0.21.0",
+    "typing-inspection>=0.4.0",
+]
+files = [
+    {file = "pydantic_settings-2.9.1-py3-none-any.whl", hash = "sha256:59b4f431b1defb26fe620c71a7d3968a710d719f5f4cdbbdb7926edeb770f6ef"},
+    {file = "pydantic_settings-2.9.1.tar.gz", hash = "sha256:c509bf79d27563add44e8446233359004ed85066cd096d8b510f715e6ef5d268"},
+]
+
+[[package]]
 name = "pyee"
-version = "12.1.1"
+version = "13.0.0"
 requires_python = ">=3.8"
 summary = "A rough port of Node.js's EventEmitter to Python with a few tricks of its own"
 groups = ["default"]
@@ -1806,8 +1857,8 @@ dependencies = [
     "typing-extensions",
 ]
 files = [
-    {file = "pyee-12.1.1-py3-none-any.whl", hash = "sha256:18a19c650556bb6b32b406d7f017c8f513aceed1ef7ca618fb65de7bd2d347ef"},
-    {file = "pyee-12.1.1.tar.gz", hash = "sha256:bbc33c09e2ff827f74191e3e5bbc6be7da02f627b7ec30d86f5ce1a6fb2424a3"},
+    {file = "pyee-13.0.0-py3-none-any.whl", hash = "sha256:48195a3cddb3b1515ce0695ed76036b5ccc2ef3a9f963ff9f77aec0139845498"},
+    {file = "pyee-13.0.0.tar.gz", hash = "sha256:b391e3c5a434d1f5118a25615001dbc8f669cf410ab67d04c4d4e07c55481c37"},
 ]
 
 [[package]]
@@ -1932,6 +1983,17 @@ files = [
 ]
 
 [[package]]
+name = "python-multipart"
+version = "0.0.20"
+requires_python = ">=3.8"
+summary = "A streaming multipart parser for Python"
+groups = ["default"]
+files = [
+    {file = "python_multipart-0.0.20-py3-none-any.whl", hash = "sha256:8a62d3a8335e06589fe01f2a3e178cdcc632f3fbe0d492ad9ee0ec35aab1f104"},
+    {file = "python_multipart-0.0.20.tar.gz", hash = "sha256:8dd0cab45b8e23064ae09147625994d090fa46f5b0d1e13af944c331a7fa9d13"},
+]
+
+[[package]]
 name = "python-socketio"
 version = "5.12.1"
 requires_python = ">=3.8"
@@ -2032,29 +2094,29 @@ files = [
 
 [[package]]
 name = "ruff"
-version = "0.9.7"
+version = "0.11.9"
 requires_python = ">=3.7"
 summary = "An extremely fast Python linter and code formatter, written in Rust."
 groups = ["dev"]
 files = [
-    {file = "ruff-0.9.7-py3-none-linux_armv6l.whl", hash = "sha256:99d50def47305fe6f233eb8dabfd60047578ca87c9dcb235c9723ab1175180f4"},
-    {file = "ruff-0.9.7-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:d59105ae9c44152c3d40a9c40d6331a7acd1cdf5ef404fbe31178a77b174ea66"},
-    {file = "ruff-0.9.7-py3-none-macosx_11_0_arm64.whl", hash = "sha256:f313b5800483770bd540cddac7c90fc46f895f427b7820f18fe1822697f1fec9"},
-    {file = "ruff-0.9.7-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:042ae32b41343888f59c0a4148f103208bf6b21c90118d51dc93a68366f4e903"},
-    {file = "ruff-0.9.7-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:87862589373b33cc484b10831004e5e5ec47dc10d2b41ba770e837d4f429d721"},
-    {file = "ruff-0.9.7-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a17e1e01bee0926d351a1ee9bc15c445beae888f90069a6192a07a84af544b6b"},
-    {file = "ruff-0.9.7-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:7c1f880ac5b2cbebd58b8ebde57069a374865c73f3bf41f05fe7a179c1c8ef22"},
-    {file = "ruff-0.9.7-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:e63fc20143c291cab2841dbb8260e96bafbe1ba13fd3d60d28be2c71e312da49"},
-    {file = "ruff-0.9.7-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:91ff963baed3e9a6a4eba2a02f4ca8eaa6eba1cc0521aec0987da8d62f53cbef"},
-    {file = "ruff-0.9.7-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:88362e3227c82f63eaebf0b2eff5b88990280fb1ecf7105523883ba8c3aaf6fb"},
-    {file = "ruff-0.9.7-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:0372c5a90349f00212270421fe91874b866fd3626eb3b397ede06cd385f6f7e0"},
-    {file = "ruff-0.9.7-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:d76b8ab60e99e6424cd9d3d923274a1324aefce04f8ea537136b8398bbae0a62"},
-    {file = "ruff-0.9.7-py3-none-musllinux_1_2_i686.whl", hash = "sha256:0c439bdfc8983e1336577f00e09a4e7a78944fe01e4ea7fe616d00c3ec69a3d0"},
-    {file = "ruff-0.9.7-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:115d1f15e8fdd445a7b4dc9a30abae22de3f6bcabeb503964904471691ef7606"},
-    {file = "ruff-0.9.7-py3-none-win32.whl", hash = "sha256:e9ece95b7de5923cbf38893f066ed2872be2f2f477ba94f826c8defdd6ec6b7d"},
-    {file = "ruff-0.9.7-py3-none-win_amd64.whl", hash = "sha256:3770fe52b9d691a15f0b87ada29c45324b2ace8f01200fb0c14845e499eb0c2c"},
-    {file = "ruff-0.9.7-py3-none-win_arm64.whl", hash = "sha256:b075a700b2533feb7a01130ff656a4ec0d5f340bb540ad98759b8401c32c2037"},
-    {file = "ruff-0.9.7.tar.gz", hash = "sha256:643757633417907510157b206e490c3aa11cab0c087c912f60e07fbafa87a4c6"},
+    {file = "ruff-0.11.9-py3-none-linux_armv6l.whl", hash = "sha256:a31a1d143a5e6f499d1fb480f8e1e780b4dfdd580f86e05e87b835d22c5c6f8c"},
+    {file = "ruff-0.11.9-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:66bc18ca783b97186a1f3100e91e492615767ae0a3be584e1266aa9051990722"},
+    {file = "ruff-0.11.9-py3-none-macosx_11_0_arm64.whl", hash = "sha256:bd576cd06962825de8aece49f28707662ada6a1ff2db848d1348e12c580acbf1"},
+    {file = "ruff-0.11.9-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5b1d18b4be8182cc6fddf859ce432cc9631556e9f371ada52f3eaefc10d878de"},
+    {file = "ruff-0.11.9-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:0f3f46f759ac623e94824b1e5a687a0df5cd7f5b00718ff9c24f0a894a683be7"},
+    {file = "ruff-0.11.9-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f34847eea11932d97b521450cf3e1d17863cfa5a94f21a056b93fb86f3f3dba2"},
+    {file = "ruff-0.11.9-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:f33b15e00435773df97cddcd263578aa83af996b913721d86f47f4e0ee0ff271"},
+    {file = "ruff-0.11.9-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:7b27613a683b086f2aca8996f63cb3dd7bc49e6eccf590563221f7b43ded3f65"},
+    {file = "ruff-0.11.9-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:9e0d88756e63e8302e630cee3ce2ffb77859797cc84a830a24473939e6da3ca6"},
+    {file = "ruff-0.11.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:537c82c9829d7811e3aa680205f94c81a2958a122ac391c0eb60336ace741a70"},
+    {file = "ruff-0.11.9-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:440ac6a7029f3dee7d46ab7de6f54b19e34c2b090bb4f2480d0a2d635228f381"},
+    {file = "ruff-0.11.9-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:71c539bac63d0788a30227ed4d43b81353c89437d355fdc52e0cda4ce5651787"},
+    {file = "ruff-0.11.9-py3-none-musllinux_1_2_i686.whl", hash = "sha256:c67117bc82457e4501473c5f5217d49d9222a360794bfb63968e09e70f340abd"},
+    {file = "ruff-0.11.9-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:e4b78454f97aa454586e8a5557facb40d683e74246c97372af3c2d76901d697b"},
+    {file = "ruff-0.11.9-py3-none-win32.whl", hash = "sha256:7fe1bc950e7d7b42caaee2a8a3bc27410547cc032c9558ee2e0f6d3b209e845a"},
+    {file = "ruff-0.11.9-py3-none-win_amd64.whl", hash = "sha256:52edaa4a6d70f8180343a5b7f030c7edd36ad180c9f4d224959c2d689962d964"},
+    {file = "ruff-0.11.9-py3-none-win_arm64.whl", hash = "sha256:bcf42689c22f2e240f496d0c183ef2c6f7b35e809f12c1db58f75d9aa8d630ca"},
+    {file = "ruff-0.11.9.tar.gz", hash = "sha256:ebd58d4f67a00afb3a30bf7d383e52d0e036e6195143c6db7019604a05335517"},
 ]
 
 [[package]]
@@ -2211,6 +2273,21 @@ files = [
 ]
 
 [[package]]
+name = "sse-starlette"
+version = "2.3.4"
+requires_python = ">=3.9"
+summary = "SSE plugin for Starlette"
+groups = ["default"]
+dependencies = [
+    "anyio>=4.7.0",
+    "starlette>=0.41.3",
+]
+files = [
+    {file = "sse_starlette-2.3.4-py3-none-any.whl", hash = "sha256:b8100694f3f892b133d0f7483acb7aacfcf6ed60f863b31947664b6dc74e529f"},
+    {file = "sse_starlette-2.3.4.tar.gz", hash = "sha256:0ffd6bed217cdbb74a84816437c609278003998b4991cd2e6872d0b35130e4d5"},
+]
+
+[[package]]
 name = "starlette"
 version = "0.45.3"
 requires_python = ">=3.9"
@@ -2316,6 +2393,20 @@ files = [
 ]
 
 [[package]]
+name = "typing-inspection"
+version = "0.4.0"
+requires_python = ">=3.9"
+summary = "Runtime typing introspection tools"
+groups = ["default"]
+dependencies = [
+    "typing-extensions>=4.12.0",
+]
+files = [
+    {file = "typing_inspection-0.4.0-py3-none-any.whl", hash = "sha256:50e72559fcd2a6367a19f7a7e610e6afcb9fac940c650290eed893d61386832f"},
+    {file = "typing_inspection-0.4.0.tar.gz", hash = "sha256:9765c87de36671694a67904bf2c96e395be9c6439bb6c87b5142569dcdd65122"},
+]
+
+[[package]]
 name = "tzdata"
 version = "2025.1"
 requires_python = ">=2"
@@ -2355,7 +2446,7 @@ files = [
 
 [[package]]
 name = "uvicorn"
-version = "0.34.0"
+version = "0.34.2"
 requires_python = ">=3.9"
 summary = "The lightning-fast ASGI server."
 groups = ["default", "deploy"]
@@ -2365,13 +2456,13 @@ dependencies = [
     "typing-extensions>=4.0; python_version < \"3.11\"",
 ]
 files = [
-    {file = "uvicorn-0.34.0-py3-none-any.whl", hash = "sha256:023dc038422502fa28a09c7a30bf2b6991512da7dcdb8fd35fe57cfc154126f4"},
-    {file = "uvicorn-0.34.0.tar.gz", hash = "sha256:404051050cd7e905de2c9a7e61790943440b3416f49cb409f965d9dcd0fa73e9"},
+    {file = "uvicorn-0.34.2-py3-none-any.whl", hash = "sha256:deb49af569084536d269fe0a6d67e3754f104cf03aba7c11c40f01aadf33c403"},
+    {file = "uvicorn-0.34.2.tar.gz", hash = "sha256:0e929828f6186353a80b58ea719861d2629d766293b6d19baf086ba31d4f3328"},
 ]
 
 [[package]]
 name = "uvicorn"
-version = "0.34.0"
+version = "0.34.2"
 extras = ["standard"]
 requires_python = ">=3.9"
 summary = "The lightning-fast ASGI server."
@@ -2381,14 +2472,14 @@ dependencies = [
     "httptools>=0.6.3",
     "python-dotenv>=0.13",
     "pyyaml>=5.1",
-    "uvicorn==0.34.0",
+    "uvicorn==0.34.2",
     "uvloop!=0.15.0,!=0.15.1,>=0.14.0; (sys_platform != \"cygwin\" and sys_platform != \"win32\") and platform_python_implementation != \"PyPy\"",
     "watchfiles>=0.13",
     "websockets>=10.4",
 ]
 files = [
-    {file = "uvicorn-0.34.0-py3-none-any.whl", hash = "sha256:023dc038422502fa28a09c7a30bf2b6991512da7dcdb8fd35fe57cfc154126f4"},
-    {file = "uvicorn-0.34.0.tar.gz", hash = "sha256:404051050cd7e905de2c9a7e61790943440b3416f49cb409f965d9dcd0fa73e9"},
+    {file = "uvicorn-0.34.2-py3-none-any.whl", hash = "sha256:deb49af569084536d269fe0a6d67e3754f104cf03aba7c11c40f01aadf33c403"},
+    {file = "uvicorn-0.34.2.tar.gz", hash = "sha256:0e929828f6186353a80b58ea719861d2629d766293b6d19baf086ba31d4f3328"},
 ]
 
 [[package]]
