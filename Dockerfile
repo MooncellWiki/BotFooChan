@@ -50,7 +50,7 @@ EXPOSE 8086
 ENV APP_MODULE bot:app
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends curl p7zip-full fontconfig fonts-noto-color-emoji \
+  && apt-get install -y --no-install-recommends git curl p7zip-full fontconfig fonts-noto-color-emoji \
   && curl -sSL https://github.com/be5invis/Sarasa-Gothic/releases/download/v1.0.30/Sarasa-TTC-1.0.30.7z -o /tmp/sarasa.7z \
   && 7z x /tmp/sarasa.7z -o/tmp/sarasa \
   && install -d /usr/share/fonts/sarasa-gothic \
