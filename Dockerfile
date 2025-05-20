@@ -18,6 +18,8 @@ WORKDIR /wheel
 
 COPY --from=requirements-stage /tmp/requirements.txt /wheel/requirements.txt
 
+RUN apt-get update && apt-get install -y --no-install-recommends git
+
 RUN pip wheel --wheel-dir=/wheel --no-cache-dir --requirement /wheel/requirements.txt
 
 FROM python:3.12-bookworm as metadata-stage
