@@ -55,7 +55,7 @@ RUN apt-get update \
   && apt-get purge -y --auto-remove curl p7zip-full \
   && rm -rf /tmp/sarasa /tmp/sarasa.7z /var/lib/apt/lists/*
 
-RUN python -m playwright install --with-deps chromium \
+RUN python -m playwright install --with-deps chromium firefox \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=metadata-stage /tmp/VERSION /app/VERSION
