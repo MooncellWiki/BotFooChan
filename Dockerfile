@@ -26,12 +26,15 @@ FROM python:3.12-slim-bookworm
 WORKDIR /app
 
 ENV TZ=Asia/Shanghai
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 COPY --from=requirements-stage /tmp/.venv/ /app/.venv
+
 ENV PATH="/app/.venv/bin:$PATH"
 
 COPY ./docker/start.sh /start.sh
+
 RUN chmod +x /start.sh
 
 COPY ./docker/gunicorn_conf.py /gunicorn_conf.py
@@ -43,7 +46,7 @@ EXPOSE 8086
 ENV APP_MODULE=bot:app
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends git curl p7zip-full fontconfig fonts-noto-color-emoji \
+  && apt-get install -y --no-install-recommends curl p7zip-full fontconfig fonts-noto-color-emoji \
   && curl -sSL https://github.com/be5invis/Sarasa-Gothic/releases/download/v1.0.30/Sarasa-TTC-1.0.30.7z -o /tmp/sarasa.7z \
   && 7z x /tmp/sarasa.7z -o/tmp/sarasa \
   && install -d /usr/share/fonts/sarasa-gothic \
