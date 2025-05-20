@@ -23,6 +23,7 @@ dependencies = [
   "nonebot-plugin-sentry ~=2.0",
   "nonebot-plugin-shorturl ~=0.4",
   "nonebot-plugin-treehelp ~=0.3",
+  "nonebot-plugin-zssm ~=0.1",
 ]
 
 [dependency-groups]
