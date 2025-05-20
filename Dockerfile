@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.12-bookworm as requirements-stage
+FROM python:3.12-bookworm AS requirements-stage
 
 WORKDIR /tmp
 
@@ -12,7 +12,7 @@ COPY ./pyproject.toml ./pdm.lock* /tmp/
 
 RUN pdm export -o requirements.txt --output requirements.txt --without-hashes --with deploy
 
-FROM python:3.12-bookworm as build-stage
+FROM python:3.12-bookworm AS build-stage
 
 WORKDIR /wheel
 
@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends git
 
 RUN pip wheel --wheel-dir=/wheel --no-cache-dir --requirement /wheel/requirements.txt
 
-FROM python:3.12-bookworm as metadata-stage
+FROM python:3.12-bookworm AS metadata-stage
 
 WORKDIR /tmp
 
@@ -35,8 +35,8 @@ FROM python:3.12-slim-bookworm
 
 WORKDIR /app
 
-ENV TZ Asia/Shanghai
-ENV DEBIAN_FRONTEND noninteractive
+ENV TZ=Asia/Shanghai
+ENV DEBIAN_FRONTEND=noninteractive
 
 COPY ./docker/start.sh /start.sh
 RUN chmod +x /start.sh
@@ -47,7 +47,7 @@ ENV PYTHONPATH=/app
 
 EXPOSE 8086
 
-ENV APP_MODULE bot:app
+ENV APP_MODULE=bot:app
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends git curl p7zip-full fontconfig fonts-noto-color-emoji \
