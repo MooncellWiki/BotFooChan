@@ -5,7 +5,7 @@
 groups = ["default", "deploy", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:a9ce4b895491fddfb5c391fa2051e3fb0adae10834c07b0ed68720f17b660b84"
+content_hash = "sha256:2b2192febb2b385776e68d773fe06b77c8bb37e08564d4fa44619f55e9629933"
 
 [[metadata.targets]]
 requires_python = "~=3.12"
@@ -1202,6 +1202,9 @@ files = [
 name = "nonebot-bison"
 version = "0.9.7"
 requires_python = "<4.0.0,>=3.10"
+git = "https://github.com/MountainDash/nonebot-bison.git"
+ref = "main"
+revision = "d5cd537087dafdac1d7d9f2d0c0cae7a8924c0d6"
 summary = "Subscribe message from social medias"
 groups = ["default"]
 dependencies = [
@@ -1215,6 +1218,7 @@ dependencies = [
     "nonebot-plugin-apscheduler>=0.5.0",
     "nonebot-plugin-datastore<2.0.0,>=1.3.0",
     "nonebot-plugin-htmlrender!=0.5.0,>=0.3.5",
+    "nonebot-plugin-prometheus>=0.3.16",
     "nonebot-plugin-send-anything-anywhere<0.7.2,>=0.7.1",
     "nonebot2[fastapi]<3.0.0,>=2.3.3",
     "pillow<11.1,>=11.0.0",
@@ -1225,10 +1229,6 @@ dependencies = [
     "rapidfuzz<4.0.0,>=3.9.7",
     "tinydb<5.0.0,>=4.8.0",
     "yarl>=1.11.1",
-]
-files = [
-    {file = "nonebot_bison-0.9.7-py3-none-any.whl", hash = "sha256:903b333869d14a0ae72baab019ceddb27afa852a6482446b94194579dae7fe7c"},
-    {file = "nonebot_bison-0.9.7.tar.gz", hash = "sha256:88084b5fb7dee2822e41169ae6a29b8898954ab8fd46ef8e1666358b49094413"},
 ]
 
 [[package]]
@@ -1377,6 +1377,22 @@ files = [
 ]
 
 [[package]]
+name = "nonebot-plugin-prometheus"
+version = "0.3.16"
+requires_python = "<4.0,>=3.9"
+summary = "为 NoneBot 和其他插件提供 Prometheus 监控支持"
+groups = ["default"]
+dependencies = [
+    "nonebot-plugin-alconna>=0.55.0",
+    "nonebot2>=2.2.1",
+    "prometheus-client>=0.21.1",
+]
+files = [
+    {file = "nonebot_plugin_prometheus-0.3.16-py3-none-any.whl", hash = "sha256:b1ca9027abd4aec9354f532527b8ec3d903117d65bd94bfdfea59da4f5620bd0"},
+    {file = "nonebot_plugin_prometheus-0.3.16.tar.gz", hash = "sha256:d0218e41682a5c262b6e2890687a508e2031351f967d916b3f88992692d58e98"},
+]
+
+[[package]]
 name = "nonebot-plugin-send-anything-anywhere"
 version = "0.7.1"
 requires_python = ">=3.9,<4.0"
@@ -1454,20 +1470,21 @@ files = [
 
 [[package]]
 name = "nonebot-plugin-zssm"
-version = "0.1.4"
+version = "0.3.5"
 requires_python = ">=3.12"
-summary = "这是什么？问一下！"
+summary = "这是什么？问一下！用 ai 来解释群友发送的「未知」内容"
 groups = ["default"]
 dependencies = [
     "httpx>=0.28.1",
-    "nonebot-plugin-alconna>=0.56.2",
+    "nonebot-plugin-alconna>=0.57.2",
     "nonebot2[fastapi,websockets]",
-    "openai>=1.68.2",
+    "pillow>=11.1.0",
     "playwright>=1.51.0",
+    "pymupdf>=1.25.5",
 ]
 files = [
-    {file = "nonebot_plugin_zssm-0.1.4-py3-none-any.whl", hash = "sha256:186290cc84bf4415980e9b44991c7447581ab3d4c5ca277868b82176218583ee"},
-    {file = "nonebot_plugin_zssm-0.1.4.tar.gz", hash = "sha256:343096dfc6c5c650bd01ea5826d36c1a54897d673aeb92cf731b2da266dcf382"},
+    {file = "nonebot_plugin_zssm-0.3.5-py3-none-any.whl", hash = "sha256:13a71e5f044b47caa3b750d8cad78aa0d586eaa02b08374ba693dac2c6ad946b"},
+    {file = "nonebot_plugin_zssm-0.3.5.tar.gz", hash = "sha256:0c95b2101378dab1ccd0d23fc3d2dc4e587400f1e85cd04574ffdb3871a34054"},
 ]
 
 [[package]]
@@ -1736,6 +1753,17 @@ files = [
 ]
 
 [[package]]
+name = "prometheus-client"
+version = "0.22.0"
+requires_python = ">=3.9"
+summary = "Python client for the Prometheus monitoring system."
+groups = ["default"]
+files = [
+    {file = "prometheus_client-0.22.0-py3-none-any.whl", hash = "sha256:c8951bbe64e62b96cd8e8f5d917279d1b9b91ab766793f33d4dce6c228558713"},
+    {file = "prometheus_client-0.22.0.tar.gz", hash = "sha256:18da1d2241ac2d10c8d2110f13eedcd5c7c0c8af18c926e8731f04fc10cd575c"},
+]
+
+[[package]]
 name = "propcache"
 version = "0.2.1"
 requires_python = ">=3.9"
@@ -1942,6 +1970,23 @@ dependencies = [
 files = [
     {file = "pymdown_extensions-10.14.3-py3-none-any.whl", hash = "sha256:05e0bee73d64b9c71a4ae17c72abc2f700e8bc8403755a00580b49a4e9f189e9"},
     {file = "pymdown_extensions-10.14.3.tar.gz", hash = "sha256:41e576ce3f5d650be59e900e4ceff231e0aed2a88cf30acaee41e02f063a061b"},
+]
+
+[[package]]
+name = "pymupdf"
+version = "1.25.5"
+requires_python = ">=3.9"
+summary = "A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+groups = ["default"]
+files = [
+    {file = "pymupdf-1.25.5-cp39-abi3-macosx_10_9_x86_64.whl", hash = "sha256:cde4e1c9cfb09c0e1e9c2b7f4b787dd6bb34a32cfe141a4675e24af7c0c25dd3"},
+    {file = "pymupdf-1.25.5-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:5a35e2725fae0ab57f058dff77615c15eb5961eac50ba04f41ebc792cd8facad"},
+    {file = "pymupdf-1.25.5-cp39-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:d94b800e9501929c42283d39bc241001dd87fdeea297b5cb40d5b5714534452f"},
+    {file = "pymupdf-1.25.5-cp39-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:ee22155d3a634642d76553204867d862ae1bdd9f7cf70c0797d8127ebee6bed5"},
+    {file = "pymupdf-1.25.5-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:6ed7fc25271004d6d3279c20a80cb2bb4cda3efa9f9088dcc07cd790eca0bc63"},
+    {file = "pymupdf-1.25.5-cp39-abi3-win32.whl", hash = "sha256:65e18ddb37fe8ec4edcdbebe9be3a8486b6a2f42609d0a142677e42f3a0614f8"},
+    {file = "pymupdf-1.25.5-cp39-abi3-win_amd64.whl", hash = "sha256:7f44bc3d03ea45b2f68c96464f96105e8c7908896f2fb5e8c04f1fb8dae7981e"},
+    {file = "pymupdf-1.25.5.tar.gz", hash = "sha256:5f96311cacd13254c905f6654a004a0a2025b71cabc04fda667f5472f72c15a0"},
 ]
 
 [[package]]

@@ -14,7 +14,7 @@ dependencies = [
   "nonebot-adapter-qq ~=1.1",
   "nonebot-adapter-feishu ~=2.3",
   "nonebot-adapter-onebot ~=2.3",
-  "nonebot-bison >=0.9.6rc2, <1.0",
+  "nonebot-bison @ git+https://github.com/MountainDash/nonebot-bison.git@main",
   "nonebot-plugin-alconna ~=0.38",
   "nonebot-plugin-apscheduler ~=0.4",
   "nonebot-plugin-deepseek ~=0.1",
@@ -23,12 +23,15 @@ dependencies = [
   "nonebot-plugin-sentry ~=2.0",
   "nonebot-plugin-shorturl ~=0.4",
   "nonebot-plugin-treehelp ~=0.3",
-  "nonebot-plugin-zssm ~=0.1",
+  "nonebot-plugin-zssm ~=0.3",
 ]
 
 [dependency-groups]
 dev = ["ruff ~= 0.9", "pre-commit ~= 4.1"]
 deploy = ["gunicorn ~= 23.0", "uvicorn ~= 0.18"]
+
+[tool.pdm.resolution.overrides]
+pillow = "<11.1,>=11.0.0"
 
 [tool.ruff]
 line-length = 88
