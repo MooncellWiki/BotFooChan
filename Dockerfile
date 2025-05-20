@@ -4,23 +4,13 @@ FROM python:3.12-bookworm AS requirements-stage
 
 WORKDIR /tmp
 
-RUN curl -sSL https://pdm-project.org/install-pdm.py | python -
+RUN pip install -U pdm
 
-ENV PATH="${PATH}:/root/.local/bin"
+ENV PDM_CHECK_UPDATE=false
 
-COPY ./pyproject.toml ./pdm.lock* /tmp/
+COPY ./pyproject.toml ./pdm.lock /tmp/
 
-RUN pdm export -o requirements.txt --output requirements.txt --without-hashes --with deploy
-
-FROM python:3.12-bookworm AS build-stage
-
-WORKDIR /wheel
-
-COPY --from=requirements-stage /tmp/requirements.txt /wheel/requirements.txt
-
-RUN apt-get update && apt-get install -y --no-install-recommends git
-
-RUN pip wheel --wheel-dir=/wheel --no-cache-dir --requirement /wheel/requirements.txt
+RUN pdm install --check --prod --no-editable
 
 FROM python:3.12-bookworm AS metadata-stage
 
@@ -37,6 +27,9 @@ WORKDIR /app
 
 ENV TZ=Asia/Shanghai
 ENV DEBIAN_FRONTEND=noninteractive
+
+COPY --from=requirements-stage /tmp/.venv/ /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
 
 COPY ./docker/start.sh /start.sh
 RUN chmod +x /start.sh
