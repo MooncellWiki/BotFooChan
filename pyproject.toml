@@ -1,6 +1,6 @@
 [project]
 name = "botfoochan"
-version = "0.5.0"
+version = "0.5.1"
 authors = [{ name = "StarHeartHunt", email = "starheart233@gmail.com" }]
 description = "Multi channel Mooncell bot"
 license = { text = "MIT" }
