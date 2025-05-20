@@ -2,13 +2,14 @@
 
 FROM python:3.12-bookworm AS requirements-stage
 
-WORKDIR /tmp
+WORKDIR /app
 
 RUN pip install -U pdm
 
 ENV PDM_CHECK_UPDATE=false
 
-COPY ./pyproject.toml ./pdm.lock /tmp/
+COPY pyproject.toml pdm.lock README.md /app/
+COPY src/ /app/src
 
 RUN pdm install --check --no-editable --without dev
 
@@ -29,7 +30,7 @@ ENV TZ=Asia/Shanghai
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-COPY --from=requirements-stage /tmp/.venv/ /app/.venv
+COPY --from=requirements-stage /app/.venv/ /app/.venv
 
 ENV PATH="/app/.venv/bin:$PATH"
 
@@ -55,7 +56,7 @@ RUN apt-get update \
   && apt-get purge -y --auto-remove curl p7zip-full \
   && rm -rf /tmp/sarasa /tmp/sarasa.7z /var/lib/apt/lists/*
 
-RUN python -m playwright install --with-deps chromium firefox \
+RUN playwright install --with-deps chromium firefox \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=metadata-stage /tmp/VERSION /app/VERSION
