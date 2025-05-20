@@ -23,15 +23,12 @@ dependencies = [
   "nonebot-plugin-sentry ~=2.0",
   "nonebot-plugin-shorturl ~=0.4",
   "nonebot-plugin-treehelp ~=0.3",
-  "nonebot-plugin-zssm ~=0.3",
+  "nonebot-plugin-zssm @ git+https://github.com/StarHeartHunt/nonebot-plugin-zssm.git",
 ]
 
 [dependency-groups]
 dev = ["ruff ~= 0.9", "pre-commit ~= 4.1"]
 deploy = ["gunicorn ~= 23.0", "uvicorn ~= 0.18"]
-
-[tool.pdm.resolution.overrides]
-pillow = "<11.1,>=11.0.0"
 
 [tool.ruff]
 line-length = 88

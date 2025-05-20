@@ -5,7 +5,7 @@
 groups = ["default", "deploy", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:2b2192febb2b385776e68d773fe06b77c8bb37e08564d4fa44619f55e9629933"
+content_hash = "sha256:c665c2ab8540b5cbb60848ca6c191aad6f67098325a7e2af440645837f8885c4"
 
 [[metadata.targets]]
 requires_python = "~=3.12"
@@ -1472,19 +1472,17 @@ files = [
 name = "nonebot-plugin-zssm"
 version = "0.3.5"
 requires_python = ">=3.12"
+git = "https://github.com/StarHeartHunt/nonebot-plugin-zssm.git"
+revision = "58486fca2c1ba58908120373b6d070c4c057a296"
 summary = "这是什么？问一下！用 ai 来解释群友发送的「未知」内容"
 groups = ["default"]
 dependencies = [
     "httpx>=0.28.1",
     "nonebot-plugin-alconna>=0.57.2",
     "nonebot2[fastapi,websockets]",
-    "pillow>=11.1.0",
+    "pillow>=11.0.0",
     "playwright>=1.51.0",
     "pymupdf>=1.25.5",
-]
-files = [
-    {file = "nonebot_plugin_zssm-0.3.5-py3-none-any.whl", hash = "sha256:13a71e5f044b47caa3b750d8cad78aa0d586eaa02b08374ba693dac2c6ad946b"},
-    {file = "nonebot_plugin_zssm-0.3.5.tar.gz", hash = "sha256:0c95b2101378dab1ccd0d23fc3d2dc4e587400f1e85cd04574ffdb3871a34054"},
 ]
 
 [[package]]
