@@ -10,7 +10,7 @@ ENV PDM_CHECK_UPDATE=false
 
 COPY ./pyproject.toml ./pdm.lock /tmp/
 
-RUN pdm install --check --prod --no-editable
+RUN pdm install --check --prod --no-editable --with deploy
 
 FROM python:3.12-bookworm AS metadata-stage
 
