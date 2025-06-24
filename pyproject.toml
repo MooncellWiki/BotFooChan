@@ -23,7 +23,7 @@ dependencies = [
   "nonebot-plugin-sentry ~=2.0",
   "nonebot-plugin-shorturl ~=0.4",
   "nonebot-plugin-treehelp ~=0.3",
-  "nonebot-plugin-zssm @ git+https://github.com/StarHeartHunt/nonebot-plugin-zssm.git",
+  "nonebot-plugin-zssm ~=0.3",
 ]
 
 [dependency-groups]
