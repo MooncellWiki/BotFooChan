@@ -166,33 +166,33 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "diro-py", specifier = "~=0.1" },
-    { name = "matplotlib", specifier = "~=3.8" },
-    { name = "nonebot-adapter-feishu", specifier = "~=2.3" },
-    { name = "nonebot-adapter-onebot", specifier = "~=2.3" },
-    { name = "nonebot-adapter-qq", specifier = "~=1.1" },
-    { name = "nonebot-bison", specifier = "~=0.9" },
-    { name = "nonebot-plugin-alconna", specifier = "~=0.38" },
-    { name = "nonebot-plugin-apscheduler", specifier = "~=0.4" },
-    { name = "nonebot-plugin-deepseek", specifier = "~=0.1" },
-    { name = "nonebot-plugin-filehost", specifier = "~=1.1" },
-    { name = "nonebot-plugin-llmchat", specifier = "~=0.1" },
-    { name = "nonebot-plugin-sentry", specifier = "~=2.0" },
-    { name = "nonebot-plugin-shorturl", specifier = "~=0.4" },
-    { name = "nonebot-plugin-treehelp", specifier = "~=0.3" },
-    { name = "nonebot-plugin-zssm", specifier = "~=0.3" },
-    { name = "nonebot2", extras = ["httpx", "fastapi", "websockets"], specifier = "~=2.1" },
-    { name = "playwright", specifier = "~=1.38" },
+    { name = "diro-py", specifier = ">=0.1.0,<1.0.0" },
+    { name = "matplotlib", specifier = ">=3.8.0,<4.0.0" },
+    { name = "nonebot-adapter-feishu", specifier = ">=2.3.0,<3.0.0" },
+    { name = "nonebot-adapter-onebot", specifier = ">=2.3.0,<3.0.0" },
+    { name = "nonebot-adapter-qq", specifier = ">=1.1.0,<2.0.0" },
+    { name = "nonebot-bison", specifier = ">=0.9.0,<1.0.0" },
+    { name = "nonebot-plugin-alconna", specifier = ">=0.38.0,<1.0.0" },
+    { name = "nonebot-plugin-apscheduler", specifier = ">=0.4.0,<1.0.0" },
+    { name = "nonebot-plugin-deepseek", specifier = ">=0.1.0,<1.0.0" },
+    { name = "nonebot-plugin-filehost", specifier = ">=1.1.0,<2.0.0" },
+    { name = "nonebot-plugin-llmchat", specifier = ">=0.1.0,<1.0.0" },
+    { name = "nonebot-plugin-sentry", specifier = ">=2.0.0,<3.0.0" },
+    { name = "nonebot-plugin-shorturl", specifier = ">=0.4.0,<1.0.0" },
+    { name = "nonebot-plugin-treehelp", specifier = ">=0.3.0,<1.0.0" },
+    { name = "nonebot-plugin-zssm", specifier = ">=0.3.0,<1.0.0" },
+    { name = "nonebot2", extras = ["httpx", "fastapi", "websockets"], specifier = ">=2.1.0,<3.0.0" },
+    { name = "playwright", specifier = ">=1.38.0,<2.0.0" },
 ]
 
 [package.metadata.requires-dev]
 deploy = [
-    { name = "gunicorn", specifier = "~=23.0" },
-    { name = "uvicorn", specifier = "~=0.18" },
+    { name = "gunicorn", specifier = ">=23.0.0,<24.0.0" },
+    { name = "uvicorn", specifier = ">=0.18.0,<1.0.0" },
 ]
 dev = [
-    { name = "pre-commit", specifier = "~=4.1" },
-    { name = "ruff", specifier = "~=0.9" },
+    { name = "pre-commit", specifier = ">=4.1.0,<5.0.0" },
+    { name = "ruff", specifier = ">=0.9.0,<1.0.0" },
 ]
 
 [[package]]
