@@ -132,7 +132,7 @@ wheels = [
 
 [[package]]
 name = "botfoochan"
-version = "0.5.4"
+version = "0.5.5"
 source = { virtual = "." }
 dependencies = [
     { name = "diro-py" },
