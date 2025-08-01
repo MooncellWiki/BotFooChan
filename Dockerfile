@@ -12,6 +12,14 @@ COPY ./pyproject.toml ./uv.lock* /tmp/
 
 RUN uv export --format requirements.txt -o requirements.txt --no-editable --no-hashes --no-dev --no-emit-project
 
+FROM python:3.12-bookworm AS build-stage
+
+WORKDIR /wheel
+
+COPY --from=requirements-stage /tmp/requirements.txt /wheel/requirements.txt
+
+RUN pip wheel --wheel-dir=/wheel --no-cache-dir --requirement /wheel/requirements.txt
+
 FROM python:3.12-bookworm AS metadata-stage
 
 WORKDIR /tmp
