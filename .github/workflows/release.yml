@@ -26,13 +26,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up PDM
-        uses: pdm-project/setup-pdm@v4
+      - name: Setup Python environment
+        uses: ./.github/actions/setup-python
 
       - name: Get Version
         id: version
         run: |
-          echo "VERSION=$(pdm show --version)" >> $GITHUB_OUTPUT
+          echo "VERSION=$(uv version --short)" >> $GITHUB_OUTPUT
           echo "TAG=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Check Version
@@ -83,7 +83,7 @@ jobs:
         run: |
           REPO=starheart/${{ github.event.repository.name }}
           echo "IMAGE=${REPO,,}" >> $GITHUB_OUTPUT
-          echo "SCOPE=${{ hashFiles('**/pdm.lock') }}-${{ matrix.platform }}" >> $GITHUB_OUTPUT
+          echo "SCOPE=${{ hashFiles('**/uv.lock') }}-${{ matrix.platform }}" >> $GITHUB_OUTPUT
           PLATFORM="${{ matrix.platform }}"
           echo "ARTIFACT=${PLATFORM/\//-}-digests" >> $GITHUB_OUTPUT
 
