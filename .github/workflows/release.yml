@@ -225,6 +225,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
+          use_insecure_cipher: true
           envs: DEPLOY_PATH
           script: |
             cd $DEPLOY_PATH
