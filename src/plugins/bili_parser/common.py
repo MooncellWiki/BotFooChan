@@ -37,19 +37,6 @@ def BiliData() -> ShareClickResponseData:
     return Depends(_bili_data, use_cache=False)
 
 
-async def get_bili_cover(data: ShareClickResponseData = BiliData()):
-    async with httpx.AsyncClient(timeout=10) as client:
-        try:
-            r = await client.get(data.picture)
-
-            return BytesIO(r.content)
-
-        except httpx.HTTPError as e:
-            logger.opt(colors=True, exception=e).error(
-                "Failed to fetch video cover from bilibili api"
-            )
-
-
 async def get_bili_data(
     state: T_State,
     code: Match[str] = AlconnaMatch("code"),
@@ -76,7 +63,6 @@ async def get_bili_data(
 async def _(
     bot: Bot,
     data: ShareClickResponseData = BiliData(),
-    cover_bytes: BytesIO | None = Depends(get_bili_cover),
 ):
     cover_url = data.picture
     mini_program_url = f"m.q.qq.com/a/p/{data.program_id}?s={data.program_path}"
@@ -86,7 +72,7 @@ async def _(
         mini_program_url = await ShortURL(url=mini_program_url).to_url()
         webpage_link = await ShortURL(url=webpage_link).to_url()
 
-    bili_cover = Image(url=cover_url, raw=cover_bytes)
+    bili_cover = Image(url=cover_url)
     message = UniMessage(
         [
             Text(f"{data.title}\n"),
