@@ -1,5 +1,3 @@
-from io import BytesIO
-
 import httpx
 from nonebot import logger
 from nonebot.adapters import Bot
