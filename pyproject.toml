@@ -17,7 +17,6 @@ dependencies = [
   "nonebot-bison >=0.9.0, <1.0.0",
   "nonebot-plugin-alconna >=0.38.0, <1.0.0",
   "nonebot-plugin-apscheduler >=0.4.0, <1.0.0",
-  "nonebot-plugin-deepseek >=0.1.0, <1.0.0",
   "nonebot-plugin-filehost >=1.1.0, <2.0.0",
   "nonebot-plugin-llmchat >=0.1.0, <1.0.0",
   "nonebot-plugin-sentry >=2.0.0, <3.0.0",
