@@ -9,7 +9,6 @@ from nonebot.adapters.onebot.v11 import Bot, MessageSegment
 from nonebot_plugin_apscheduler import scheduler
 import nonebot_plugin_localstore as store
 
-from .config import plugin_config
 from .data_source import (
     MAINT_ACTION_CN,
     MAINT_ACTION_JP,
@@ -19,6 +18,7 @@ from .data_source import (
     get_action,
     get_detail,
 )
+from .storage import load_recv_groups
 
 DATA_FILE_CN = store.get_plugin_data_file("gamedata_cn.json")
 DATA_FILE_JP = store.get_plugin_data_file("gamedata_jp.json")
@@ -38,7 +38,8 @@ def _save_data(file: Path, data: dict[str, Any]) -> None:
 
 
 async def _push_to_groups(text: str) -> None:
-    if not plugin_config.fgo_recv_groups:
+    recv_groups = load_recv_groups()
+    if not recv_groups:
         return
 
     bots = [bot for bot in get_bots().values() if isinstance(bot, Bot)]
@@ -46,7 +47,7 @@ async def _push_to_groups(text: str) -> None:
         logger.warning("没有已连接的 OneBot V11 Bot，跳过本次推送")
         return
 
-    for group_id in plugin_config.fgo_recv_groups:
+    for group_id in recv_groups:
         for bot in bots:
             try:
                 await bot.send_group_msg(
