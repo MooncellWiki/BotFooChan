@@ -55,11 +55,10 @@ RUN apt-get update \
   && apt-get purge -y --auto-remove curl p7zip-full \
   && rm -rf /tmp/sarasa /tmp/sarasa.7z /var/lib/apt/lists/*
 
-COPY --from=build-stage /wheel /wheel
+RUN --mount=type=bind,from=build-stage,source=/wheel,target=/wheel \
+  pip install --no-cache-dir --no-index --find-links=/wheel -r /wheel/requirements.txt
 
-RUN pip install --no-cache-dir --no-index --find-links=/wheel -r /wheel/requirements.txt && rm -rf /wheel
-
-RUN playwright install --with-deps chromium firefox \
+RUN playwright install --with-deps --only-shell chromium \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=metadata-stage /tmp/VERSION /app/VERSION
