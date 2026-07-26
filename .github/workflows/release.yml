@@ -199,8 +199,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: official-bot
     needs: push
-    permissions:
-      deployments: write
+    permissions: {}
     if: |-
       ${{
         always() &&
@@ -209,14 +208,6 @@ jobs:
       }}
 
     steps:
-      - name: Start Deployment
-        uses: bobheadxi/deployments@v1
-        id: deployment
-        with:
-          step: start
-          token: ${{ secrets.GITHUB_TOKEN }}
-          env: official-bot
-
       - name: Run Remote SSH Command
         uses: appleboy/ssh-action@master
         env:
@@ -232,13 +223,3 @@ jobs:
             docker compose pull
             docker compose up -d
             docker system prune -a -f
-
-      - name: update deployment status
-        uses: bobheadxi/deployments@v1
-        if: always()
-        with:
-          step: finish
-          token: ${{ secrets.GITHUB_TOKEN }}
-          status: ${{ job.status }}
-          env: ${{ steps.deployment.outputs.env }}
-          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
