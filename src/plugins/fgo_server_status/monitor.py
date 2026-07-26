@@ -92,11 +92,11 @@ async def _check_server(
     await _push_to_groups(text)
 
 
-@scheduler.scheduled_job("cron", minute="*", id="fgo_server_status_cn")
+@scheduler.scheduled_job("cron", minute="*/5", id="fgo_server_status_cn")
 async def check_cn() -> None:
     await _check_server("国服", fetch_gamedata_cn, DATA_FILE_CN, MAINT_ACTION_CN)
 
 
-@scheduler.scheduled_job("cron", minute="*", id="fgo_server_status_jp")
+@scheduler.scheduled_job("cron", minute="*/5", id="fgo_server_status_jp")
 async def check_jp() -> None:
     await _check_server("日服", fetch_gamedata_jp, DATA_FILE_JP, MAINT_ACTION_JP)
