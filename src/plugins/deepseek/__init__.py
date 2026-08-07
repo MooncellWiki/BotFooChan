@@ -29,7 +29,6 @@ from nonebot_plugin_alconna import (
     Subcommand,
     on_alconna,
 )
-from nonebot_plugin_alconna.builtins.extensions.reply import ReplyMergeExtension
 
 from .config import Config, ds_config, json_config
 
@@ -38,7 +37,7 @@ if htmlrender_enable := find_spec("nonebot_plugin_htmlrender") is not None:
 
 from . import hook as hook
 from .api import RequestException, query_balance
-from .extension import CleanDocExtension, ParseExtension
+from .extension import CleanDocExtension, ParseExtension, ReplyMergeExtension
 from .handler import DeepSeekHandler
 
 __plugin_meta__ = PluginMetadata(
