@@ -38,6 +38,10 @@ rhd_matcher = on_alconna(
         meta=CommandMeta(compact=True),
     ),
 )
+# /help 由 treehelp 提供，此处仅注册 "." 前缀避免冲突
+help_matcher = on_alconna(
+    Alconna(["."], "help", Args["item?", str], meta=CommandMeta(compact=True))
+)
 st_matcher = on_alconna(Alconna([".", "/"], "st"))
 en_matcher = on_alconna(Alconna([".", "/"], "en", Args["level?", str]))
 ti_matcher = on_alconna(Alconna([".", "/"], "ti"))
@@ -115,6 +119,24 @@ async def rhd_handler(
     except Exception:
         await rhd_matcher.finish("暗骰失败，请确认机器人能够向你发送私聊消息")
     await rhd_matcher.finish("暗骰结果已私聊发送")
+
+
+_help_topics = {
+    "r": constant.r,
+    "sc": constant.sc,
+    "set": constant.set,
+    "show": constant.show,
+    "sa": constant.sa,
+    "en": constant.en,
+    "del": constant.del_,
+    "del_": constant.del_,
+}
+
+
+@help_matcher.handle()
+async def help_handler(item: Match = AlconnaMatch("item")):
+    topic = item.result.strip().lower() if item.available else ""
+    await help_matcher.finish(_help_topics.get(topic, constant.main))
 
 
 @st_matcher.handle()
