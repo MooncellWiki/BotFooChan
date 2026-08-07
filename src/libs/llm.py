@@ -16,7 +16,8 @@
 from collections.abc import Sequence
 from functools import cache
 import re
-from typing import Literal
+import time
+from typing import Any, Literal
 
 import httpx
 from nonebot import get_plugin_config, logger
@@ -32,6 +33,7 @@ from pydantic_ai.output import OutputSpec
 from pydantic_ai.providers.deepseek import DeepSeekProvider
 from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.settings import ModelSettings
+from pydantic_ai.usage import RunUsage
 
 DEEPSEEK_OFFICIAL_HOST = "api.deepseek.com"
 
@@ -264,3 +266,42 @@ def extract_content_and_thinking(result: AgentRunResult[str]) -> tuple[str, str]
     content, inline_thinking = split_inline_thinking(result.output)
     thinking = extract_thinking(result.new_messages()) or inline_thinking
     return content, thinking
+
+
+class UsageTracker:
+    """按模型累计一次处理流程中的 token 消耗，并统计总用时
+
+    渲染结果形如::
+
+        --- 5.0s
+        deepseek-v4-flash  I:1966 O:383 A:2349 C:1152
+
+    其中 I 为输入、O 为输出、A 为合计、C 为命中缓存的输入 token。
+    """
+
+    def __init__(self) -> None:
+        self.started_at = time.perf_counter()
+        self.usages: dict[str, RunUsage] = {}
+
+    def record(self, model: str, result: AgentRunResult[Any]) -> None:
+        """记录一次模型调用的用量"""
+        self.usages.setdefault(model, RunUsage()).incr(result.usage)
+
+    @property
+    def elapsed(self) -> float:
+        """从创建到当前的耗时（秒）"""
+        return time.perf_counter() - self.started_at
+
+    def render(self) -> str:
+        """渲染用时与各模型的 token 统计"""
+        lines = [f"--- {self.elapsed:.1f}s"]
+        for model, usage in self.usages.items():
+            stats = [
+                f"I:{usage.input_tokens}",
+                f"O:{usage.output_tokens}",
+                f"A:{usage.total_tokens}",
+            ]
+            if usage.cache_read_tokens:
+                stats.append(f"C:{usage.cache_read_tokens}")
+            lines.append(f"{model}  {' '.join(stats)}")
+        return "\n".join(lines)
