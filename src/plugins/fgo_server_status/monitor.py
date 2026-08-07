@@ -5,7 +5,7 @@ from typing import Any
 
 import httpx
 from nonebot import get_bots, logger
-from nonebot.adapters.onebot.v11 import Bot, MessageSegment
+from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
 from nonebot_plugin_apscheduler import scheduler
 import nonebot_plugin_localstore as store
 
@@ -51,7 +51,7 @@ async def _push_to_groups(text: str) -> None:
         for bot in bots:
             try:
                 await bot.send_group_msg(
-                    group_id=group_id, message=MessageSegment.text(text)
+                    group_id=group_id, message=Message(MessageSegment.text(text))
                 )
             except Exception as e:
                 logger.opt(exception=e).error(f"推送维护状态到群 {group_id} 失败")
