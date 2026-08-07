@@ -23,9 +23,11 @@ from nonebot import get_plugin_config, logger
 from pydantic import BaseModel, Field, field_validator
 from pydantic_ai import Agent
 from pydantic_ai.agent import AgentRunResult
+from pydantic_ai.capabilities import NativeTool
 from pydantic_ai.messages import ModelMessage, ModelResponse, ThinkingPart
 from pydantic_ai.models import Model
 from pydantic_ai.models.openai import OpenAIChatModel, OpenAIResponsesModel
+from pydantic_ai.native_tools import WebSearchTool
 from pydantic_ai.output import OutputSpec
 from pydantic_ai.providers.deepseek import DeepSeekProvider
 from pydantic_ai.providers.openai import OpenAIProvider
@@ -207,14 +209,29 @@ def create_agent[OutputT](
     output_type: OutputSpec[OutputT] = str,
     settings: ModelSettings | None = None,
     retries: int = 1,
+    web_search: bool = False,
 ) -> Agent[None, OutputT]:
-    """按端点创建 pydantic-ai Agent"""
+    """按端点创建 pydantic-ai Agent。
+
+    web_search 启用服务商内置的联网搜索（服务端执行），仅 Responses API 协议支持；
+    DeepSeek 官方对应 tools=[{"type": "web_search"}]。
+    """
+    capabilities = None
+    if web_search:
+        if endpoint.resolved_api_type == "responses":
+            capabilities = [NativeTool(WebSearchTool())]
+        else:
+            logger.warning(
+                f"模型 {endpoint.name} 走 chat completions 协议，"
+                "不支持内置联网搜索，已忽略"
+            )
     return Agent(
         get_model(endpoint),
         instructions=instructions,
         output_type=output_type,
         model_settings=settings,
         retries=retries,
+        capabilities=capabilities,
     )
 
 

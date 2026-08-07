@@ -43,6 +43,7 @@ class DeepSeekHandler:
             model.to_endpoint(),
             instructions=model.prompt or ds_config.prompt or None,
             settings=model.to_settings(ds_config.api_timeout),
+            web_search=model.web_search,
         )
         self.history: list[ModelMessage] = []
         self.pending: str | None = None

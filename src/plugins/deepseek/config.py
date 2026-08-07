@@ -17,6 +17,8 @@ class CustomModel(BaseModel):
     """展示别名（缺省时使用模型引用本身）"""
     prompt: str | None = None
     """模型独立的人设（缺省时使用全局配置）"""
+    web_search: bool = False
+    """启用服务商内置的联网搜索（仅 Responses API 协议支持，如 DeepSeek 官方）"""
     max_tokens: int | None = Field(default=None, gt=1)
     """单次请求生成的最大 token 数"""
     frequency_penalty: float | None = Field(default=None, ge=-2, le=2)
