@@ -18,7 +18,7 @@ WORKDIR /wheel
 
 COPY --from=requirements-stage /tmp/requirements.txt /wheel/requirements.txt
 
-RUN pip wheel --wheel-dir=/wheel --no-cache-dir --requirement /wheel/requirements.txt
+RUN pip wheel --wheel-dir=/wheel --no-cache-dir --no-deps --requirement /wheel/requirements.txt
 
 FROM python:3.14-bookworm AS metadata-stage
 
@@ -56,7 +56,7 @@ RUN apt-get update \
   && rm -rf /tmp/sarasa /tmp/sarasa.7z /var/lib/apt/lists/*
 
 RUN --mount=type=bind,from=build-stage,source=/wheel,target=/wheel \
-  pip install --no-cache-dir --no-index --find-links=/wheel -r /wheel/requirements.txt
+  pip install --no-cache-dir --no-index --no-deps --find-links=/wheel -r /wheel/requirements.txt
 
 RUN playwright install --with-deps --only-shell chromium \
   && rm -rf /var/lib/apt/lists/*
