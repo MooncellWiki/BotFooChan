@@ -41,12 +41,12 @@ class Balance:
 
 async def query_balance(model_name: str) -> Balance:
     model = ds_config.get_model_config(model_name)
-    api_key = model.api_key or ds_config.api_key
+    endpoint = model.to_endpoint()
 
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            f"{model.base_url}/user/balance",
-            headers={"Authorization": f"Bearer {api_key}"},
+            f"{endpoint.base_url}/user/balance",
+            headers={"Authorization": f"Bearer {endpoint.api_key}"},
         )
     if response.status_code == 404:
         raise RequestException("本地模型不支持查询余额，请更换默认模型")

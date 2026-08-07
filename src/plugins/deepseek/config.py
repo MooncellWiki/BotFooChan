@@ -2,29 +2,21 @@ import json
 
 from nonebot import get_plugin_config, logger
 import nonebot_plugin_localstore as store
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_ai.settings import ModelSettings
 
-from src.libs.llm import ApiType, ModelEndpoint
+from src.libs.llm import ModelEndpoint, list_models, require_endpoint
 
 
 class CustomModel(BaseModel):
     model_config = ConfigDict(extra="allow")
 
-    name: str
-    """模型名称"""
+    model: str
+    """模型引用：LLM__MODELS 中的别名，或 '服务商:模型名'"""
     alias: str | None = None
-    """模型别名（用于展示与指定）"""
-    base_url: str = "https://api.deepseek.com"
-    """模型服务地址"""
-    api_key: str | None = None
-    """模型独立的 API Key（缺省时使用全局配置）"""
-    api_type: ApiType | None = None
-    """调用协议；缺省时 DeepSeek 官方走 Responses API，其余走 chat completions"""
+    """展示别名（缺省时使用模型引用本身）"""
     prompt: str | None = None
     """模型独立的人设（缺省时使用全局配置）"""
-    proxy: str | None = None
-    """代理地址"""
     max_tokens: int | None = Field(default=None, gt=1)
     """单次请求生成的最大 token 数"""
     frequency_penalty: float | None = Field(default=None, ge=-2, le=2)
@@ -35,16 +27,10 @@ class CustomModel(BaseModel):
 
     @property
     def display_name(self) -> str:
-        return self.alias or self.name
+        return self.alias or self.model
 
-    def to_endpoint(self, fallback_api_key: str | None = None) -> ModelEndpoint:
-        return ModelEndpoint(
-            name=self.name,
-            base_url=self.base_url,
-            api_key=self.api_key or fallback_api_key,
-            api_type=self.api_type,
-            proxy=self.proxy,
-        )
+    def to_endpoint(self) -> ModelEndpoint:
+        return require_endpoint(self.model)
 
     def to_settings(self, timeout: float) -> ModelSettings:
         settings = ModelSettings(timeout=timeout)
@@ -73,15 +59,9 @@ class TimeoutConfig(BaseModel):
 
 
 class ScopedConfig(BaseModel):
-    api_key: str = ""
-    """DeepSeek API Key"""
-    enable_models: list[CustomModel] = Field(
-        default_factory=lambda: [
-            CustomModel(name="deepseek-v4-flash"),
-            CustomModel(name="deepseek-v4-pro"),
-        ]
-    )
-    """启用的模型列表"""
+    enable_models: list[CustomModel] = Field(default_factory=list)
+    """启用的模型列表；元素可为模型引用字符串或带覆写项的对象。
+    缺省时启用 LLM__MODELS 注册表中的全部模型"""
     prompt: str = ""
     """全局人设"""
     md_to_pic: bool = False
@@ -90,6 +70,15 @@ class ScopedConfig(BaseModel):
     """是否发送思维链"""
     timeout: int | TimeoutConfig = Field(default_factory=TimeoutConfig)
     """超时配置"""
+
+    @field_validator("enable_models", mode="before")
+    @classmethod
+    def _coerce_models(cls, value: object) -> object:
+        if isinstance(value, list):
+            return [
+                {"model": item} if isinstance(item, str) else item for item in value
+            ]
+        return value
 
     @property
     def api_timeout(self) -> int:
@@ -108,7 +97,7 @@ class ScopedConfig(BaseModel):
 
     def get_model_config(self, model_name: str) -> CustomModel:
         for model in self.enable_models:
-            if model_name in (model.name, model.alias):
+            if model_name in (model.model, model.alias):
                 return model
         raise ValueError(f"Model {model_name} not enabled")
 
@@ -119,6 +108,11 @@ class Config(BaseModel):
 
 
 ds_config = get_plugin_config(Config).deepseek
+if not ds_config.enable_models:
+    ds_config.enable_models = [CustomModel(model=alias) for alias in list_models()] or [
+        CustomModel(model="deepseek:deepseek-v4-flash"),
+        CustomModel(model="deepseek:deepseek-v4-pro"),
+    ]
 
 
 class ModelConfig:

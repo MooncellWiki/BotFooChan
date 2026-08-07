@@ -116,8 +116,8 @@ async def handle(
         return await UniMessage(Text("请回复或输入内容")).send(reply_to=Reply(msg_id))
 
     # 验证API配置
-    if not config.zssm_ai_text_token or not config.zssm_ai_vl_token:
-        return await UniMessage(Text("未配置 Api Key, 暂时无法使用")).send(
+    if not config.zssm_ai_text_model or not config.zssm_ai_vl_model:
+        return await UniMessage(Text("未配置 AI 模型, 暂时无法使用")).send(
             reply_to=Reply(msg_id)
         )
 

@@ -40,7 +40,7 @@ class DeepSeekHandler:
         self.is_to_pic = is_to_pic
         self.is_contextual = is_contextual
         self.agent: Agent[None, str] = create_agent(
-            model.to_endpoint(ds_config.api_key),
+            model.to_endpoint(),
             instructions=model.prompt or ds_config.prompt or None,
             settings=model.to_settings(ds_config.api_timeout),
         )

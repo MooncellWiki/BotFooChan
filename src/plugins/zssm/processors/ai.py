@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from pydantic_ai.output import PromptedOutput
 from pydantic_ai.settings import ModelSettings
 
-from src.libs.llm import ModelEndpoint, create_agent
+from src.libs.llm import create_agent, resolve_endpoint
 from src.plugins.zssm.config import Config
 
 config = get_plugin_config(Config)
@@ -46,16 +46,15 @@ async def check_prompt_leakage(response: str, system_prompt: str) -> tuple[bool,
     Returns:
         tuple[bool, str]: (是否泄露, 审查后的响应)
     """
-    if not config.zssm_ai_check_token:
-        logger.warning("未配置审查API Token，跳过system prompt泄露检查")
+    if not config.zssm_ai_check_model:
+        logger.warning("未配置审查模型，跳过system prompt泄露检查")
+        return False, response
+    endpoint = resolve_endpoint(config.zssm_ai_check_model)
+    if endpoint is None:
         return False, response
 
     agent = create_agent(
-        ModelEndpoint(
-            name=config.zssm_ai_check_model,
-            base_url=config.zssm_ai_check_endpoint,
-            api_key=config.zssm_ai_check_token,
-        ),
+        endpoint,
         instructions=AUDIT_SYSTEM_PROMPT,
         output_type=PromptedOutput(AuditResult),
         settings=ModelSettings(timeout=REQUEST_TIMEOUT),
@@ -95,15 +94,14 @@ async def generate_ai_response(system_prompt: str, user_prompt: str) -> str | No
     Returns:
         Optional[str]: AI 生成的响应, 失败时返回 None
     """
-    if not config.zssm_ai_text_token:
+    if not config.zssm_ai_text_model:
+        return None
+    endpoint = resolve_endpoint(config.zssm_ai_text_model)
+    if endpoint is None:
         return None
 
     agent = create_agent(
-        ModelEndpoint(
-            name=config.zssm_ai_text_model,
-            base_url=config.zssm_ai_text_endpoint,
-            api_key=config.zssm_ai_text_token,
-        ),
+        endpoint,
         instructions=system_prompt,
         output_type=PromptedOutput(ZssmOutput),
         settings=ModelSettings(timeout=REQUEST_TIMEOUT),

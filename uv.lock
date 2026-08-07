@@ -56,18 +56,6 @@ wheels = [
 ]
 
 [[package]]
-name = "anysqlite"
-version = "0.0.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "anyio" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/0f/4b/cd5d66b9f87e773bc71344a368b9472987e33514e6627e28342b9c3e7c43/anysqlite-0.0.5.tar.gz", hash = "sha256:9dfcf87baf6b93426ad1d9118088c41dbf24ef01b445eea4a5d486bac2755cce", size = 3432, upload-time = "2023-10-02T13:49:25.135Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/0b/31/349eae2bc9d9331dd8951684cf94528d91efaa71129dc30822ac111dfc66/anysqlite-0.0.5-py3-none-any.whl", hash = "sha256:cb345dc4f76f6b37f768d7a0b3e9cf5c700dfcb7a6356af8ab46a11f666edbe7", size = 3907, upload-time = "2023-10-02T13:49:26.943Z" },
-]
-
-[[package]]
 name = "apscheduler"
 version = "3.11.3"
 source = { registry = "https://pypi.org/simple" }
@@ -182,7 +170,7 @@ requires-dist = [
     { name = "nonebot-plugin-treehelp", specifier = ">=0.3.0,<1.0.0" },
     { name = "nonebot-plugin-waiter", specifier = ">=0.8.0,<1.0.0" },
     { name = "nonebot2", extras = ["httpx", "fastapi", "websockets"], specifier = ">=2.1.0,<3.0.0" },
-    { name = "pillow", specifier = ">=10.0.0" },
+    { name = "pillow", specifier = ">=10.0.0,<11.0.0" },
     { name = "playwright", specifier = ">=1.38.0,<2.0.0" },
     { name = "pydantic-ai-slim", extras = ["openai"], specifier = ">=1.0.0,<2.0.0" },
     { name = "pymupdf", specifier = ">=1.24.0,<2.0.0" },
@@ -660,18 +648,15 @@ wheels = [
 
 [[package]]
 name = "hishel"
-version = "0.1.5"
+version = "0.0.30"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "anyio" },
-    { name = "anysqlite" },
     { name = "httpx" },
-    { name = "msgpack" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e5/64/a104ccac48f123f853254483617b16e0efc1649bd7e35bcdc5a5a5ef0ae2/hishel-0.1.5.tar.gz", hash = "sha256:9d40c682cd94fd6e1394fb05713ae20a75ed8aeba6f5272380444039ce6257f2", size = 75468, upload-time = "2025-10-18T13:32:41.854Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/88/91/bf14b25c1fea465299aa1684cf6fab97acb4465d222f4fde457bbea3cf3c/hishel-0.0.30.tar.gz", hash = "sha256:656393ee77e9c39a0d6c527c74810e15d96e598dcb9b191f20a788608ceaca99", size = 34004, upload-time = "2024-07-12T15:28:17.248Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/70/83/4f8b77839e62114bb034375ee8e08cfb6af1164754b925b271d3f1ec06ee/hishel-0.1.5-py3-none-any.whl", hash = "sha256:0bfbe9a2b9342090eba82ba6de88258092e1c4c7b730cd4cb4b570e4b40e44a7", size = 92486, upload-time = "2025-10-18T13:32:40.333Z" },
+    { url = "https://files.pythonhosted.org/packages/2a/3b/93213764caad170daf4984ca39410417251aafa386bb24784f9fb75fc65b/hishel-0.0.30-py3-none-any.whl", hash = "sha256:0c73a779a6b554b52dff75e5962057df25764fd798c31b9435ce6398b1b171c8", size = 40464, upload-time = "2024-07-12T15:28:15.471Z" },
 ]
 
 [[package]]
@@ -1219,7 +1204,7 @@ wheels = [
 
 [[package]]
 name = "nonebot-bison"
-version = "0.9.14"
+version = "0.9.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -1232,7 +1217,6 @@ dependencies = [
     { name = "nonebot-plugin-apscheduler" },
     { name = "nonebot-plugin-datastore" },
     { name = "nonebot-plugin-htmlrender" },
-    { name = "nonebot-plugin-prometheus" },
     { name = "nonebot-plugin-send-anything-anywhere" },
     { name = "nonebot2", extra = ["fastapi"] },
     { name = "pillow" },
@@ -1244,9 +1228,9 @@ dependencies = [
     { name = "tinydb" },
     { name = "yarl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/51/36/5bf33312f261b44eee34f1e88470cd70dcea76a5d3cd418d2b7c6b1f0970/nonebot_bison-0.9.14.tar.gz", hash = "sha256:1e472a46e5acf76a2bd0c5f64ffe68ea542870407df21262c87f6c792ec93d13", size = 3235386, upload-time = "2026-01-11T09:22:19.302Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/70/b8/37fae15f4e1dc598bc43b64c9a2fc4119ee3223c7af3503e3b1ef48468a9/nonebot_bison-0.9.5.tar.gz", hash = "sha256:931a7f0511f1a29b9b10b84ddcd823ee45eaea7068adc72d263602b0358867e6", size = 2884339, upload-time = "2024-10-30T15:55:40.9Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/a1/8a8f14714dff14bfde26f68ce20c4d25b9b1afdd151533b5356238d2439e/nonebot_bison-0.9.14-py3-none-any.whl", hash = "sha256:e0a3cb1684d5e398165009b0f49944db45c0650cd80286bd71dad89592dbda06", size = 2961608, upload-time = "2026-01-11T09:22:21.039Z" },
+    { url = "https://files.pythonhosted.org/packages/37/55/090f742e26dcca9fe1d314797bd8f170aa62c8975ee56e8a3af8e861665d/nonebot_bison-0.9.5-py3-none-any.whl", hash = "sha256:39d5cbc802aedb53bd252aaef19c4c581e5e742cd7e1ae89457b5713f8ad4d35", size = 2932231, upload-time = "2024-10-30T15:55:39.405Z" },
 ]
 
 [[package]]
@@ -1345,20 +1329,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/63/22/67ec1e604c0385729bf2d71db406c032de9015363588785617113dfb76ac/nonebot_plugin_localstore-0.7.4.tar.gz", hash = "sha256:85ddc13814bfcd484ab311306823651390020bf44f4fb4733b343a58e72723ce", size = 5535, upload-time = "2025-03-01T12:54:04.077Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7b/c8/0fcb2c6d994579e53342cbf11bf9326ddfab010d1a8063e1fc0cc19c13bf/nonebot_plugin_localstore-0.7.4-py3-none-any.whl", hash = "sha256:3b08030878eadcdd8b9ce3d079da0dc2d0e41dc91f0b2d8cf7fa862a27de9090", size = 6963, upload-time = "2025-03-01T12:54:02.137Z" },
-]
-
-[[package]]
-name = "nonebot-plugin-prometheus"
-version = "0.4.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "nonebot-plugin-alconna" },
-    { name = "nonebot2" },
-    { name = "prometheus-client" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/1a/cb/306c93f4ce36c083c17196aa84a51ad2f31e96ad0d0963a23842d71843f5/nonebot_plugin_prometheus-0.4.1.tar.gz", hash = "sha256:113a23f076d490ab75b7f9851bc1911de4fc6aaf79600f2f0e759ce7ef6666db", size = 15920, upload-time = "2025-09-10T12:18:33.026Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d6/78/ee801769f82aff50213f2ea17cddff469348876b0dc40b841e1315c477f8/nonebot_plugin_prometheus-0.4.1-py3-none-any.whl", hash = "sha256:c53797ac30cc22f8e54942990100678c823f90fc73051fef3c6c501a9409f029", size = 20448, upload-time = "2025-09-10T12:18:31.439Z" },
 ]
 
 [[package]]
@@ -1538,9 +1508,9 @@ wheels = [
 
 [[package]]
 name = "pillow"
-version = "11.0.0"
+version = "10.4.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a5/26/0d95c04c868f6bdb0c447e3ee2de5564411845e36a858cfd63766bc7b563/pillow-11.0.0.tar.gz", hash = "sha256:72bacbaf24ac003fea9bff9837d1eedb6088758d41e100c1552930151f677739", size = 46737780, upload-time = "2024-10-15T14:24:29.672Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cd/74/ad3d526f3bf7b6d3f408b73fde271ec69dfac8b81341a318ce825f2b3812/pillow-10.4.0.tar.gz", hash = "sha256:166c1cd4d24309b30d61f79f4a9114b7b2313d7450912277855ff5dfd7cd4a06", size = 46555059, upload-time = "2024-07-01T09:48:43.583Z" }
 
 [[package]]
 name = "platformdirs"
@@ -1584,15 +1554,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/25/3a/ddb78f32a0814e66b18a099377a106a2dcdce92d86a034d69d65df9b256e/pre_commit-4.6.1.tar.gz", hash = "sha256:03e809865c7d178b9979d06c761fcbfe6808fdaded8581a745bb110e52050421", size = 198646, upload-time = "2026-07-21T20:56:58.225Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fb/49/bc925106abcdac498074f2cbe6137e94e09f418dd2b7775df5b577dc0313/pre_commit-4.6.1-py2.py3-none-any.whl", hash = "sha256:0e3b2942510d1fb34eec167a3ec57331bf8442122f1153a9fb8b58f5c49b2717", size = 226186, upload-time = "2026-07-21T20:56:57.064Z" },
-]
-
-[[package]]
-name = "prometheus-client"
-version = "0.26.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/52/73/f1334c29c2af4cd9dba6c7817e61b611bd0215e2eb5565c6064a4de18802/prometheus_client-0.26.0.tar.gz", hash = "sha256:04a91bcf94e2cf74a44a1a874d651a2e853ed354b6e822f3b7487751465d5c2b", size = 92910, upload-time = "2026-07-24T19:36:41.893Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/eb/a3/b69efbf4143b5b9859b977770bbbabcc2796b702fa69dc40271e45cd5a56/prometheus_client-0.26.0-py3-none-any.whl", hash = "sha256:fa93d06737aa02bacd05794768508bb97d2fbee28cb3bca04eaae92f0ca953d6", size = 64494, upload-time = "2026-07-24T19:36:40.854Z" },
 ]
 
 [[package]]

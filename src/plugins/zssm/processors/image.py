@@ -10,7 +10,7 @@ from PIL import Image as PILImage
 from pydantic_ai import BinaryContent
 from pydantic_ai.settings import ModelSettings
 
-from src.libs.llm import ModelEndpoint, create_agent
+from src.libs.llm import create_agent, resolve_endpoint
 from src.plugins.zssm.config import Config
 
 config = get_plugin_config(Config)
@@ -45,17 +45,13 @@ async def process_image(image: Image) -> str | None:
     Returns:
         Optional[str]: 图片描述内容, 失败时返回 None
     """
-    if not image.url or not config.zssm_ai_vl_token:
+    if not image.url or not config.zssm_ai_vl_model:
+        return None
+    endpoint = resolve_endpoint(config.zssm_ai_vl_model)
+    if endpoint is None:
         return None
 
-    agent = create_agent(
-        ModelEndpoint(
-            name=config.zssm_ai_vl_model,
-            base_url=config.zssm_ai_vl_endpoint,
-            api_key=config.zssm_ai_vl_token,
-        ),
-        settings=ModelSettings(timeout=120),
-    )
+    agent = create_agent(endpoint, settings=ModelSettings(timeout=120))
 
     try:
         logger.info(f"开始处理图片: {config.zssm_ai_vl_model} - {image.url}")
