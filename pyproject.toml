@@ -7,7 +7,6 @@ license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.14, <4.0"
 dependencies = [
-  "diro-py >=0.1.0, <1.0.0",
   "matplotlib >=3.8.0, <4.0.0",
   "playwright >=1.38.0, <2.0.0",
   "nonebot2[httpx,fastapi,websockets] >=2.1.0, <3.0.0",
@@ -17,14 +16,18 @@ dependencies = [
   "nonebot-bison >=0.9.0, <1.0.0",
   "nonebot-plugin-alconna >=0.38.0, <1.0.0",
   "nonebot-plugin-apscheduler >=0.4.0, <1.0.0",
-  "nonebot-plugin-deepseek >=0.1.0, <1.0.0",
   "nonebot-plugin-filehost >=1.1.0, <2.0.0",
+  "nonebot-plugin-htmlrender >=0.7.0, <0.8.0",
   "nonebot-plugin-llmchat >=0.1.0, <1.0.0",
   "nonebot-plugin-localstore >=0.7.0, <1.0.0",
   "nonebot-plugin-sentry >=2.0.0, <3.0.0",
   "nonebot-plugin-shorturl >=0.4.0, <1.0.0",
   "nonebot-plugin-treehelp >=0.3.0, <1.0.0",
-  "nonebot-plugin-zssm >=0.3.0, <1.0.0",
+  "nonebot-plugin-waiter >=0.8.0, <1.0.0",
+  "pillow >=10.0.0",
+  "pydantic-ai-slim[openai] >=1.0.0, <2.0.0",
+  "pymupdf >=1.24.0, <2.0.0",
+  "yarl >=1.9.0, <2.0.0",
 ]
 
 [dependency-groups]
@@ -33,7 +36,7 @@ deploy = ["gunicorn >=23.0.0, <24.0.0", "uvicorn >=0.18.0, <1.0.0"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py312"
+target-version = "py314"
 
 [tool.ruff.format]
 line-ending = "lf"
@@ -63,6 +66,9 @@ ignore = [
   "RUF001", # ambiguous-unicode-character-string
   "RUF002", # ambiguous-unicode-character-docstring
   "RUF003", # ambiguous-unicode-character-comment
+  "TC001",  # typing-only-first-party-import
+  "TC002",  # typing-only-third-party-import
+  "TC003",  # typing-only-standard-library-import
 ]
 
 [tool.ruff.lint.isort]
