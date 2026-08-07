@@ -7,7 +7,9 @@
 from collections.abc import Iterable
 import json
 
-from nonebot import logger
+from nonebot import logger, require
+
+require("nonebot_plugin_localstore")
 import nonebot_plugin_localstore as store
 from pydantic import BaseModel, Field
 
