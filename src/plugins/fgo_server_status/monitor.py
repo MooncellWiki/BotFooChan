@@ -29,7 +29,7 @@ def _load_data(file: Path) -> dict[str, Any] | None:
         return None
     try:
         return json.loads(file.read_text("utf-8"))
-    except (json.JSONDecodeError, OSError):
+    except json.JSONDecodeError, OSError:
         return None
 
 

@@ -10,7 +10,7 @@ def load_recv_groups() -> list[int]:
         return []
     try:
         groups = json.loads(RECV_GROUPS_FILE.read_text("utf-8"))
-    except (json.JSONDecodeError, OSError):
+    except json.JSONDecodeError, OSError:
         return []
     return [int(group) for group in groups] if isinstance(groups, list) else []
 

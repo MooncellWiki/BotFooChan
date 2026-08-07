@@ -128,7 +128,7 @@ async def handle_version(version: Match[str]) -> None:
     ]
     try:
         hot_update = json.loads(detail["hotUpdateList"])
-    except (json.JSONDecodeError, TypeError):
+    except json.JSONDecodeError, TypeError:
         hot_update = {}
     if ab_infos := hot_update.get("abInfos"):
         total_size = sum(info.get("totalSize", 0) for info in ab_infos)

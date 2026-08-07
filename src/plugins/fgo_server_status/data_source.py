@@ -35,7 +35,7 @@ async def fetch_gamedata_jp() -> dict[str, Any]:
 def _get_fail(data: dict[str, Any]) -> dict[str, Any]:
     try:
         fail = data["response"][0]["fail"]
-    except (KeyError, IndexError, TypeError):
+    except KeyError, IndexError, TypeError:
         return {}
     return fail if isinstance(fail, dict) else {}
 
