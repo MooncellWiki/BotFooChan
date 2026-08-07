@@ -19,6 +19,8 @@ from nonebot_plugin_alconna.uniseg import (
     message_reaction,
 )
 
+from src.libs.llm import UsageTracker
+
 from .config import Config
 from .processors.ai import generate_ai_response
 from .processors.image import process_image
@@ -54,6 +56,7 @@ async def handle(
         content: 消息内容
     """
     msg = event.get_message()
+    tracker = UsageTracker()
     random_number = str(random.randint(10000000, 99999999))
     system_prompt = SYSTEM_PROMPT_RAW + random_number
     user_prompt = ""
@@ -130,7 +133,7 @@ async def handle(
         )
 
     for image in image_list:
-        image_content = await process_image(image)
+        image_content = await process_image(image, tracker)
         if image_content:
             image_id = hash(image.url)
             user_prompt += (
@@ -203,11 +206,11 @@ async def handle(
     logger.info(f"最终用户提示: \n{user_prompt}")
 
     # 生成AI响应
-    response = await generate_ai_response(system_prompt, user_prompt)
+    response = await generate_ai_response(system_prompt, user_prompt, tracker)
     # 如果失败，进行一次重试
     if response is None:
         logger.warning("AI 回复解析失败，正在重试...")
-        response = await generate_ai_response(system_prompt, user_prompt)
+        response = await generate_ai_response(system_prompt, user_prompt, tracker)
 
     if response is None:
         return await UniMessage(Text("AI 回复解析失败, 请重试")).send(
@@ -215,4 +218,4 @@ async def handle(
         )
 
     await message_reaction("144", msg_id, event, bot)
-    await UniMessage(Text(response)).send(reply_to=reply)
+    await UniMessage(Text(f"{response}\n\n{tracker.render()}")).send(reply_to=reply)

@@ -10,7 +10,7 @@ from PIL import Image as PILImage
 from pydantic_ai import BinaryContent
 from pydantic_ai.settings import ModelSettings
 
-from src.libs.llm import create_agent, resolve_endpoint
+from src.libs.llm import UsageTracker, create_agent, resolve_endpoint
 from src.plugins.zssm.config import Config
 
 config = get_plugin_config(Config)
@@ -39,8 +39,14 @@ async def download_image_as_jpeg(url: str) -> bytes:
     return buffered.getvalue()
 
 
-async def process_image(image: Image) -> str | None:
+async def process_image(
+    image: Image, tracker: UsageTracker | None = None
+) -> str | None:
     """处理图片内容, 返回图片描述
+
+    Args:
+        image: 待识别的图片
+        tracker: 用量统计器, 传入时记录本次调用的 token 消耗
 
     Returns:
         Optional[str]: 图片描述内容, 失败时返回 None
@@ -62,6 +68,9 @@ async def process_image(image: Image) -> str | None:
     except Exception as e:
         logger.opt(exception=e).error("图片处理失败")
         return None
+
+    if tracker:
+        tracker.record(endpoint.name, result)
 
     logger.info("图片处理完成")
     return result.output

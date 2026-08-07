@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from pydantic_ai.output import PromptedOutput
 from pydantic_ai.settings import ModelSettings
 
-from src.libs.llm import create_agent, resolve_endpoint
+from src.libs.llm import UsageTracker, create_agent, resolve_endpoint
 from src.plugins.zssm.config import Config
 
 config = get_plugin_config(Config)
@@ -40,8 +40,15 @@ class AuditResult(BaseModel):
     """是否泄露了系统提示词"""
 
 
-async def check_prompt_leakage(response: str, system_prompt: str) -> tuple[bool, str]:
+async def check_prompt_leakage(
+    response: str, system_prompt: str, tracker: UsageTracker | None = None
+) -> tuple[bool, str]:
     """检查 AI 响应是否泄露了 system prompt
+
+    Args:
+        response: 待审查的 AI 响应
+        system_prompt: 系统提示词
+        tracker: 用量统计器, 传入时记录本次调用的 token 消耗
 
     Returns:
         tuple[bool, str]: (是否泄露, 审查后的响应)
@@ -81,6 +88,9 @@ AI的响应如下:
         logger.opt(exception=e).error("检查prompt泄露失败")
         return False, response
 
+    if tracker:
+        tracker.record(endpoint.name, result)
+
     logger.info(f"审查结果: {result.output}")
     if result.output.leaked:
         logger.warning("检测到system prompt泄露，已替换响应")
@@ -88,8 +98,15 @@ AI的响应如下:
     return False, response
 
 
-async def generate_ai_response(system_prompt: str, user_prompt: str) -> str | None:
+async def generate_ai_response(
+    system_prompt: str, user_prompt: str, tracker: UsageTracker | None = None
+) -> str | None:
     """生成 AI 响应
+
+    Args:
+        system_prompt: 系统提示词
+        user_prompt: 用户提示词
+        tracker: 用量统计器, 传入时记录本次调用的 token 消耗
 
     Returns:
         Optional[str]: AI 生成的响应, 失败时返回 None
@@ -115,6 +132,9 @@ async def generate_ai_response(system_prompt: str, user_prompt: str) -> str | No
         logger.opt(exception=e).error("生成AI响应失败")
         return None
 
+    if tracker:
+        tracker.record(endpoint.name, result)
+
     llm_output = result.output
     if llm_output.block:
         return "（抱歉, 我现在还不会这个）"
@@ -126,5 +146,5 @@ async def generate_ai_response(system_prompt: str, user_prompt: str) -> str | No
     else:
         response = llm_output.output
 
-    _, safe_response = await check_prompt_leakage(response, system_prompt)
+    _, safe_response = await check_prompt_leakage(response, system_prompt, tracker)
     return safe_response
