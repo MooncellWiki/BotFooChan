@@ -11,14 +11,13 @@ def resolve_data(name: str):
 
 
 main = (
-    "本骰娘由 nonebot2 强力驱动\n"
-    ".r    投掷指令 todo\n"
+    ".r    投掷指令\n"
     "    d   制定骰子面数\n"
     "    a   检定\n"
     "    h   暗骰\n"
     "    #   多轮检定\n"
     "    bp  奖励骰&惩罚骰\n"
-    "    +/- 附加计算  todo\n"
+    "    +/- 附加计算\n"
     ".sc   疯狂检定\n"
     ".st   射击命中判定\n"
     ".ti   临时疯狂症状\n"

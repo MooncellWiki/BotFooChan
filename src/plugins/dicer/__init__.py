@@ -1,4 +1,8 @@
+from nonebot import require
 from nonebot.plugin import PluginMetadata
+
+require("nonebot_plugin_alconna")
+require("nonebot_plugin_localstore")
 
 from . import common as common
 from .constant import main as main_help

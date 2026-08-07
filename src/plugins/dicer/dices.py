@@ -2,15 +2,8 @@
 import contextlib
 import random
 
-import diro
-
-from src.plugins.dicer.constant import success_level
-
-
-def to_circled(num: int, c: int) -> str:
-    if num < 1 or num > 10:
-        return "?"
-    return str(num) if num < c else chr(0xA2) + chr(0xD8 + num)
+from . import diro
+from .constant import success_level
 
 
 def roll_success_level(res: int, rate: int, rule: int = 0) -> int:
@@ -123,10 +116,6 @@ def _roll_success_level_rule0(res, rate):
     if res <= rate:
         return 2
     return 1 if rate >= 50 or res < 96 else 0
-
-
-def dhr(t, o):
-    return 100 if t == 0 and o == 0 else t * 10 + o
 
 
 def st():
