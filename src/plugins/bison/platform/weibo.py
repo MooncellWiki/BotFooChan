@@ -13,7 +13,11 @@ from yarl import URL
 from src.plugins.bison.post import Post
 from src.plugins.bison.types import ApiError, Category, RawPost, Tag, Target
 from src.plugins.bison.utils import http_client, text_fletten
-from src.plugins.bison.utils.site import CookieClientManager, Site
+from src.plugins.bison.utils.site import (
+    CookieClientManager,
+    Site,
+    SkipRequestException,
+)
 
 from .platform import NewMessage
 
@@ -143,13 +147,26 @@ class Weibo(NewMessage):
             timeout=4.0,
         )
         res_data = json.loads(res.text)
-        if not res_data["ok"] and res_data["msg"] != "这里还没有内容":
+        ok = res_data.get("ok")
+        if ok != 1:
+            if ok == 0 and res_data.get("msg") == "这里还没有内容":
+                # 该用户还没有发过微博，响应中没有 cards
+                return []
+            if ok == -100:
+                # 微博要求登录（cookie 失效或匿名访问被风控），
+                # 响应中只有跳转到 passport 的 url，没有 data 字段
+                logger.warning(
+                    f"weibo requires login for target {target}, "
+                    f"redirect: {res_data.get('url')}"
+                )
+                raise SkipRequestException("weibo requires login")
             raise ApiError(res.request.url)
 
         def custom_filter(d: RawPost) -> bool:
             return d["card_type"] == 9
 
-        return list(filter(custom_filter, res_data["data"]["cards"]))
+        cards = res_data.get("data", {}).get("cards") or []
+        return list(filter(custom_filter, cards))
 
     def get_id(self, post: RawPost) -> Any:
         return post["mblog"]["id"]
