@@ -24,10 +24,20 @@ if TYPE_CHECKING:
     from .platforms import Bilibili
 
 
-class ApiCode352Error(Exception):
+class RiskControlError(Exception):
+    """B站风控错误，需要刷新 cookie 或者回避一段时间后重试"""
+
     def __init__(self, url: HttpxURL) -> None:
         msg = f"api {url} error"
         super().__init__(msg)
+
+
+class ApiCode352Error(RiskControlError):
+    """API 返回 -352 错误码，通常是 cookie 失效或者请求被风控"""
+
+
+class HttpStatus412Error(RiskControlError):
+    """API 返回 412 状态码，触发了B站的安全风控策略"""
 
 
 # see https://docs.python.org/zh-cn/3/howto/enum.html#dataclass-support
@@ -240,7 +250,7 @@ class RetryFSM[TBilibili: Bilibili](FSM[RetryState, RetryEvent, RetryAddon[TBili
 _retry_fsm = RetryFSM(RETRY_GRAPH, RetryAddon["Bilibili"]())
 
 
-def retry_for_352[TBilibili: Bilibili, **P](
+def retry_for_risk_control[TBilibili: Bilibili, **P](
     api_func: Callable[Concatenate[TBilibili, P], Awaitable[list[DynRawPost]]],
 ) -> Callable[Concatenate[TBilibili, P], CoroutineType[Any, Any, list[DynRawPost]]]:
     # _retry_fsm = RetryFSM(RETRY_GRAPH, RetryAddon[TBilibili]())
@@ -257,8 +267,8 @@ def retry_for_352[TBilibili: Bilibili, **P](
             case RetryState.NROMAL | RetryState.REFRESH | RetryState.RAISE:
                 try:
                     res = await api_func(bls, *args, **kwargs)
-                except ApiCode352Error as e:
-                    logger.warning("本次 Bilibili API 请求返回 352 错误码")
+                except RiskControlError as e:
+                    logger.warning(f"本次 Bilibili API 请求被风控: {e}")
                     await _retry_fsm.emit(RetryEvent.REQUEST_AND_RAISE)
 
                     if _retry_fsm.current_state == RetryState.RAISE:

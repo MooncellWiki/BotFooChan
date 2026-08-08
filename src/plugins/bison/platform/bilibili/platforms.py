@@ -36,7 +36,7 @@ from .models import (
     UserAPI,
     VideoMajor,
 )
-from .retry import ApiCode352Error, retry_for_352
+from .retry import ApiCode352Error, HttpStatus412Error, retry_for_risk_control
 from .scheduler import BiliBangumiSite, BilibiliSite, BililiveSite
 
 
@@ -96,7 +96,7 @@ class Bilibili(NewMessage):
                 prompt="正确格式:\n1. 用户纯数字id\n2. UID:<用户id>\n3. 用户主页链接: https://space.bilibili.com/xxxx"
             )
 
-    @retry_for_352
+    @retry_for_risk_control
     async def get_sub_list(self, target: Target) -> list[DynRawPost]:
         client = await self.ctx.get_client(target)
         params = {
@@ -108,8 +108,16 @@ class Bilibili(NewMessage):
         res = await client.get(
             "https://api.bilibili.com/x/polymer/web-dynamic/v1/feed/space",
             params=params,
+            # 缺少来源信息的请求更容易被风控拦截
+            headers={
+                "origin": "https://space.bilibili.com",
+                "referer": f"https://space.bilibili.com/{target}/dynamic",
+            },
             timeout=4.0,
         )
+        if res.status_code == 412:
+            # 触发风控时返回的是一个 HTML 页面，没有可解析的内容
+            raise HttpStatus412Error(res.request.url)
         res.raise_for_status()
         try:
             res_obj = type_validate_json(PostAPI, res.content)
