@@ -64,8 +64,8 @@ class WeiboClientManager(CookieClientManager):
 
         return client
 
-    @classmethod
-    async def get_query_name_client(cls) -> AsyncClient:
+    @override
+    async def get_query_name_client(self) -> AsyncClient:
         client = http_client()
 
         if len(client.cookies) == 0:
@@ -116,10 +116,10 @@ class Weibo(NewMessage):
             return None
 
     @classmethod
-    async def parse_target(cls, target_text: str) -> Target:
-        if re.match(r"\d+", target_text):
-            return Target(target_text)
-        elif match := re.match(r"(?:https?://)?weibo\.com/u/(\d+)", target_text):
+    async def parse_target(cls, target_string: str) -> Target:
+        if re.match(r"\d+", target_string):
+            return Target(target_string)
+        elif match := re.match(r"(?:https?://)?weibo\.com/u/(\d+)", target_string):
             # 都2202年了应该不会有http了吧，不过还是防一手
             return Target(match.group(1))
         else:
@@ -157,11 +157,11 @@ class Weibo(NewMessage):
     def filter_platform_custom(self, raw_post: RawPost) -> bool:
         return raw_post["card_type"] == 9
 
-    def get_date(self, raw_post: RawPost) -> float:
+    def get_date(self, post: RawPost) -> int:
         created_time = datetime.strptime(
-            raw_post["mblog"]["created_at"], "%a %b %d %H:%M:%S %z %Y"
+            post["mblog"]["created_at"], "%a %b %d %H:%M:%S %z %Y"
         )
-        return created_time.timestamp()
+        return int(created_time.timestamp())
 
     def get_tags(self, raw_post: RawPost) -> list[Tag] | None:
         "Return Tag list of given RawPost"
@@ -177,25 +177,29 @@ class Weibo(NewMessage):
         super_topic_img = soup.find(
             "img", src=re.compile(r"timeline_card_small_super_default")
         )
-        if super_topic_img:
-            try:
-                res.append(
-                    super_topic_img.parent.parent.find("span", class_="surl-text").text
-                    + "超话"
-                )  # type: ignore
-            except Exception:
+        if super_topic_img is not None:
+            parent = super_topic_img.parent
+            grand_parent = parent.parent if parent is not None else None
+            super_topic = (
+                grand_parent.find("span", class_="surl-text")
+                if grand_parent is not None
+                else None
+            )
+            if super_topic is not None:
+                res.append(f"{super_topic.text}超话")
+            else:
                 logger.info(f"super_topic extract error: {text}")
         return res
 
-    def get_category(self, raw_post: RawPost) -> Category:
-        if raw_post["mblog"].get("retweeted_status"):
+    def get_category(self, post: RawPost) -> Category:
+        if post["mblog"].get("retweeted_status"):
             return Category(1)
         elif (
-            raw_post["mblog"].get("page_info")
-            and raw_post["mblog"]["page_info"].get("type") == "video"
+            post["mblog"].get("page_info")
+            and post["mblog"]["page_info"].get("type") == "video"
         ):
             return Category(2)
-        elif raw_post["mblog"].get("pics"):
+        elif post["mblog"].get("pics"):
             return Category(3)
         else:
             return Category(4)

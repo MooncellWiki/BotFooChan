@@ -4,12 +4,11 @@ from datetime import UTC, datetime, timedelta
 from enum import Enum, StrEnum
 from functools import wraps
 import random
-from typing import TYPE_CHECKING, Literal, assert_never, override
+from types import CoroutineType
+from typing import TYPE_CHECKING, Any, Concatenate, Literal, assert_never, override
 
 from httpx import URL as HttpxURL
 from nonebot.log import logger
-
-from src.plugins.bison.types import Target
 
 from .fsm import (
     FSM,
@@ -221,8 +220,9 @@ RETRY_GRAPH: StateGraph[RetryState, RetryEvent, RetryAddon] = {
 
 class RetryFSM[TBilibili: Bilibili](FSM[RetryState, RetryEvent, RetryAddon[TBilibili]]):
     @override
-    async def start(self, bls: TBilibili):
-        self.addon.bilibili_platform = bls
+    async def start(self, bls: TBilibili | None = None):
+        if bls is not None:
+            self.addon.bilibili_platform = bls
         await super().start()
 
     @override
@@ -240,13 +240,15 @@ class RetryFSM[TBilibili: Bilibili](FSM[RetryState, RetryEvent, RetryAddon[TBili
 _retry_fsm = RetryFSM(RETRY_GRAPH, RetryAddon["Bilibili"]())
 
 
-def retry_for_352[TBilibili: Bilibili](
-    api_func: Callable[[TBilibili, Target], Awaitable[list[DynRawPost]]],
-):
+def retry_for_352[TBilibili: Bilibili, **P](
+    api_func: Callable[Concatenate[TBilibili, P], Awaitable[list[DynRawPost]]],
+) -> Callable[Concatenate[TBilibili, P], CoroutineType[Any, Any, list[DynRawPost]]]:
     # _retry_fsm = RetryFSM(RETRY_GRAPH, RetryAddon[TBilibili]())
 
     @wraps(api_func)
-    async def wrapper(bls: TBilibili, *args, **kwargs) -> list[DynRawPost]:
+    async def wrapper(
+        bls: TBilibili, *args: P.args, **kwargs: P.kwargs
+    ) -> list[DynRawPost]:
         # nonlocal _retry_fsm
         if not _retry_fsm.started:
             await _retry_fsm.start(bls)

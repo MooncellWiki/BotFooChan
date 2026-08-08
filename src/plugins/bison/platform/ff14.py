@@ -24,7 +24,7 @@ class FF14(NewMessage):
     async def get_target_name(cls, client: AsyncClient, target: Target) -> str | None:
         return "最终幻想XIV官方公告"
 
-    async def get_sub_list(self, _) -> list[RawPost]:
+    async def get_sub_list(self, target: Target) -> list[RawPost]:
         client = await self.ctx.get_client()
         raw_data = await client.get(
             "https://cqnews.web.sdo.com/api/news/newsList?gameCode=ff&CategoryCode=5309,5310,5311,5312,5313&pageIndex=0&pageSize=5"
@@ -38,7 +38,7 @@ class FF14(NewMessage):
         """
         return post["PublishDate"]
 
-    def get_date(self, _: RawPost) -> None:
+    def get_date(self, post: RawPost) -> None:
         return None
 
     async def parse(self, raw_post: RawPost) -> Post:

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from nonebot_plugin_alconna.uniseg import Segment, Text
 
@@ -12,9 +12,11 @@ if TYPE_CHECKING:
 class BriefTheme(Theme):
     """简报主题，只发送标题、头图（如果有）、URL（如果有）"""
 
-    name: Literal["brief"] = "brief"
+    name: str = "brief"
 
-    async def render(self, post: "Post") -> list[Segment]:
+    async def render(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self, post: "Post"
+    ) -> list[Segment]:
         if not post.title:
             raise ThemeRenderUnsupportError("Post has no title")
         text = f"{post.title}\n\n"

@@ -76,10 +76,11 @@ def do_add_sub(add_sub: type[Matcher]):
                 url = "https://nonebot-bison.netlify.app/usage/#%E6%89%80%E6%94%AF%E6%8C%81%E5%B9%B3%E5%8F%B0%E7%9A%84-uid"
                 with contextlib.suppress(ImportError):
                     from nonebot.adapters.onebot.v11 import Bot as OB11Bot
+                    from nonebot.adapters.onebot.v11 import Event as OB11Event
                     from nonebot.adapters.onebot.v11 import MessageSegment
 
                     # OneBot V11 能发分享卡片，其他适配器退化成纯文本链接
-                    if isinstance(bot, OB11Bot):
+                    if isinstance(bot, OB11Bot) and isinstance(event, OB11Event):
                         await bot.send(
                             event,
                             MessageSegment.share(

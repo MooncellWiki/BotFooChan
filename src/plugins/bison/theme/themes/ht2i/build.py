@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from io import BytesIO
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from nonebot_plugin_alconna.uniseg import Image, Segment, Text
 
@@ -20,7 +20,7 @@ class Ht2iTheme(Theme):
     需要安装`nonebot_plugin_htmlrender`插件
     """
 
-    name: Literal["ht2i"] = "ht2i"
+    name: str = "ht2i"
     need_browser: bool = True
 
     async def _text_render(self, text: str):
@@ -31,7 +31,7 @@ class Ht2iTheme(Theme):
         except Exception as e:
             raise ThemeRenderError(f"渲染文本失败: {e}")
 
-    async def render(self, post: "Post"):
+    async def render(self, post: "Post"):  # pyright: ignore[reportIncompatibleMethodOverride]
         md_text = ""
 
         md_text += f"## {post.title}\n\n" if post.title else ""

@@ -4,6 +4,7 @@ from collections.abc import Set as AbstractSet
 from dataclasses import dataclass
 from functools import wraps
 import inspect
+from types import CoroutineType
 from typing import (
     Any,
     Concatenate,
@@ -168,7 +169,7 @@ class FSM[TState, TEvent, TAddon]:
 @overload
 def reset_on_exception[TFSM: FSM, **P](
     func: Callable[Concatenate[TFSM, P], Awaitable[ActionReturn]],
-) -> Callable[Concatenate[TFSM, P], Awaitable[ActionReturn]]:
+) -> Callable[Concatenate[TFSM, P], CoroutineType[Any, Any, ActionReturn]]:
     """自动在发生异常后重置 FSM"""
 
 
@@ -177,7 +178,7 @@ def reset_on_exception[TFSM: FSM, **P](
     auto_start: bool = False,
 ) -> Callable[
     [Callable[Concatenate[TFSM, P], Awaitable[ActionReturn]]],
-    Callable[Concatenate[TFSM, P], Awaitable[ActionReturn]],
+    Callable[Concatenate[TFSM, P], CoroutineType[Any, Any, ActionReturn]],
 ]:
     """自动在异常后重置 FSM，当 auto_start 为 True 时，自动启动 FSM"""
 

@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from io import BytesIO
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from nonebot_plugin_alconna.uniseg import Segment, Text
 
@@ -18,9 +18,11 @@ class BasicTheme(Theme):
     纯文本，应为每个Post必定支持的Theme
     """
 
-    name: Literal["basic"] = "basic"
+    name: str = "basic"
 
-    async def render(self, post: "Post") -> list[Segment]:
+    async def render(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self, post: "Post"
+    ) -> list[Segment]:
         text = ""
 
         text += f"{post.title}\n\n" if post.title else ""

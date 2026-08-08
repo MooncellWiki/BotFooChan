@@ -4,7 +4,7 @@ from datetime import timedelta
 from http.cookies import SimpleCookie
 import json
 from json import JSONDecodeError
-from typing import Literal
+from typing import ClassVar, Literal
 
 import httpx
 from httpx import AsyncClient
@@ -207,7 +207,7 @@ class SiteMeta(type):
 
 class Site(metaclass=SiteMeta):
     schedule_type: Literal["date", "interval", "cron"]
-    schedule_setting: dict
+    schedule_setting: ClassVar[dict]
     name: str
     client_mgr: type[ClientManager] = DefaultClientManager
     require_browser: bool = False

@@ -39,11 +39,11 @@ class NcmArtist(NewMessage):
         return res_data["artist"]["name"]
 
     @classmethod
-    async def parse_target(cls, target_text: str) -> Target:
-        if re.match(r"^\d+$", target_text):
-            return Target(target_text)
+    async def parse_target(cls, target_string: str) -> Target:
+        if re.match(r"^\d+$", target_string):
+            return Target(target_string)
         elif match := re.match(
-            r"(?:https?://)?music\.163\.com/#/artist\?id=(\d+)", target_text
+            r"(?:https?://)?music\.163\.com/#/artist\?id=(\d+)", target_string
         ):
             return Target(match.group(1))
         else:
@@ -101,11 +101,11 @@ class NcmRadio(NewMessage):
         return res_data["programs"][0]["radio"]["name"]
 
     @classmethod
-    async def parse_target(cls, target_text: str) -> Target:
-        if re.match(r"^\d+$", target_text):
-            return Target(target_text)
+    async def parse_target(cls, target_string: str) -> Target:
+        if re.match(r"^\d+$", target_string):
+            return Target(target_string)
         elif match := re.match(
-            r"(?:https?://)?music\.163\.com/#/djradio\?id=(\d+)", target_text
+            r"(?:https?://)?music\.163\.com/#/djradio\?id=(\d+)", target_string
         ):
             return Target(match.group(1))
         else:

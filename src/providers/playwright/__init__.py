@@ -6,7 +6,7 @@
 
 from nonebot import get_driver
 
-from .browser import config as config
+from .browser import config as plugin_config
 from .browser import get_browser as get_browser
 from .browser import get_new_page as get_new_page
 from .browser import get_proxy_settings as get_proxy_settings
@@ -14,5 +14,5 @@ from .config import Config as Config
 from .installer import install_browser as install_browser
 
 # 远程模式下浏览器由 Playwright Server 提供，本地不需要装
-if config.browser_install and not config.browser_ws_endpoint:
+if plugin_config.browser_install and not plugin_config.browser_ws_endpoint:
     get_driver().on_startup(install_browser)

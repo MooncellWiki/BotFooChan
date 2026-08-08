@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from io import BytesIO
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from nonebot_plugin_alconna.uniseg import Image, Segment, Text
 
@@ -26,13 +26,15 @@ class ArknightsTheme(Theme):
     需要安装`nonebot_plugin_htmlrender`插件
     """
 
-    name: Literal["arknights"] = "arknights"
+    name: str = "arknights"
     need_browser: bool = True
 
     template_path: Path = Path(__file__).parent / "templates"
     template_name: str = "announce.html.jinja"
 
-    async def render(self, post: "ArknightsPost"):
+    async def render(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self, post: "ArknightsPost"
+    ):
         from src.plugins.bison.theme.render_helper import template_to_pic
 
         if not post.title:

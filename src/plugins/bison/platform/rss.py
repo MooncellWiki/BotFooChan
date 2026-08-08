@@ -88,7 +88,7 @@ class Rss(NewMessage):
         soup = bs(raw_post.description, "html.parser")
         desc = raw_post.description
         title, desc = self._text_process(title, desc)
-        pics = [x.attrs["src"] for x in soup("img")]
+        pics = [src for x in soup("img") if isinstance(src := x.get("src"), str)]
         if raw_post.get("media_content"):
             for media in raw_post["media_content"]:
                 if media.get("medium") == "image" and media.get("url"):

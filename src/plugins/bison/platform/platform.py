@@ -6,7 +6,7 @@ import json
 import ssl
 import time
 import typing
-from typing import Any
+from typing import Any, ClassVar
 
 import httpx
 from httpx import AsyncClient
@@ -65,7 +65,7 @@ async def catch_network_error[**P, R](
 
 
 class PlatformMeta(RegistryMeta):
-    categories: dict[Category, str]
+    categories: ClassVar[dict[Category, str]]
     store: dict[Target, Any]
 
     def __init__(cls, name, bases, namespace, **kwargs):
@@ -87,7 +87,7 @@ class Platform(metaclass=PlatformABCMeta, base=True):
     enabled: bool
     name: str
     has_target: bool
-    categories: dict[Category, str]
+    categories: ClassVar[dict[Category, str]]
     enable_tag: bool
     platform_name: str
     parse_target_promot: str | None = None

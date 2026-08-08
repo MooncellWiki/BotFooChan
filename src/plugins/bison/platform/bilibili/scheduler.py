@@ -10,17 +10,13 @@ from playwright.async_api import Cookie
 
 from src.plugins.bison.config import config
 from src.plugins.bison.config.db_model import Cookie as CookieModel
-from src.plugins.bison.config.db_model import Target
 from src.plugins.bison.config.utils import db_now
-from src.plugins.bison.plugin_config import plugin_config
+from src.plugins.bison.types import Target
 from src.plugins.bison.utils import Site, http_client
 from src.plugins.bison.utils.site import CookieClientManager
 
 if TYPE_CHECKING:
     from .platforms import Bilibili
-
-if plugin_config.bison_use_browser:
-    from src.providers.playwright import get_browser
 
 B = TypeVar("B", bound="Bilibili")
 
@@ -31,6 +27,8 @@ class BilibiliClientManager(CookieClientManager):
     _site_name = "bilibili.com"
 
     async def _get_cookies(self) -> list[Cookie]:
+        from src.providers.playwright import get_browser
+
         browser = await get_browser()
         async with await browser.new_page() as page:
             await page.goto(
@@ -100,6 +98,7 @@ class BilibiliClientManager(CookieClientManager):
         cookie = min(available_cookies, key=lambda x: x.last_usage)
         return cookie
 
+    @override
     async def _choose_cookie(self, target: Target | None) -> CookieModel:
         """选择 cookie 的具体算法"""
         if self.current_identified_cookie is None:

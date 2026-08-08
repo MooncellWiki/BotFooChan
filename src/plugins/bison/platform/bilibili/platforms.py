@@ -84,12 +84,12 @@ class Bilibili(NewMessage):
         return res_data.data.info.uname if res_data.data else None
 
     @classmethod
-    async def parse_target(cls, target_text: str) -> Target:
-        if re.match(r"\d+", target_text):
-            return Target(target_text)
-        elif re.match(r"UID:(\d+)", target_text):
-            return Target(target_text[4:])
-        elif m := re.match(r"(?:https?://)?space\.bilibili\.com/(\d+)", target_text):
+    async def parse_target(cls, target_string: str) -> Target:
+        if re.match(r"\d+", target_string):
+            return Target(target_string)
+        elif re.match(r"UID:(\d+)", target_string):
+            return Target(target_string[4:])
+        elif m := re.match(r"(?:https?://)?space\.bilibili\.com/(\d+)", target_string):
             return Target(m.group(1))
         else:
             raise cls.ParseTargetException(
@@ -475,7 +475,7 @@ class Bilibililive(StatusChange):
         return infos
 
     def compare_status(
-        self, _: Target, old_status: Info, new_status: Info
+        self, target: Target, old_status: Info, new_status: Info
     ) -> list[RawPost]:
         action = Bilibililive.LiveAction
         match new_status.get_live_action(old_status):
@@ -493,9 +493,9 @@ class Bilibililive(StatusChange):
         current_status.category = Category(category)
         return [current_status]
 
-    def get_category(self, status: Info) -> Category:
-        assert status.category != Category(0)
-        return status.category
+    def get_category(self, post: Info) -> Category:
+        assert post.category != Category(0)
+        return post.category
 
     async def parse(self, raw_post: Info) -> Post:
         url = f"https://live.bilibili.com/{raw_post.room_id}"
