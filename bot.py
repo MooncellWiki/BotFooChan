@@ -13,6 +13,7 @@ driver.register_adapter(QQAdapter)
 driver.register_adapter(FeishuAdapter)
 driver.register_adapter(ONEBOT_V11Adapter)
 
+nonebot.load_plugins("src/providers")
 nonebot.load_all_plugins(set(config.plugins), {"src/plugins"}.union(config.plugin_dirs))
 
 if __name__ == "__main__":

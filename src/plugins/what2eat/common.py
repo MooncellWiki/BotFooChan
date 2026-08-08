@@ -7,8 +7,8 @@ from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import Alconna, on_alconna
 from pydantic_ai.settings import ModelSettings
 
-from src.libs.llm import create_agent, extract_content_and_thinking
-from src.libs.memory import memory_store
+from src.providers.llm import create_agent, extract_content_and_thinking
+from src.providers.user_memory import memory_store
 
 from .config import get_endpoint, w2e_config
 

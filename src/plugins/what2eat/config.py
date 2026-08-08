@@ -1,7 +1,7 @@
 from nonebot import get_plugin_config
 from pydantic import BaseModel, Field
 
-from src.libs.llm import ModelEndpoint, resolve_endpoint
+from src.providers.llm import ModelEndpoint, resolve_endpoint
 
 
 class ScopedConfig(BaseModel):

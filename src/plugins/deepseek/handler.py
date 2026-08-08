@@ -27,7 +27,7 @@ from pydantic_ai.messages import (
     UserPromptPart,
 )
 
-from src.libs.llm import create_agent, extract_content_and_thinking
+from src.providers.llm import create_agent, extract_content_and_thinking
 
 from .config import CustomModel, ds_config
 

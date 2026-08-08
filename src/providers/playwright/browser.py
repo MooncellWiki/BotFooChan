@@ -1,8 +1,14 @@
 from nonebot import get_plugin_config, logger
-from playwright.async_api import Browser, Error, Playwright, async_playwright
+from playwright.async_api import (
+    Browser,
+    Error,
+    Playwright,
+    ProxySettings,
+    async_playwright,
+)
+from yarl import URL
 
-from src.plugins.zssm.config import Config
-
+from .config import Config
 from .installer import install_browser
 
 config = get_plugin_config(Config)
@@ -16,7 +22,7 @@ async def init(**kwargs) -> Browser:
     global _playwright
     _playwright = await async_playwright().start()
 
-    if config.zssm_browser_ws_endpoint:
+    if config.browser_ws_endpoint:
         _browser = await connect_browser(**kwargs)
         return _browser
 
@@ -30,8 +36,8 @@ async def init(**kwargs) -> Browser:
 
 async def connect_browser(**kwargs) -> Browser:
     assert _playwright is not None, "Playwright 没有安装"
-    endpoint = config.zssm_browser_ws_endpoint
-    assert endpoint, "未配置 zssm_browser_ws_endpoint"
+    endpoint = config.browser_ws_endpoint
+    assert endpoint, "未配置 browser_ws_endpoint"
     logger.info(f"连接远程 firefox: {endpoint}")
     return await _playwright.firefox.connect(endpoint, **kwargs)
 
@@ -44,3 +50,19 @@ async def launch_browser(**kwargs) -> Browser:
 
 async def get_browser(**kwargs) -> Browser:
     return _browser if _browser and _browser.is_connected() else await init(**kwargs)
+
+
+def get_proxy_settings() -> ProxySettings | None:
+    """解析 BROWSER_PROXY 为 Playwright 的代理配置，未配置时返回 None"""
+    if not config.browser_proxy:
+        return None
+
+    proxy_uri = URL(config.browser_proxy)
+    proxy: ProxySettings = {
+        "server": f"{proxy_uri.scheme}://{proxy_uri.host}:{proxy_uri.port}"
+    }
+    if proxy_uri.user:
+        proxy["username"] = proxy_uri.user
+    if proxy_uri.password:
+        proxy["password"] = proxy_uri.password
+    return proxy

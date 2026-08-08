@@ -1,11 +1,6 @@
-from nonebot import get_plugin_config, logger
-from playwright.async_api import ProxySettings
-from yarl import URL
+from nonebot import logger
 
-from src.plugins.zssm.browser import get_browser
-from src.plugins.zssm.config import Config
-
-config = get_plugin_config(Config)
+from src.providers.playwright import get_browser, get_proxy_settings
 
 
 async def process_web_page(url: str) -> str | None:
@@ -18,18 +13,8 @@ async def process_web_page(url: str) -> str | None:
         Optional[str]: 网页内容, 失败时返回None
     """
     try:
-        proxy: ProxySettings | None = None
-        if config.zssm_browser_proxy:
-            proxy_uri = URL(config.zssm_browser_proxy)
-            proxy = {
-                "server": f"{proxy_uri.scheme}://{proxy_uri.host}:{proxy_uri.port}"
-            }
-            if proxy_uri.user:
-                proxy["username"] = proxy_uri.user
-            if proxy_uri.password:
-                proxy["password"] = proxy_uri.password
-
-        logger.info(f"使用代理: {proxy}，{config.zssm_browser_proxy}")
+        proxy = get_proxy_settings()
+        logger.info(f"使用代理: {proxy}")
         browser = await get_browser()
         # 代理挂在 context 上而不是 browser 上：远程 connect() 不接受 launch 参数
         context = await browser.new_context(proxy=proxy)

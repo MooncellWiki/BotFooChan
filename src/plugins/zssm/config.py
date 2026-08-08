@@ -9,11 +9,6 @@ class Config(BaseModel):
     zssm_ai_check_model: str | None = None
     """审查模型引用（缺省时跳过 system prompt 泄露审查）"""
 
-    zssm_browser_proxy: str | None = None
-    zssm_browser_ws_endpoint: str | None = None
-    """远程 Playwright Server 的 WS 地址；配置后不再本地启动/下载浏览器"""
-    zssm_install_browser: bool = True
-
     # PDF处理设置
     zssm_pdf_max_size: int = 10 * 1024 * 1024  # 10MB
     zssm_pdf_max_pages: int = 50  # 最大处理页数

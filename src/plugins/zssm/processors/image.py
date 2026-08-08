@@ -10,8 +10,8 @@ from PIL import Image as PILImage
 from pydantic_ai import BinaryContent
 from pydantic_ai.settings import ModelSettings
 
-from src.libs.llm import UsageTracker, create_agent, resolve_endpoint
 from src.plugins.zssm.config import Config
+from src.providers.llm import UsageTracker, create_agent, resolve_endpoint
 
 config = get_plugin_config(Config)
 

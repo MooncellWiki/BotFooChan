@@ -8,7 +8,7 @@ from nonebot_plugin_alconna import (
     on_alconna,
 )
 
-from src.libs.memory import memory_store
+from src.providers.user_memory import memory_store
 
 remember_matcher = on_alconna(
     Alconna("记住", Args["items", MultiVar(str, "+")]),

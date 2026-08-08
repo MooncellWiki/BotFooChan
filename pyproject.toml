@@ -76,6 +76,8 @@ ignore = [
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true
+# src/providers/playwright 与三方包同名，避免其中的 playwright 导入被判为同包
+known-third-party = ["playwright"]
 
 [tool.ruff.lint.pyupgrade]
 keep-runtime-typing = true

@@ -5,7 +5,7 @@ import nonebot_plugin_localstore as store
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_ai.settings import ModelSettings
 
-from src.libs.llm import ModelEndpoint, list_models, require_endpoint
+from src.providers.llm import ModelEndpoint, list_models, require_endpoint
 
 
 class CustomModel(BaseModel):

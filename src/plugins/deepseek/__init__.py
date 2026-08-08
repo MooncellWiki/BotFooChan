@@ -2,7 +2,7 @@
 
 迁移自 nonebot-plugin-deepseek (https://github.com/KomoriDev/nonebot-plugin-deepseek)
 原作者 Komorebi <mute231010@gmail.com>，MIT License。
-模型调用已改为基于 pydantic-ai 的统一封装（src/libs/llm）。
+模型调用已改为基于 pydantic-ai 的统一封装（src/providers/llm）。
 """
 
 from importlib.util import find_spec
