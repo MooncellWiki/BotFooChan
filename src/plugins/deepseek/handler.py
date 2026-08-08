@@ -20,16 +20,13 @@ from openai import APIConnectionError, APITimeoutError
 from pydantic_ai import Agent
 from pydantic_ai.agent import AgentRunResult
 from pydantic_ai.exceptions import ModelHTTPError
-from pydantic_ai.messages import (
-    ModelMessage,
-    ModelResponse,
-    TextPart,
-    UserPromptPart,
-)
+from pydantic_ai.messages import ModelMessage, ModelResponse, TextPart, UserPromptPart
 
 from src.providers.llm import create_agent, extract_content_and_thinking
 
+from .binding import GroupBinding, group_bindings
 from .config import CustomModel, ds_config
+from .markdown import send_group_markdown
 
 if TYPE_CHECKING:
     from nonebot_plugin_htmlrender import RenderedImage
@@ -37,11 +34,17 @@ if TYPE_CHECKING:
 
 class DeepSeekHandler:
     def __init__(
-        self, model: CustomModel, is_to_pic: bool, is_contextual: bool
+        self,
+        model: CustomModel,
+        is_to_pic: bool,
+        is_contextual: bool,
+        allow_group_markdown: bool = True,
     ) -> None:
         self.model = model
         self.is_to_pic = is_to_pic
         self.is_contextual = is_contextual
+        self.allow_group_markdown = allow_group_markdown
+        """群聊里优先用官方机器人发原生 markdown；显式 -r 指定渲染时置 False"""
         self.agent: Agent[None, str] = create_agent(
             model.to_endpoint(),
             instructions=model.prompt or ds_config.prompt or None,
@@ -217,18 +220,36 @@ class DeepSeekHandler:
 
         await message_reaction(emoji, message_id=self.message_id)
 
+    def _group_binding(self) -> GroupBinding | None:
+        """当前群是否登记了官方机器人的 group_openid"""
+        if not self.allow_group_markdown:
+            return None
+
+        target = get_target(self.event)
+        if target.private or target.adapter != SupportAdapter.onebot11:
+            return None
+        return group_bindings.get(target.id)
+
     async def _send_response(self, result: AgentRunResult[str]) -> None:
         content, thinking = extract_content_and_thinking(result)
+        binding = self._group_binding()
 
         output = content
         if ds_config.enable_send_thinking and content and thinking:
-            output = (
-                f"<blockquote><p>{thinking}</p></blockquote>{content}"
-                if self.is_to_pic
-                else f"{thinking}\n\n--------------------\n\n{content}"
-            )
+            if binding is not None:
+                output = f"> {thinking}\n\n{content}"
+            else:
+                output = (
+                    f"<blockquote><p>{thinking}</p></blockquote>{content}"
+                    if self.is_to_pic
+                    else f"{thinking}\n\n--------------------\n\n{content}"
+                )
 
         await self._message_reaction("done")
+
+        # 官方接口有主动消息额度、原生 markdown 权限等限制，发不出去就退回原路径
+        if binding is not None and await send_group_markdown(binding, output):
+            return
 
         if self.render_markdown is not None:
             await UniMessage.image(raw=(await self.render_markdown(output)).data).send(
