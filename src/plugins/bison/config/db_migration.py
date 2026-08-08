@@ -1,4 +1,4 @@
-"""从上游 nonebot-bison 插件迁移已有数据
+"""从上游 nonebot-bison 插件迁移已有数据，并整理 ``user_target`` 存量格式
 
 上游插件和本插件的表结构完全一致（表名也沿用 ``nonebot_bison_*``），差别只有两处：
 
@@ -7,8 +7,14 @@
 2. 上游用 saa 序列化发送目标，本插件用 uniseg 的 ``Target``，``user_target``
    这一列的 JSON 结构不同。
 
-两步迁移都是幂等的：库里已经有订阅时不再从旧库搬，``user_target`` 已经是新格式时
-不再转换。
+除了 saa 格式，``user_target`` 历史上还有过带 ``adapter``/``platforms`` 字段的旧
+uniseg dump（从事件里拿到的）和群管理流程手写的无 adapter 版本。订阅命令按
+``user_target`` 匹配订阅者，格式不一致会让同一个群「推送正常但查询/删除是空的」，
+还会被存成多条 User。所以启动时统一重写成 ``dump_send_target`` 的规范格式，再把
+指向同一会话的重复 User 合并掉。
+
+所有步骤都是幂等的：库里已经有订阅时不再从旧库搬，``user_target`` 已经是规范格式
+时不再改写。
 """
 
 from pathlib import Path
@@ -21,9 +27,10 @@ from nonebot_plugin_alconna.uniseg import Target as SendTarget
 from nonebot_plugin_orm import get_session
 from sqlalchemy import func, insert, inspect, select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import selectinload
 
 from .db_model import Cookie, CookieTarget, ScheduleTimeWeight, Subscribe, Target, User
-from .utils import dump_send_target
+from .utils import dump_send_target, load_send_target, same_send_target
 
 # 有外键依赖，顺序不能变
 _MIGRATE_ORDER = (Target, User, Subscribe, ScheduleTimeWeight, Cookie, CookieTarget)
@@ -148,27 +155,84 @@ def _convert_saa_target(data: dict[str, Any]) -> SendTarget | None:
             return None
 
 
-async def _convert_user_targets() -> None:
+async def _normalize_user_targets() -> None:
     async with get_session() as session:
-        users = (await session.scalars(select(User))).all()
+        users = (
+            await session.scalars(select(User).options(selectinload(User.subscribes)))
+        ).all()
         converted = 0
+        normalized = 0
+        valid: list[User] = []
         for user in users:
+            data = user.user_target
             # 新格式没有 platform_type，靠它区分
-            if "platform_type" not in user.user_target:
+            if "platform_type" in data:
+                if not (target := _convert_saa_target(data)):
+                    logger.error(
+                        f"无法识别的旧发送目标 {data}，"
+                        f"user {user.id} 的订阅将无法推送，请删除后重新订阅"
+                    )
+                    continue
+                converted += 1
+            else:
+                try:
+                    target = load_send_target(data)
+                except TypeError, ValueError:
+                    logger.error(
+                        f"无法解析的发送目标 {data}，"
+                        f"user {user.id} 的订阅将无法管理，请删除后重新订阅"
+                    )
+                    continue
+            canonical = dump_send_target(target)
+            if canonical != data:
+                user.user_target = canonical
+                normalized += 1
+            valid.append(user)
+
+        # 合并指向同一会话的重复 User：不同入口写入的格式不同（有无 self_id 等），
+        # 同一个群会被建出多条记录，推送两份、查询却只能看到其中一条
+        merged = 0
+        kept: list[User] = []
+        for user in valid:
+            dup = next(
+                (
+                    k
+                    for k in kept
+                    if same_send_target(
+                        k.user_target, load_send_target(user.user_target)
+                    )
+                ),
+                None,
+            )
+            if dup is None:
+                kept.append(user)
                 continue
-            if not (target := _convert_saa_target(user.user_target)):
-                logger.error(
-                    f"无法识别的旧发送目标 {user.user_target}，"
-                    f"user {user.id} 的订阅将无法推送，请删除后重新订阅"
-                )
-                continue
-            user.user_target = dump_send_target(target)
-            converted += 1
-        if converted:
+            keep, drop = dup, user
+            # 优先保留带 self_id 的记录，它信息更全，和事件里 dump 出来的一致
+            if drop.user_target.get("self_id") and not keep.user_target.get("self_id"):
+                kept[kept.index(keep)] = drop
+                keep, drop = drop, keep
+            subscribed_targets = {sub.target_id for sub in keep.subscribes}
+            for sub in list(drop.subscribes):
+                if sub.target_id in subscribed_targets:
+                    await session.delete(sub)
+                else:
+                    sub.user = keep
+            await session.delete(drop)
+            merged += 1
+
+        if converted or normalized or merged:
             await session.commit()
-            logger.success(f"已将 {converted} 个发送目标转换为 uniseg 格式")
+            parts = []
+            if converted:
+                parts.append(f"saa 格式转换 {converted} 条")
+            if normalized:
+                parts.append(f"重写为规范格式 {normalized} 条")
+            if merged:
+                parts.append(f"合并重复记录 {merged} 条")
+            logger.success(f"已整理订阅者数据：{'，'.join(parts)}")
 
 
 async def data_migrate() -> None:
     await _migrate_from_datastore()
-    await _convert_user_targets()
+    await _normalize_user_targets()

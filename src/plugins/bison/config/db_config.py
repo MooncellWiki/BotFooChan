@@ -7,6 +7,7 @@ from nonebot_plugin_alconna.uniseg import Target as SendTarget
 from nonebot_plugin_orm import get_session
 from sqlalchemy import delete, func, select
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.plugins.bison.types import (
@@ -24,6 +25,7 @@ from .utils import (
     DuplicateCookieTargetException,
     NoSuchTargetException,
     dump_send_target,
+    same_send_target,
 )
 
 
@@ -35,6 +37,18 @@ def _get_time():
 
 
 class SubscribeDupException(Exception): ...
+
+
+async def _find_db_users(session: AsyncSession, user: SendTarget) -> list[User]:
+    """找出库里指向 ``user`` 这个会话的所有 User 记录
+
+    ``user_target`` 的历史格式不完全一致（有无 adapter/self_id 等字段），不能按
+    JSON 全等匹配——那样会出现「推送正常但查询/删除匹配不到」。只能全部读出来
+    逐条语义比对；User 表很小，代价可以接受。启动时会合并重复记录，正常情况下
+    最多命中一条，返回列表只是为了容错。
+    """
+    users = (await session.scalars(select(User))).all()
+    return [u for u in users if same_send_target(u.user_target, user)]
 
 
 class DBConfig:
@@ -58,10 +72,8 @@ class DBConfig:
         tags: list[Tag],
     ):
         async with get_session() as session:
-            db_user_stmt = select(User).where(
-                User.user_target == dump_send_target(user)
-            )
-            db_user: User | None = await session.scalar(db_user_stmt)
+            db_users = await _find_db_users(session, user)
+            db_user = db_users[0] if db_users else None
             if not db_user:
                 db_user = User(user_target=dump_send_target(user))
                 session.add(db_user)
@@ -96,10 +108,12 @@ class DBConfig:
 
     async def list_subscribe(self, user: SendTarget) -> Sequence[Subscribe]:
         async with get_session() as session:
+            user_ids = [u.id for u in await _find_db_users(session, user)]
+            if not user_ids:
+                return []
             query_stmt = (
                 select(Subscribe)
-                .where(User.user_target == dump_send_target(user))
-                .join(User)
+                .where(Subscribe.user_id.in_(user_ids))
                 .options(selectinload(Subscribe.target))
             )
             subs = (await session.scalars(query_stmt)).all()
@@ -119,9 +133,9 @@ class DBConfig:
 
     async def del_subscribe(self, user: SendTarget, target: str, platform_name: str):
         async with get_session() as session:
-            user_obj = await session.scalar(
-                select(User).where(User.user_target == dump_send_target(user))
-            )
+            user_ids = [u.id for u in await _find_db_users(session, user)]
+            if not user_ids:
+                return
             target_obj = await session.scalar(
                 select(Target).where(
                     Target.platform_name == platform_name, Target.target == target
@@ -129,7 +143,7 @@ class DBConfig:
             )
             await session.execute(
                 delete(Subscribe).where(
-                    Subscribe.user == user_obj, Subscribe.target == target_obj
+                    Subscribe.user_id.in_(user_ids), Subscribe.target == target_obj
                 )
             )
             target_count = await session.scalar(
@@ -157,14 +171,14 @@ class DBConfig:
         tags: list,
     ):
         async with get_session() as sess:
+            user_ids = [u.id for u in await _find_db_users(sess, user)]
             subscribe_obj: Subscribe = await sess.scalar(
                 select(Subscribe)
                 .where(
-                    User.user_target == dump_send_target(user),
+                    Subscribe.user_id.in_(user_ids),
                     Target.target == target,
                     Target.platform_name == platform_name,
                 )
-                .join(User)
                 .join(Target)
                 .options(selectinload(Subscribe.target))  # type:ignore
             )
