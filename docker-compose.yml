@@ -1,7 +1,26 @@
 version: "3"
 services:
+  playwright:
+    # 由 .github/workflows/playwright.yml 构建，版本跟随 uv.lock
+    # 本地构建: ./docker/playwright/build.sh
+    image: starheart/botfoochan-playwright:latest
+    # run-server 没有鉴权，只在 compose 网络内暴露，不要 publish 到宿主机
+    expose:
+      - "3000"
+    # Chromium 默认的 /dev/shm 太小，渲染长页面会崩
+    ipc: host
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+        reservations:
+          memory: 512M
+    restart: always
+
   nonebot:
     image: starheart/botfoochan:latest
+    depends_on:
+      - playwright
     environment:
       - ENVIRONMENT=prod
       - LOG_LEVEL=INFO

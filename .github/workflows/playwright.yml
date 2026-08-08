@@ -1,0 +1,175 @@
+name: Playwright Sidecar
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "docker/playwright/**"
+      - "uv.lock"
+      - ".github/workflows/playwright.yml"
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "docker/playwright/**"
+      - "uv.lock"
+      - ".github/workflows/playwright.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: playwright-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE: starheart/botfoochan-playwright
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.resolve.outputs.VERSION }}
+      build-key: ${{ steps.resolve.outputs.BUILD_KEY }}
+      needed: ${{ steps.check.outputs.NEEDED }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # 版本只从 uv.lock 取，镜像里不写死；依赖升级后这里自然跟着走
+      - name: Resolve Playwright version
+        id: resolve
+        run: |
+          VERSION=$(./docker/playwright/version.sh)
+          DIGEST=${{ hashFiles('docker/playwright/Dockerfile') }}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "BUILD_KEY=$VERSION-${DIGEST:0:12}" >> $GITHUB_OUTPUT
+          echo "playwright $VERSION (build key $VERSION-${DIGEST:0:12})" >> $GITHUB_STEP_SUMMARY
+
+      # build key 已经在 registry 里就跳过：uv.lock 的无关变更不会白白重建 2G 镜像
+      - name: Check if already published
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "NEEDED=true" >> $GITHUB_OUTPUT
+            echo "手动触发，强制重建" >> $GITHUB_STEP_SUMMARY
+          elif docker buildx imagetools inspect "$IMAGE:${{ steps.resolve.outputs.BUILD_KEY }}" >/dev/null 2>&1; then
+            echo "NEEDED=false" >> $GITHUB_OUTPUT
+            echo "已发布，跳过构建" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "NEEDED=true" >> $GITHUB_OUTPUT
+            echo "未发布，开始构建" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  build:
+    runs-on: ${{ matrix.os }}
+    needs: resolve
+    if: ${{ needs.resolve.outputs.needed == 'true' }}
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux/amd64
+            platform-artifact: linux-amd64
+          - os: ubuntu-24.04-arm
+            platform: linux/arm64
+            platform-artifact: linux-arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Docker
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v4.6.0
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and Publish
+        uses: docker/build-push-action@v7
+        id: build
+        with:
+          context: ./docker/playwright
+          platforms: ${{ matrix.platform }}
+          build-args: PLAYWRIGHT_VERSION=${{ needs.resolve.outputs.version }}
+          cache-from: type=gha,scope=playwright-${{ needs.resolve.outputs.build-key }}-${{ matrix.platform }}
+          cache-to: type=gha,scope=playwright-${{ needs.resolve.outputs.build-key }}-${{ matrix.platform }},mode=max
+          outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=${{ github.event_name != 'pull_request' }}
+
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.platform-artifact }}-playwright-digests
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  push:
+    runs-on: ubuntu-latest
+    needs: [resolve, build]
+    permissions:
+      contents: read
+      packages: write
+    if: |-
+      ${{
+        always() &&
+        github.event_name != 'pull_request' &&
+        needs.build.result == 'success'
+      }}
+
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v8
+        with:
+          path: /tmp/artifacts
+          pattern: "*-playwright-digests"
+
+      - name: Copy digests
+        run: |
+          mkdir -p /tmp/digests
+          cp /tmp/artifacts/*-playwright-digests/* /tmp/digests
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v4.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create manifest list and push
+        working-directory: /tmp/digests
+        env:
+          VERSION: ${{ needs.resolve.outputs.version }}
+          BUILD_KEY: ${{ needs.resolve.outputs.build-key }}
+        run: |
+          GHCR="ghcr.io/${{ github.repository }}-playwright"
+          GHCR="${GHCR,,}"
+          docker buildx imagetools create \
+            -t "$IMAGE:latest" -t "$IMAGE:$VERSION" -t "$IMAGE:$BUILD_KEY" \
+            -t "$GHCR:latest" -t "$GHCR:$VERSION" -t "$GHCR:$BUILD_KEY" \
+            $(printf "$IMAGE@sha256:%s " *)

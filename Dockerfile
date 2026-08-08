@@ -45,21 +45,10 @@ EXPOSE 8086
 
 ENV APP_MODULE=bot:app
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends curl p7zip-full fontconfig fonts-noto-color-emoji \
-  && curl -sSL https://github.com/be5invis/Sarasa-Gothic/releases/download/v1.0.32/Sarasa-TTC-1.0.32.7z -o /tmp/sarasa.7z \
-  && 7z x /tmp/sarasa.7z -o/tmp/sarasa \
-  && install -d /usr/share/fonts/sarasa-gothic \
-  && install -m644 /tmp/sarasa/*.ttc /usr/share/fonts/sarasa-gothic \
-  && fc-cache -fv \
-  && apt-get purge -y --auto-remove curl p7zip-full \
-  && rm -rf /tmp/sarasa /tmp/sarasa.7z /var/lib/apt/lists/*
-
+# 浏览器与字体都不在这个镜像里：渲染走远程 Playwright Server（见 docker/playwright/）。
+# 这里只保留 playwright 的 Python 客户端。
 RUN --mount=type=bind,from=build-stage,source=/wheel,target=/wheel \
   pip install --no-cache-dir --no-index --no-deps --find-links=/wheel -r /wheel/requirements.txt
-
-RUN playwright install --with-deps --only-shell chromium \
-  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=metadata-stage /tmp/VERSION /app/VERSION
 
