@@ -1,7 +1,11 @@
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
 from nonebot import get_plugin_config, logger
 from playwright.async_api import (
     Browser,
     Error,
+    Page,
     Playwright,
     ProxySettings,
     async_playwright,
@@ -50,6 +54,26 @@ async def launch_browser(**kwargs) -> Browser:
 
 async def get_browser(**kwargs) -> Browser:
     return _browser if _browser and _browser.is_connected() else await init(**kwargs)
+
+
+@asynccontextmanager
+async def get_new_page(
+    device_scale_factor: float = 2, **kwargs
+) -> AsyncGenerator[Page]:
+    """开一个新页面，用完连同 context 一起关掉
+
+    代理挂在 context 上而不是 browser 上：远程 connect() 不接受 launch 参数
+    """
+    browser = await get_browser()
+    context = await browser.new_context(
+        device_scale_factor=device_scale_factor,
+        proxy=get_proxy_settings(),
+        **kwargs,
+    )
+    try:
+        yield await context.new_page()
+    finally:
+        await context.close()
 
 
 def get_proxy_settings() -> ProxySettings | None:

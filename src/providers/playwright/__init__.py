@@ -8,6 +8,7 @@ from nonebot import get_driver
 
 from .browser import config as config
 from .browser import get_browser as get_browser
+from .browser import get_new_page as get_new_page
 from .browser import get_proxy_settings as get_proxy_settings
 from .config import Config as Config
 from .installer import install_browser as install_browser

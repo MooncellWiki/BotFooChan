@@ -8,13 +8,17 @@ readme = "README.md"
 requires-python = ">=3.14, <4.0"
 dependencies = [
   "yarl >=1.9.0, <2.0.0",
-  "pillow >=11.3.0, <12.0.0",
+  "lxml >=5.3.0, <7.0.0",
+  "pillow >=11.3.0, <13.0.0",
   "pymupdf >=1.24.0, <2.0.0",
+  "rapidfuzz >=3.9.7, <4.0.0",
+  "feedparser >=6.0.11, <7.0.0",
   "matplotlib >=3.8.0, <4.0.0",
   "playwright >=1.38.0, <2.0.0",
+  "beautifulsoup4 >=4.12.3, <5.0.0",
   "pydantic-ai-slim[openai,anthropic] >=2.0.0, <3.0.0",
-  "nonebot-bison >=0.9.0, <1.0.0",
   "nonebot-adapter-qq >=1.1.0, <2.0.0",
+  "nonebot-plugin-orm[sqlite] >=0.7.0, <1.0.0",
   "nonebot-plugin-sentry >=2.0.0, <3.0.0",
   "nonebot-plugin-waiter >=0.8.0, <1.0.0",
   "nonebot-adapter-feishu >=2.3.0, <3.0.0",
@@ -23,19 +27,38 @@ dependencies = [
   "nonebot-plugin-filehost >=1.1.0, <2.0.0",
   "nonebot-plugin-shorturl >=0.4.0, <1.0.0",
   "nonebot-plugin-treehelp >=0.3.0, <1.0.0",
-  "nonebot-plugin-htmlrender >=0.7.0, <0.8.0",
+  "nonebot-plugin-htmlrender[playwright] >=0.8.1, <0.9.0",
   "nonebot-plugin-localstore >=0.7.0, <1.0.0",
   "nonebot-plugin-apscheduler >=0.4.0, <1.0.0",
   "nonebot2[httpx,fastapi,websockets] >=2.1.0, <3.0.0",
 ]
 
 [dependency-groups]
-dev = ["ruff >=0.9.0, <1.0.0", "pre-commit >=4.1.0, <5.0.0"]
-deploy = ["gunicorn >=23.0.0, <24.0.0", "uvicorn >=0.18.0, <1.0.0"]
+dev = [
+  "ruff >=0.9.0, <1.0.0",
+  "nb-cli >=1.7.4, <2.0.0",
+  "pre-commit >=4.1.0, <5.0.0",
+]
+deploy = ["gunicorn >=26.0.0, <27.0.0", "uvicorn >=0.18.0, <1.0.0"]
 
-[tool.uv]
-# nonebot-bison pins pillow <11.1, but pillow gained cp314 wheels in 11.3.0
-override-dependencies = ["pillow >=11.3.0, <12.0.0"]
+# 仅供 nb-cli 使用（`nb orm ...`）：它自己拼启动脚本，只认 [tool.nonebot]，不走 bot.py。
+# 运行时的插件列表以 .env 的 PLUGINS / PLUGIN_DIRS 为准，改那边时记得同步这里，
+# 否则 `nb orm revision` 会看不到新插件的模型。
+[tool.nonebot]
+adapters = [
+  { name = "QQ", module_name = "nonebot.adapters.qq" },
+  { name = "Feishu", module_name = "nonebot.adapters.feishu" },
+  { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" },
+]
+plugins = [
+  "nonebot_plugin_sentry",
+  "nonebot_plugin_alconna",
+  "nonebot_plugin_apscheduler",
+  "nonebot_plugin_filehost",
+  "nonebot_plugin_shorturl",
+  "nonebot_plugin_treehelp",
+]
+plugin_dirs = ["src/plugins", "src/providers"]
 
 [tool.ruff]
 line-length = 88

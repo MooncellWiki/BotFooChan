@@ -1,6 +1,6 @@
 from collections.abc import Awaitable, Callable
 import importlib
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import httpx
 from nonebot import logger
@@ -31,6 +31,9 @@ from src.providers.llm import create_agent, extract_content_and_thinking
 
 from .config import CustomModel, ds_config
 
+if TYPE_CHECKING:
+    from nonebot_plugin_htmlrender import RenderedImage
+
 
 class DeepSeekHandler:
     def __init__(
@@ -52,8 +55,8 @@ class DeepSeekHandler:
         self.message_id: str = get_message_id(self.event)
         self.waiter: Waiter[str | Literal[False]] = self._setup_waiter()
 
-        self.md_to_pic: Callable[..., Awaitable[bytes]] | None = (
-            importlib.import_module("nonebot_plugin_htmlrender").md_to_pic
+        self.render_markdown: Callable[..., Awaitable["RenderedImage"]] | None = (
+            importlib.import_module("nonebot_plugin_htmlrender").render_markdown
             if self.is_to_pic
             else None
         )
@@ -227,8 +230,8 @@ class DeepSeekHandler:
 
         await self._message_reaction("done")
 
-        if self.md_to_pic is not None:
-            await UniMessage.image(raw=await self.md_to_pic(output)).send(
+        if self.render_markdown is not None:
+            await UniMessage.image(raw=(await self.render_markdown(output)).data).send(
                 reply_to=self.message_id
             )
         else:
