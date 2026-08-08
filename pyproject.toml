@@ -31,6 +31,10 @@ dependencies = [
   "nonebot-plugin-localstore >=0.7.0, <1.0.0",
   "nonebot-plugin-apscheduler >=0.4.0, <1.0.0",
   "nonebot2[httpx,fastapi,websockets] >=2.1.0, <3.0.0",
+  "markdown-it-py >=4.2.0, <5.0.0",
+  "mdit-py-plugins >=0.6.1, <1.0.0",
+  "pygments >=2.20.0, <3.0.0",
+  "jinja2 >=3.1.6, <4.0.0",
 ]
 
 [dependency-groups]

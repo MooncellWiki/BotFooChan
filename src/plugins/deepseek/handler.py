@@ -1,5 +1,4 @@
 from collections.abc import Awaitable, Callable
-import importlib
 from typing import TYPE_CHECKING, Literal
 
 import httpx
@@ -58,11 +57,12 @@ class DeepSeekHandler:
         self.message_id: str = get_message_id(self.event)
         self.waiter: Waiter[str | Literal[False]] = self._setup_waiter()
 
-        self.render_markdown: Callable[..., Awaitable["RenderedImage"]] | None = (
-            importlib.import_module("nonebot_plugin_htmlrender").render_markdown
-            if self.is_to_pic
-            else None
-        )
+        self.render_markdown: Callable[..., Awaitable["RenderedImage"]] | None = None
+        if self.is_to_pic:
+            # 延迟导入：htmlrender 是可选依赖，插件入口用 find_spec 判断过才会走到这里
+            from .render import render_markdown
+
+            self.render_markdown = render_markdown
 
     async def handle(self, content: str | None) -> None:
         if not self.is_contextual and content is None:
@@ -240,7 +240,9 @@ class DeepSeekHandler:
                 output = f"> {thinking}\n\n{content}"
             else:
                 output = (
-                    f"<blockquote><p>{thinking}</p></blockquote>{content}"
+                    # 空行不能少：CommonMark 的 HTML 块以空行结束，
+                    # 否则 content 会被并入原始 HTML 块、不做 markdown 解析
+                    f"<blockquote><p>{thinking}</p></blockquote>\n\n{content}"
                     if self.is_to_pic
                     else f"{thinking}\n\n--------------------\n\n{content}"
                 )
