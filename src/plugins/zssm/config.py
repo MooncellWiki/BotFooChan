@@ -10,6 +10,8 @@ class Config(BaseModel):
     """审查模型引用（缺省时跳过 system prompt 泄露审查）"""
 
     zssm_browser_proxy: str | None = None
+    zssm_browser_ws_endpoint: str | None = None
+    """远程 Playwright Server 的 WS 地址；配置后不再本地启动/下载浏览器"""
     zssm_install_browser: bool = True
 
     # PDF处理设置

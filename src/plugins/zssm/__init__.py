@@ -24,7 +24,8 @@ __plugin_meta__ = PluginMetadata(
 
 
 config = get_plugin_config(Config)
-if config.zssm_install_browser:
+# 远程模式下浏览器由 Playwright Server 提供，本地不需要装
+if config.zssm_install_browser and not config.zssm_browser_ws_endpoint:
     driver = get_driver()
     driver.on_startup(install_browser)
 
