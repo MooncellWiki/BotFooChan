@@ -7,7 +7,6 @@
 from nonebot import logger, on_message, require
 from nonebot.adapters import Event
 from nonebot.plugin import PluginMetadata, inherit_supported_adapters
-from nonebot.rule import to_me
 
 require("nonebot_plugin_alconna")
 from nonebot_plugin_alconna import UniMsg
@@ -15,6 +14,8 @@ from nonebot_plugin_alconna.uniseg import get_message_id
 
 from . import handler as handler
 from .config import Config, chat_config
+from .recorder import recorder
+from .rule import should_reply
 
 __plugin_meta__ = PluginMetadata(
     name="群聊对话",
@@ -29,14 +30,15 @@ __plugin_meta__ = PluginMetadata(
 # 包括那些触发了别的命令的消息，它们同样是上下文的一部分
 message_recorder = on_message(priority=1, block=False)
 
-# 对话：排在最末，别的插件都没接手（没有命令匹配并阻断）才轮到它兜底
-chat = on_message(rule=to_me(), priority=99, block=True)
+# 对话：排在最末，别的插件都没接手（没有命令匹配并阻断）才轮到它兜底。
+# 触发条件不用 to_me()，见 rule.py：那个太宽，两个机器人能靠它自己聊起来
+chat = on_message(rule=should_reply, priority=99, block=True)
 
 
 @message_recorder.handle()
 async def _(event: Event, msg: UniMsg) -> None:
     try:
-        handler.recorder.record_event(event, msg, get_message_id(event))
+        recorder.record_event(event, msg, get_message_id(event))
     except Exception as e:
         # 记录失败绝不能影响别的插件处理这条消息
         logger.opt(exception=e).debug("记录群聊消息失败")

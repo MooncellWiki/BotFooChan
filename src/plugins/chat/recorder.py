@@ -16,6 +16,8 @@ from zoneinfo import ZoneInfo
 from nonebot.adapters import Event
 from nonebot_plugin_alconna.uniseg import At, AtAll, Emoji, Image, Text, UniMessage
 
+from .config import chat_config
+
 TZ = ZoneInfo("Asia/Shanghai")
 
 
@@ -134,3 +136,7 @@ class Recorder:
         if not buffer:
             return None
         return next((r for r in buffer if r.message_id == message_id), None)
+
+
+recorder = Recorder(chat_config.history_size)
+"""全局缓冲：记录器、触发规则、对话流程共用这一份"""

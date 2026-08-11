@@ -22,12 +22,27 @@ class ScopedConfig(BaseModel):
     temperature: float | None = Field(default=None, ge=0, le=2)
     web_search: bool = False
     """启用服务商内置的联网搜索（仅 responses / anthropic 协议支持）"""
+    blacklist: set[str] = Field(default_factory=set)
+    """不接话的账号 id：群里其它机器人写在这里，免得两边你一句我一句聊起来。
+
+    本进程自己连着的账号会自动忽略，不用往这里写。
+    """
 
     @field_validator("name", "prompt", mode="before")
     @classmethod
     def _empty_when_unset(cls, value: object) -> object:
         # .env 里只写键名不写值表示「不配置」，取到的是 None
         return "" if value is None else value
+
+    @field_validator("blacklist", mode="before")
+    @classmethod
+    def _as_id_set(cls, value: object) -> object:
+        if value is None or value == "":
+            return set()
+        # QQ 号写成数字也收，统一按字符串比对
+        if isinstance(value, list | set | tuple):
+            return {str(item) for item in value}
+        return value
 
 
 class Config(BaseModel):

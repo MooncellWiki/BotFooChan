@@ -27,9 +27,8 @@ from src.providers.user_memory import get_memories
 
 from . import memory_tools
 from .config import chat_config, get_endpoint, self_name
-from .recorder import TZ, Record, Recorder, render_text, scope_id, sender_name
-
-recorder = Recorder(chat_config.history_size)
+from .recorder import TZ, Record, recorder, render_text, scope_id, sender_name
+from .rule import ignored_ids
 
 FAILED_REPLY = "脑子卡了一下，等会儿再问我一次吧"
 
@@ -75,8 +74,15 @@ def _who(record: Record) -> str:
 
 
 def _participants(records: list[Record]) -> dict[str, str]:
-    """上下文里出现过的群友，后出现的名字覆盖先前的（群名片会改）"""
-    return {r.user_id: r.name for r in records if not r.is_self}
+    """上下文里出现过的群友，后出现的名字覆盖先前的（群名片会改）。
+
+    机器人（我们自己的其它账号、黑名单里的号）说的话仍然算上下文，但不给它们
+    建档案——记忆是留给人的。
+    """
+    ignored = ignored_ids()
+    return {
+        r.user_id: r.name for r in records if not r.is_self and r.user_id not in ignored
+    }
 
 
 def _format_memories(participants: dict[str, str], memories: dict[str, str]) -> str:
