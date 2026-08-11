@@ -123,7 +123,7 @@ def create_agent[OutputT](
 _THINK_BLOCK = re.compile(r"<think>(.*?)</think>", re.DOTALL)
 
 
-def _thinking_text(part: ThinkingPart) -> str:
+def thinking_text(part: ThinkingPart) -> str:
     """取出一个思维链片段的文本。
 
     Responses 协议下 DeepSeek 官方不生成 summary，思维链以 reasoning_text 形式
@@ -146,7 +146,7 @@ def extract_thinking(messages: Sequence[ModelMessage]) -> str:
         for message in messages
         if isinstance(message, ModelResponse)
         for part in message.parts
-        if isinstance(part, ThinkingPart) and (text := _thinking_text(part))
+        if isinstance(part, ThinkingPart) and (text := thinking_text(part))
     ]
     return "\n".join(chunks)
 

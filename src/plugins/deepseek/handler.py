@@ -21,7 +21,8 @@ from pydantic_ai.agent import AgentRunResult
 from pydantic_ai.exceptions import ModelHTTPError
 from pydantic_ai.messages import ModelMessage, ModelResponse, TextPart, UserPromptPart
 
-from src.providers.llm import create_agent, extract_content_and_thinking
+from src.providers.llm import create_agent
+from src.providers.llm.transcript import Section, build_sections, render_transcript
 
 from .binding import GroupBinding, group_bindings
 from .config import CustomModel, ds_config
@@ -57,12 +58,12 @@ class DeepSeekHandler:
         self.message_id: str = get_message_id(self.event)
         self.waiter: Waiter[str | Literal[False]] = self._setup_waiter()
 
-        self.render_markdown: Callable[..., Awaitable["RenderedImage"]] | None = None
+        self.render_chat: Callable[..., Awaitable["RenderedImage"]] | None = None
         if self.is_to_pic:
             # 延迟导入：htmlrender 是可选依赖，插件入口用 find_spec 判断过才会走到这里
-            from .render import render_markdown
+            from src.providers.llm.chat import render_chat
 
-            self.render_markdown = render_markdown
+            self.render_chat = render_chat
 
     async def handle(self, content: str | None) -> None:
         if not self.is_contextual and content is None:
@@ -231,31 +232,24 @@ class DeepSeekHandler:
         return group_bindings.get(target.id)
 
     async def _send_response(self, result: AgentRunResult[str]) -> None:
-        content, thinking = extract_content_and_thinking(result)
+        sections: list[Section] = build_sections(
+            result.new_messages(), with_thinking=ds_config.enable_send_thinking
+        )
         binding = self._group_binding()
-
-        output = content
-        if ds_config.enable_send_thinking and content and thinking:
-            if binding is not None:
-                output = f"> {thinking}\n\n{content}"
-            else:
-                output = (
-                    # 空行不能少：CommonMark 的 HTML 块以空行结束，
-                    # 否则 content 会被并入原始 HTML 块、不做 markdown 解析
-                    f"<blockquote><p>{thinking}</p></blockquote>\n\n{content}"
-                    if self.is_to_pic
-                    else f"{thinking}\n\n--------------------\n\n{content}"
-                )
 
         await self._message_reaction("done")
 
         # 官方接口有主动消息额度、原生 markdown 权限等限制，发不出去就退回原路径
-        if binding is not None and await send_group_markdown(binding, output):
+        if binding is not None and await send_group_markdown(
+            binding,
+            render_transcript(sections, flavor="markdown", fallback=result.output),
+        ):
             return
 
-        if self.render_markdown is not None:
-            await UniMessage.image(raw=(await self.render_markdown(output)).data).send(
-                reply_to=self.message_id
-            )
+        if self.render_chat is not None:
+            rendered = await self.render_chat(sections, fallback=result.output)
+            await UniMessage.image(raw=rendered.data).send(reply_to=self.message_id)
         else:
-            await UniMessage.text(output).send(reply_to=self.message_id)
+            await UniMessage.text(
+                render_transcript(sections, flavor="text", fallback=result.output)
+            ).send(reply_to=self.message_id)

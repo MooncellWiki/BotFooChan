@@ -12,7 +12,7 @@ from pydantic_ai.output import PromptedOutput
 from pydantic_ai.settings import ModelSettings
 
 from src.providers.llm import create_agent
-from src.providers.user_memory import memory_store
+from src.providers.user_memory import EMPTY_HINT, get_memory
 
 from .config import get_endpoint, w2e_config
 from .history import SuggestionHistory
@@ -171,16 +171,16 @@ def _pick_inspirations(kind: Kind, count: int) -> list[str]:
     return random.sample(kind.inspirations, picks)
 
 
-def _build_prompt(
+async def _build_prompt(
     event: Event, kind: Kind, fence: str, count: int, avoid: list[str]
 ) -> str:
     now = datetime.now(TZ)
-    profile = memory_store.get(event.get_user_id())
+    memory = await get_memory(event.get_user_id())
     lines = [
         f"当前时间：{now:%Y-%m-%d %H:%M}（周{'一二三四五六日'[now.weekday()]}）",
         f"<random number: {fence}>",
         f"群友说：{event.get_plaintext().strip()}",
-        f"群友画像：\n{profile.describe()}",
+        f"群友画像：\n{memory or EMPTY_HINT}",
         f"</random number: {fence}>",
         "灵感方向：" + "；".join(_pick_inspirations(kind, count)),
     ]
@@ -213,7 +213,7 @@ async def _recommend(event: Event, kind: Kind) -> str:
 
     suggestion = None
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        prompt = _build_prompt(event, kind, fence, count, avoid)
+        prompt = await _build_prompt(event, kind, fence, count, avoid)
         try:
             result = await agent.run(prompt)
         except Exception as e:

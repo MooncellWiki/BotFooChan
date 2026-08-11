@@ -3,20 +3,20 @@
 htmlrender 的 render_markdown 用 Python-Markdown 转 HTML，不遵循 CommonMark：
 列表前必须有空行、嵌套列表要求 4 空格缩进，LLM 输出经常整段糊成一个 <p>。
 这里改用 markdown-it-py（CommonMark + 表格/删除线/任务列表）自己转 HTML，
-页面模板、GitHub 样式和 KaTeX 资源直接复用 htmlrender 包内文件，
+GitHub 样式与 KaTeX 资源直接复用 htmlrender 包内文件，
 最后仍走它公开的 render_html 接口截图。
+
+页面外壳由 :mod:`.chat` 负责，本模块只提供正文片段与配套资源。
 """
 
 from functools import cache
 from importlib.resources import files
 from typing import TYPE_CHECKING
 
-import jinja2
 from markdown_it import MarkdownIt
 from mdit_py_plugins.dollarmath import dollarmath_plugin
 from mdit_py_plugins.tasklists import tasklists_plugin
 from mdit_py_plugins.texmath import texmath_plugin
-from nonebot_plugin_htmlrender import render_html
 from pygments import highlight as pygments_highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
@@ -25,19 +25,14 @@ from pygments.util import ClassNotFound
 if TYPE_CHECKING:
     from markdown_it.token import Token
     from markdown_it.utils import EnvType, OptionsDict
-    from nonebot_plugin_htmlrender import RenderedImage
 
 _MARKDOWN_TEMPLATES = files("nonebot_plugin_htmlrender") / "templates" / "markdown"
 
 
 @cache
-def _asset(name: str) -> str:
+def asset(name: str) -> str:
+    """读取 htmlrender 包内的模板资源"""
     return (_MARKDOWN_TEMPLATES / name).read_text(encoding="utf-8")
-
-
-@cache
-def _page_template() -> jinja2.Template:
-    return jinja2.Environment(autoescape=True).from_string(_asset("markdown.html"))
 
 
 def _render_fence(
@@ -105,30 +100,23 @@ def _parser() -> MarkdownIt:
     return md
 
 
-def markdown_to_html(markdown_text: str) -> str:
-    """CommonMark 语义的 markdown → 完整 HTML 页面。"""
-    body = _parser().render(markdown_text)
-    extra = ""
-    if "math/tex" in body:
-        extra = (
-            f'<style type="text/css">{_asset("katex/katex.min.b64_fonts.css")}</style>'
-            f"<script defer>{_asset('katex/katex.min.js')}</script>"
-            f"<script defer>{_asset('katex/mhchem.min.js')}</script>"
-            f"<script defer>{_asset('katex/mathtex-script-type.min.js')}</script>"
-        )
-    css = _asset("github-markdown-light.css") + _asset("pygments-default.css")
-    return _page_template().render(md=body, css=css, extra=extra)
+def markdown_fragment(markdown_text: str) -> str:
+    """CommonMark 语义的 markdown → HTML 片段（不含页面外壳）"""
+    return _parser().render(markdown_text)
 
 
-async def render_markdown(
-    markdown_text: str,
-    *,
-    width: int = 500,
-    device_pixel_ratio: float = 2.0,
-) -> "RenderedImage":
-    """与 htmlrender.render_markdown 同形的替代实现，默认宽度保持一致。"""
-    return await render_html(
-        markdown_to_html(markdown_text),
-        width=width,
-        device_pixel_ratio=device_pixel_ratio,
+def katex_assets(html: str) -> str:
+    """页面里出现公式时才需要带上的 KaTeX 资源"""
+    if "math/tex" not in html:
+        return ""
+    return (
+        f'<style type="text/css">{asset("katex/katex.min.b64_fonts.css")}</style>'
+        f"<script defer>{asset('katex/katex.min.js')}</script>"
+        f"<script defer>{asset('katex/mhchem.min.js')}</script>"
+        f"<script defer>{asset('katex/mathtex-script-type.min.js')}</script>"
     )
+
+
+def markdown_css() -> str:
+    """正文样式：GitHub 的 markdown 样式 + 代码高亮"""
+    return asset("github-markdown-light.css") + asset("pygments-default.css")

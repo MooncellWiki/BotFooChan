@@ -1,78 +1,65 @@
+from nonebot import require
 from nonebot.adapters import Event
-from nonebot_plugin_alconna import (
-    Alconna,
-    AlconnaMatch,
-    Args,
-    Match,
-    MultiVar,
-    on_alconna,
-)
 
-from src.providers.user_memory import memory_store
+require("nonebot_plugin_waiter")
+require("nonebot_plugin_alconna")
+from nonebot_plugin_alconna import Alconna, on_alconna
+from nonebot_plugin_waiter import prompt
 
-remember_matcher = on_alconna(
-    Alconna("记住", Args["items", MultiVar(str, "+")]),
-    use_cmd_start=True,
+from src.providers.user_memory import clear_memory, get_memory, set_memory
+
+EDIT_TIMEOUT = 120
+"""等待用户发来新档案的超时（秒）"""
+
+EMPTY_REPLY = (
+    "还没有关于你的记录。直接 @ 我聊天就行，聊到的偏好、忌口这些我会自己记下来"
 )
-forget_matcher = on_alconna(
-    Alconna("忘记", Args["keywords", MultiVar(str, "+")]),
-    use_cmd_start=True,
-)
-region_matcher = on_alconna(
-    Alconna("设置地区", Args["region?", str]),
-    use_cmd_start=True,
-)
+CANCEL_WORDS = ("取消", "算了", "cancel")
+
 show_matcher = on_alconna(Alconna("我的记忆"), use_cmd_start=True)
+edit_matcher = on_alconna(Alconna("编辑记忆"), use_cmd_start=True)
 clear_matcher = on_alconna(Alconna("清空记忆"), use_cmd_start=True)
-
-
-@remember_matcher.handle()
-async def remember_handler(event: Event, items: Match = AlconnaMatch("items")):
-    added = memory_store.add_preferences(event.get_user_id(), items.result)
-    if not added:
-        await remember_matcher.finish("这些我已经记住过啦")
-    await remember_matcher.finish("记住了：" + "、".join(added))
-
-
-@forget_matcher.handle()
-async def forget_handler(event: Event, keywords: Match = AlconnaMatch("keywords")):
-    user_id = event.get_user_id()
-    words = [word for word in keywords.result if word.strip()]
-
-    replies = []
-    profile = memory_store.get(user_id)
-    if profile.region and (
-        "地区" in words or any(word in profile.region for word in words)
-    ):
-        memory_store.set_region(user_id, None)
-        replies.append(f"已忘记地区“{profile.region}”")
-
-    if removed := memory_store.remove_preferences(user_id, words):
-        replies.append("已忘记：" + "、".join(removed))
-
-    await forget_matcher.finish("；".join(replies) if replies else "没有找到相关的记录")
-
-
-@region_matcher.handle()
-async def region_handler(event: Event, region: Match = AlconnaMatch("region")):
-    if not region.available or not region.result.strip():
-        await region_matcher.finish("请带上地区，例如“设置地区 广州”")
-    memory_store.set_region(event.get_user_id(), region.result)
-    await region_matcher.finish(f"记住了，你在{region.result.strip()}")
 
 
 @show_matcher.handle()
 async def show_handler(event: Event):
-    profile = memory_store.get(event.get_user_id())
-    if profile.is_empty:
-        await show_matcher.finish(
-            "还没有关于你的记录，可以用“记住 <内容>”和“设置地区 <地区>”告诉我你的喜好"
-        )
-    await show_matcher.finish(profile.describe())
+    content = await get_memory(event.get_user_id())
+    if not content:
+        await show_matcher.finish(EMPTY_REPLY)
+    await show_matcher.finish(f"我记得关于你的这些：\n{content}")
+
+
+@edit_matcher.handle()
+async def edit_handler(event: Event):
+    """整份覆盖档案。
+
+    档案是多行 markdown，让 alconna 按空白切分再拼回来会把换行吃掉，
+    所以这里不收内联参数，改为等用户把新内容整条发过来。
+    """
+    user_id = event.get_user_id()
+    current = await get_memory(user_id)
+
+    resp = await prompt(
+        (f"当前记录是：\n{current}\n\n" if current else "目前还没有记录。\n")
+        + f"把修改后的完整内容发给我（{EDIT_TIMEOUT} 秒内），发“取消”放弃",
+        timeout=EDIT_TIMEOUT,
+    )
+    if resp is None:
+        await edit_matcher.finish("等太久了，这次就先不改了")
+
+    content = resp.extract_plain_text().strip()
+    if not content or content in CANCEL_WORDS:
+        await edit_matcher.finish("那就不改了")
+
+    saved = await set_memory(user_id, content)
+    # 超长时 set_memory 会顺手压缩，存进去的未必是用户发来的原文
+    if saved != content:
+        await edit_matcher.finish(f"内容有点长，我压缩了一下再记住的：\n{saved}")
+    await edit_matcher.finish("已更新")
 
 
 @clear_matcher.handle()
 async def clear_handler(event: Event):
-    if memory_store.clear(event.get_user_id()):
+    if await clear_memory(event.get_user_id()):
         await clear_matcher.finish("已清空关于你的全部记忆")
     await clear_matcher.finish("本来就没有关于你的记录")
