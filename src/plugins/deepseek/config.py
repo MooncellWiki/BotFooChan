@@ -70,6 +70,8 @@ class ScopedConfig(BaseModel):
     """Markdown 渲染为图片"""
     enable_send_thinking: bool = False
     """是否发送思维链"""
+    max_images: int = Field(default=4, ge=0)
+    """单次提问最多带几张图片（仅对支持图片输入的模型生效）"""
     timeout: int | TimeoutConfig = Field(default_factory=TimeoutConfig)
     """超时配置"""
 
@@ -112,7 +114,7 @@ class Config(BaseModel):
 ds_config = get_plugin_config(Config).deepseek
 if not ds_config.enable_models:
     ds_config.enable_models = [CustomModel(model=alias) for alias in list_models()] or [
-        CustomModel(model="deepseek:deepseek-v4-flash"),
+        CustomModel(model="deepseek:deepseek-flash"),
         CustomModel(model="deepseek:deepseek-v4-pro"),
     ]
 
