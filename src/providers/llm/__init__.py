@@ -19,7 +19,7 @@ import re
 import time
 from typing import Any
 
-import httpx
+import httpx2
 from nonebot import logger
 from pydantic_ai import Agent
 from pydantic_ai.agent import AgentRunResult
@@ -59,7 +59,9 @@ def get_model(endpoint: ModelEndpoint) -> Model:
     if cached := _model_cache.get(key):
         return cached
 
-    http_client = httpx.AsyncClient(proxy=endpoint.proxy) if endpoint.proxy else None
+    # anthropic SDK 1.x 换成了 httpx2，给它旧版 httpx 的客户端会在构造 provider 时
+    # 直接 TypeError；openai 系 provider 两种都认，统一用 httpx2
+    http_client = httpx2.AsyncClient(proxy=endpoint.proxy) if endpoint.proxy else None
     api_type = endpoint.resolved_api_type
 
     model: Model
