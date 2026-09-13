@@ -21,7 +21,9 @@ from urllib.parse import urlparse
 from pydantic_ai.messages import (
     BaseToolCallPart,
     BaseToolReturnPart,
+    BinaryContent,
     FilePart,
+    ImageUrl,
     ModelMessage,
     RetryPromptPart,
     TextContent,
@@ -79,6 +81,8 @@ class Source:
 @dataclass
 class UserSection:
     text: str
+    images: list[str] = field(default_factory=list)
+    """随提问一起发出的图片，为可直接塞进 ``<img src>`` 的 data URI 或链接"""
     kind: ClassVar[str] = "user"
 
 
@@ -149,8 +153,9 @@ def build_sections(
         for part in message.parts:
             # 人设（SystemPromptPart / InstructionPart）不展示
             if isinstance(part, UserPromptPart):
-                if text := _user_text(part):
-                    sections.append(UserSection(text))
+                text, images = _user_content(part)
+                if text or images:
+                    sections.append(UserSection(text, images))
 
             elif isinstance(part, ThinkingPart):
                 if with_thinking and (text := thinking_text(part).strip()):
@@ -208,19 +213,25 @@ def render_transcript(
     return "\n\n".join(render(section) for section in sections)
 
 
-def _user_text(part: UserPromptPart) -> str:
+def _user_content(part: UserPromptPart) -> tuple[str, list[str]]:
+    """拆出提问的正文与随附的图片"""
     if isinstance(part.content, str):
-        return part.content.strip()
+        return part.content.strip(), []
 
     chunks: list[str] = []
+    images: list[str] = []
     for item in part.content:
         if isinstance(item, str):
             chunks.append(item)
         elif isinstance(item, TextContent):
             chunks.append(item.content)
+        elif isinstance(item, BinaryContent) and item.is_image:
+            images.append(item.data_uri)
+        elif isinstance(item, ImageUrl):
+            images.append(item.url)
         else:
             chunks.append(f"（{type(item).__name__}）")
-    return "\n".join(chunks).strip()
+    return "\n".join(chunks).strip(), images
 
 
 def _query_of(args: dict[str, Any]) -> str:
@@ -301,7 +312,7 @@ def _truncate(text: str, limit: int) -> str:
 def _markdown_section(section: Section) -> str:
     match section:
         case UserSection():
-            return f"**🧑 用户**\n\n{section.text}"
+            return f"**🧑 用户**\n\n{_user_body(section)}"
         case ThinkingSection():
             return f"**💭 思考**\n\n{_quote(section.text)}"
         case AnswerSection():
@@ -327,7 +338,7 @@ def _markdown_section(section: Section) -> str:
 def _text_section(section: Section) -> str:
     match section:
         case UserSection():
-            return f"【🧑 用户】\n{section.text}"
+            return f"【🧑 用户】\n{_user_body(section)}"
         case ThinkingSection():
             return f"【💭 思考】\n{section.text}"
         case AnswerSection():
@@ -349,6 +360,14 @@ def _text_section(section: Section) -> str:
                     for line in _tool_details(section)
                 )
             return "\n".join(lines)
+
+
+def _user_body(section: UserSection) -> str:
+    """纯文本与原生 markdown 都贴不了图，只能用占位标出来"""
+    if not section.images:
+        return section.text
+    marker = f"[图片 ×{len(section.images)}]"
+    return f"{marker}\n{section.text}" if section.text else marker
 
 
 def _tool_details(section: ToolSection) -> list[str]:

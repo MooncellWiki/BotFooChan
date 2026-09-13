@@ -61,15 +61,41 @@ body {
 .msg.user { justify-content: flex-end; }
 .msg > * { max-width: 100%; }
 
-/* 用户气泡 */
-.bubble {
+/* 用户侧：图片在上、气泡在下，整体靠右 */
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
   max-width: 84%;
+}
+
+.bubble {
+  max-width: 100%;
   padding: 9px 15px;
   background: #eff4ff;
   border-radius: 16px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+/* 随提问发来的图片：多图并排，单图占不满就按原比例收着 */
+.imgs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  /* 默认的 stretch 会把矮图拉到和高图一样高，直接毁掉宽高比 */
+  align-items: flex-start;
+  gap: 6px;
+}
+.imgs img {
+  max-width: 100%;
+  max-height: 280px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+/* 多图时收成两列并压矮一点，免得一张张排下去把整页拉得老长 */
+.imgs img:not(:only-child) { max-width: calc(50% - 3px); max-height: 200px; }
 
 /* 思维链：一个弱化的旁支，不抢正文 */
 .think { width: 100%; }
@@ -236,7 +262,16 @@ _TEMPLATE = """
   <main class="chat">
     {%- for s in sections %}
     {%- if s.kind == 'user' %}
-    <div class="msg user"><div class="bubble">{{ s.text }}</div></div>
+    <div class="msg user"><div class="stack">
+      {%- if s.images %}
+      <div class="imgs">
+        {%- for src in s.images %}<img src="{{ src }}">{% endfor %}
+      </div>
+      {%- endif %}
+      {%- if s.text %}
+      <div class="bubble">{{ s.text }}</div>
+      {%- endif %}
+    </div></div>
     {%- elif s.kind == 'thinking' %}
     <div class="msg"><div class="think">
       <div class="think-head">

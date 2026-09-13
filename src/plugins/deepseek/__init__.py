@@ -32,7 +32,7 @@ from nonebot_plugin_alconna import (
     SupportAdapter,
     on_alconna,
 )
-from nonebot_plugin_alconna.uniseg import get_target
+from nonebot_plugin_alconna.uniseg import Image, get_target
 
 from .binding import GroupBinding, group_bindings
 from .config import Config, ds_config, json_config
@@ -42,7 +42,12 @@ if htmlrender_enable := find_spec("nonebot_plugin_htmlrender") is not None:
 
 from . import hook as hook
 from .api import RequestException, query_balance
-from .extension import CleanDocExtension, ParseExtension, ReplyMergeExtension
+from .extension import (
+    CleanDocExtension,
+    ParseExtension,
+    ReplyMergeExtension,
+    prompt_images,
+)
 from .handler import DeepSeekHandler
 
 __plugin_meta__ = PluginMetadata(
@@ -323,6 +328,7 @@ async def _(event: Event, is_superuser: bool = Depends(SuperUser())):
 @deepseek.handle()
 async def _(
     content: Match[tuple[str, ...]],
+    images: list[Image] = Depends(prompt_images),
     model_name: Query[str] = Query("use-model.model"),
     render_option: Query[bool] = Query("render.value"),
     context_option: Query[bool] = Query("with-context.value"),
@@ -340,4 +346,7 @@ async def _(
         is_contextual=context_option.available,
         # 显式指定了 -r 就按用户说的渲染成图片，不抢着走群 markdown
         allow_group_markdown=not render_option.available,
-    ).handle(" ".join(content.result) if content.available else None)
+    ).handle(
+        " ".join(content.result) if content.available else None,
+        images,
+    )

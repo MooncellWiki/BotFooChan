@@ -1,4 +1,5 @@
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Sequence
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal
 
 import httpx
@@ -8,6 +9,7 @@ from nonebot.matcher import Matcher, current_event, current_matcher
 from nonebot.permission import Permission, User
 from nonebot_plugin_alconna import SupportAdapter
 from nonebot_plugin_alconna.uniseg import (
+    Image,
     UniMessage,
     UniMsg,
     get_message_id,
@@ -19,9 +21,10 @@ from openai import APIConnectionError, APITimeoutError
 from pydantic_ai import Agent
 from pydantic_ai.agent import AgentRunResult
 from pydantic_ai.exceptions import ModelHTTPError
-from pydantic_ai.messages import ModelMessage, ModelResponse, TextPart, UserPromptPart
+from pydantic_ai.messages import ModelMessage, UserContent
 
-from src.providers.llm import create_agent
+from src.providers.llm import ModelEndpoint, create_agent
+from src.providers.llm.media import as_model_inputs
 from src.providers.llm.transcript import Section, build_sections, render_transcript
 
 from .binding import GroupBinding, group_bindings
@@ -30,6 +33,21 @@ from .markdown import send_group_markdown
 
 if TYPE_CHECKING:
     from nonebot_plugin_htmlrender import RenderedImage
+
+
+@dataclass
+class UserInput:
+    """一次提问：正文加上随消息发来的图片"""
+
+    text: str = ""
+    images: list[Image] = field(default_factory=list)
+
+    def __bool__(self) -> bool:
+        return bool(self.text or self.images)
+
+
+WaiterResult = UserInput | Literal[False, "rollback"]
+"""多轮对话里一条消息的解析结果：提问 / 结束 / 回滚"""
 
 
 class DeepSeekHandler:
@@ -45,18 +63,19 @@ class DeepSeekHandler:
         self.is_contextual = is_contextual
         self.allow_group_markdown = allow_group_markdown
         """群聊里优先用官方机器人发原生 markdown；显式 -r 指定渲染时置 False"""
+        self.endpoint: ModelEndpoint = model.to_endpoint()
         self.agent: Agent[None, str] = create_agent(
-            model.to_endpoint(),
+            self.endpoint,
             instructions=model.prompt or ds_config.prompt or None,
             settings=model.to_settings(ds_config.api_timeout),
             web_search=model.web_search,
         )
         self.history: list[ModelMessage] = []
-        self.pending: str | None = None
+        self.pending: UserInput | None = None
         self.event: Event = current_event.get()
         self.matcher: Matcher = current_matcher.get()
         self.message_id: str = get_message_id(self.event)
-        self.waiter: Waiter[str | Literal[False]] = self._setup_waiter()
+        self.waiter: Waiter[WaiterResult] = self._setup_waiter()
 
         self.render_chat: Callable[..., Awaitable["RenderedImage"]] | None = None
         if self.is_to_pic:
@@ -65,13 +84,14 @@ class DeepSeekHandler:
 
             self.render_chat = render_chat
 
-    async def handle(self, content: str | None) -> None:
-        if not self.is_contextual and content is None:
-            await UniMessage.text("请输入内容，例：/deepseek 你好").finish(
+    async def handle(self, content: str | None, images: Sequence[Image] = ()) -> None:
+        user_input = UserInput(content or "", list(images))
+        if not self.is_contextual and not user_input:
+            await UniMessage.text("请输入内容或发送图片，例：/deepseek 你好").finish(
                 reply_to=self.message_id
             )
 
-        self.pending = content
+        self.pending = user_input or None
         await self._message_reaction("thinking")
 
         if self.is_contextual:
@@ -86,15 +106,15 @@ class DeepSeekHandler:
 
     async def _handle_multi_round(self) -> None:
         async for resp in self.waiter(default=False, timeout=ds_config.input_timeout):
-            text = await self._resolve_input(resp)
-            if text is None:
+            user_input = await self._resolve_input(resp)
+            if user_input is None:
                 continue
-            result = await self._run(text)
+            result = await self._run(user_input)
             if result is None:
                 continue
             await self._send_response(result)
 
-    def _setup_waiter(self) -> Waiter[str | Literal[False]]:
+    def _setup_waiter(self) -> Waiter[WaiterResult]:
         permission = Permission(
             User.from_event(self.event, perm=self.matcher.permission)
         )
@@ -104,29 +124,31 @@ class DeepSeekHandler:
             matcher=self.matcher,
             permission=permission,
         )
-        waiter.future.set_result("")
+        # 空提问是首轮的占位，让循环先把命令自带的提问消费掉
+        waiter.future.set_result(UserInput())
         return waiter
 
-    def _waiter_handler(self, msg: UniMsg, skip: bool = False) -> str | Literal[False]:
-        text = msg.extract_plain_text()
+    def _waiter_handler(self, msg: UniMsg, skip: bool = False) -> WaiterResult:
+        text = msg.extract_plain_text().strip()
         if not skip:
             self.message_id = get_message_id()
         if text in ("结束", "取消", "done"):
             return False
         if text in ("回滚", "rollback"):
             return "rollback"
-        return text
+        return UserInput(text, list(msg.get(Image)))
 
     def _prompt_handler(self, msg: UniMsg) -> UniMsg:
         self.message_id = get_message_id()
         return msg
 
-    async def _resolve_input(self, resp: str | bool) -> str | None:
-        if resp == "":
+    async def _resolve_input(self, resp: WaiterResult | bool) -> UserInput | None:
+        # 空提问既是首轮的占位，也可能是用户发了条没有内容的消息
+        if isinstance(resp, UserInput) and not resp:
             if self.pending is not None:
-                text, self.pending = self.pending, None
+                pending, self.pending = self.pending, None
                 await self._message_reaction("thinking")
-                return text
+                return pending
             if not self.history:
                 _resp = await prompt(
                     "你想对 DeepSeek 说什么呢？",
@@ -146,9 +168,46 @@ class DeepSeekHandler:
             return None
         return resp or None
 
-    async def _run(self, text: str) -> AgentRunResult[str] | None:
+    async def _note(self, text: str) -> None:
+        await UniMessage.text(text).send(reply_to=self.message_id)
+
+    async def _build_prompt(
+        self, user_input: UserInput
+    ) -> str | list[UserContent] | None:
+        """提问 -> 模型输入；图片用不上时降级成纯文本，两头都空则返回 None"""
+        images = await self._image_inputs(user_input.images)
+        if not images:
+            return user_input.text or None
+        return [user_input.text, *images] if user_input.text else images
+
+    async def _image_inputs(self, images: Sequence[Image]) -> list[UserContent]:
+        """把图片取回来交给模型；模型不认或取不到时说一声并退化成纯文本"""
+        limit = ds_config.max_images
+        if not images:
+            return []
+        if not self.endpoint.supports_vision:
+            await self._note(f"{self.model.display_name} 不支持图片输入，已忽略图片")
+            return []
+        if limit <= 0:
+            await self._note("图片输入已关闭，已忽略图片")
+            return []
+
+        contents = await as_model_inputs(images, limit=limit)
+        if not contents:
+            await self._note("图片获取失败，已忽略图片")
+        elif dropped := len(images) - len(contents):
+            await self._note(f"已忽略 {dropped} 张图片（超出 {limit} 张上限或取不到）")
+        return list(contents)
+
+    async def _run(self, user_input: UserInput) -> AgentRunResult[str] | None:
+        content = await self._build_prompt(user_input)
+        if content is None:
+            # 图片全军覆没且没有正文，提示已经在 _image_inputs 里发过了
+            await self._message_reaction("fail")
+            return None
+
         try:
-            result = await self.agent.run(text, message_history=self.history or None)
+            result = await self.agent.run(content, message_history=self.history or None)
         except Exception as e:
             logger.opt(exception=e).error("DeepSeek 请求失败")
             await self._message_reaction("fail")
@@ -179,7 +238,7 @@ class DeepSeekHandler:
             self.history = self.history[:-2]
             remaining = self._last_context_text() or "空"
             await UniMessage.text(
-                f"已回滚 1 轮对话。当前上下文为:\n{remaining}\nuser:（等待输入）"
+                f"已回滚 1 轮对话。当前上下文为:\n{remaining}\n【🧑 用户】（等待输入）"
             ).send(reply_to=self.message_id)
         else:
             await UniMessage.text("无法回滚，当前对话记录为空").send(
@@ -187,20 +246,10 @@ class DeepSeekHandler:
             )
 
     def _last_context_text(self) -> str:
+        """回滚后回显剩下的最后一条消息，图片提问也能交代清楚"""
         if not self.history:
             return ""
-        last = self.history[-1]
-        if isinstance(last, ModelResponse):
-            text = "".join(
-                part.content for part in last.parts if isinstance(part, TextPart)
-            )
-            return f"assistant: {text}"
-        text = "".join(
-            part.content
-            for part in last.parts
-            if isinstance(part, UserPromptPart) and isinstance(part.content, str)
-        )
-        return f"user: {text}"
+        return render_transcript(build_sections(self.history[-1:]), flavor="text")
 
     async def _message_reaction(
         self, status: Literal["fail", "thinking", "done"]

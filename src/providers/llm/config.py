@@ -18,14 +18,20 @@ DEEPSEEK_ANTHROPIC_PATH = "/anthropic"
 ApiType = Literal["responses", "chat", "anthropic"]
 
 
-def _deepseek_supports_responses(model_name: str) -> bool:
-    """DeepSeek 官方 Responses API 目前仅开放 deepseek-v4-flash。
+def _is_deepseek_flash(model_name: str) -> bool:
+    """DeepSeek 官方的 Flash 系模型，即 ``deepseek-flash``（DeepSeek-V4.1-Flash）。
 
-    deepseek-v4-pro 调用 /responses 会返回 400（官方称 2026 年 8 月初支持），
-    因此未列入的模型默认回落到 chat completions；待官方放开后可移除本函数。
-    见 https://api-docs.deepseek.com/zh-cn/guides/responses_api
+    旧模型名 ``deepseek-v4-flash`` / ``deepseek-v4-flash-vision-exp`` 已下线，
+    请求同样由 V4.1-Flash 承接，因此一并算进来。
+
+    Flash 系比 ``deepseek-v4-pro`` 多两项能力，两者都靠本函数判定：
+
+    - Responses API：v4-pro 调 /responses 会返回 400，只能回落到 chat completions
+      （见 https://api-docs.deepseek.com/zh-cn/guides/responses_api）
+    - 图片输入：V4.1-Flash 原生多模态，v4-pro 不支持
+      （见 https://api-docs.deepseek.com/zh-cn/guides/vision）
     """
-    return model_name.startswith("deepseek-v4-flash")
+    return model_name.startswith(("deepseek-flash", "deepseek-v4-flash"))
 
 
 class ModelEndpoint(BaseModel):
@@ -39,6 +45,8 @@ class ModelEndpoint(BaseModel):
     """API Key"""
     api_type: ApiType | None = None
     """调用协议；缺省时 DeepSeek 官方支持的模型走 Responses，其余走 chat completions"""
+    vision: bool | None = None
+    """是否接受图片输入；缺省时按 DeepSeek 官方的模型能力推断"""
     proxy: str | None = None
     """代理地址"""
 
@@ -50,9 +58,20 @@ class ModelEndpoint(BaseModel):
     def resolved_api_type(self) -> ApiType:
         if self.api_type:
             return self.api_type
-        if self.is_deepseek_official and _deepseek_supports_responses(self.name):
+        if self.is_deepseek_official and _is_deepseek_flash(self.name):
             return "responses"
         return "chat"
+
+    @property
+    def supports_vision(self) -> bool:
+        """是否接受图片输入。
+
+        只有 DeepSeek 官方的模型能力可以从模型名推断出来，别家服务商一律按不支持
+        处理，需要在注册表里显式写 ``vision: true`` 打开。
+        """
+        if self.vision is not None:
+            return self.vision
+        return self.is_deepseek_official and _is_deepseek_flash(self.name)
 
     @property
     def resolved_base_url(self) -> str:
@@ -74,6 +93,8 @@ class LLMProvider(BaseModel):
     """API Key"""
     api_type: ApiType | None = None
     """调用协议；缺省时 DeepSeek 官方支持的模型走 Responses，其余走 chat completions"""
+    vision: bool | None = None
+    """该服务商的模型是否接受图片输入；缺省时按 DeepSeek 官方的模型能力推断"""
     proxy: str | None = None
     """代理地址"""
 
@@ -87,6 +108,8 @@ class LLMModel(BaseModel):
     """模型名称"""
     api_type: ApiType | None = None
     """调用协议，覆写服务商级配置"""
+    vision: bool | None = None
+    """是否接受图片输入，覆写服务商级配置"""
 
 
 def _parse_model_ref(ref: str) -> LLMModel:
@@ -154,6 +177,7 @@ def resolve_endpoint(ref: str) -> ModelEndpoint | None:
         base_url=provider.base_url,
         api_key=provider.api_key,
         api_type=model.api_type or provider.api_type,
+        vision=model.vision if model.vision is not None else provider.vision,
         proxy=provider.proxy,
     )
 
