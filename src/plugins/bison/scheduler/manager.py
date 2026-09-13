@@ -51,7 +51,13 @@ async def init_scheduler():
         scheduler_dict[site] = Scheduler(site, schedulable_args, platform_name_list)
         if is_cookie_client_manager(site.client_mgr):
             client_mgr = cast("CookieClientManager", scheduler_dict[site].client_mgr)
-            await client_mgr.refresh_client()
+            # 刷新要开 playwright 页面等 B 站下发 cookie，风控超时或 playwright 还没
+            # 起来都会抛错。不能让它拖垮整个 bot 的启动：调度已经注册好了，之后请求
+            # 失败时重试状态机会再刷新一次
+            try:
+                await client_mgr.refresh_client()
+            except Exception:
+                logger.exception(f"{site.name} 启动时刷新客户端失败，稍后重试")
     config.register_add_target_hook(handle_insert_new_target)
     config.register_delete_target_hook(handle_delete_target)
 
