@@ -27,7 +27,8 @@ services:
     image: starheart/botfoochan:latest
     # 只写服务名只会等容器「启动」，不等 run-server 真正可连，所以要等 healthcheck。
     # 这只管 compose up：restart: always 在宿主或 dockerd 重启时各自独立拉起、
-    # 不看 depends_on，那种情况靠 bot 端按需连接、断线重连兜底
+    # 不看 depends_on。那种情况下 bison 启动时刷新 B 站 cookie 会连不上 playwright，
+    # 只记日志不中断启动，cookie 由之后的重试状态机补刷；htmlrender 本就按需连接
     depends_on:
       playwright:
         condition: service_healthy
