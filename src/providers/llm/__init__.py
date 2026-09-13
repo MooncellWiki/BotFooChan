@@ -2,10 +2,14 @@
 
 项目内插件的模型调用统一通过本 provider 创建 Agent：
 
-- DeepSeek 官方 API 在模型支持时走 OpenAI Responses API 兼容协议（内置联网搜索）
+- DeepSeek 官方 API 在模型支持时走 OpenAI Responses API 兼容协议
 - 其他 OpenAI 兼容服务（硅基流动、OpenRouter 等）走 chat completions 协议
 - ``api_type="anthropic"`` 可切到 Anthropic Messages 兼容协议（DeepSeek 官方为
-  ``/anthropic`` 端点），同样支持内置联网搜索，但不支持图片输入与 penalty 类参数
+  ``/anthropic`` 端点），不支持 penalty 类参数，且未设 max_tokens 时默认 4096
+
+三种协议都能传图片（模型本身支持的前提下），但**内置联网搜索只有 Anthropic
+协议能用**：DeepSeek 官方的 Responses 端点会把 ``web_search`` 原样回显却从不执行，
+模型侧根本看不到这个工具，chat completions 则压根没有对应能力。
 
 服务商与模型的注册方式见 :mod:`.config`。
 """
@@ -97,18 +101,23 @@ def create_agent[OutputT](
 ) -> Agent[None, OutputT]:
     """按端点创建 pydantic-ai Agent。
 
-    web_search 启用服务商内置的联网搜索（服务端执行），Responses 与 Anthropic
-    协议均支持：DeepSeek 官方分别对应 tools=[{"type": "web_search"}] 与
-    tools=[{"type": "web_search_20250305"}]，chat completions 协议没有对应能力。
+    web_search 启用服务商内置的联网搜索（服务端执行），只有 Anthropic 协议能用，
+    对应 tools=[{"type": "web_search_20250305"}]，响应里带回 server_tool_use 与
+    web_search_tool_result 分块。
+
+    Responses 协议看着像支持——DeepSeek 官方会把 tools=[{"type": "web_search"}]
+    原样回显——但实测从不执行，模型的思维链里明说「没有提供 web search 工具」，
+    而且不报错，静默降级成瞎编来源。所以这里当作不支持，免得配了以为在联网。
     """
     capabilities = None
     if web_search:
         api_type = endpoint.resolved_api_type
-        if api_type in ("responses", "anthropic"):
+        if api_type == "anthropic":
             capabilities = [NativeTool(WebSearchTool())]
         else:
             logger.warning(
-                f"模型 {endpoint.name} 走 {api_type} 协议，不支持内置联网搜索，已忽略"
+                f"模型 {endpoint.name} 走 {api_type} 协议，不支持内置联网搜索，"
+                "已忽略（需要联网搜索请把 api_type 设为 anthropic）"
             )
     return Agent(
         get_model(endpoint),
