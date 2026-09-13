@@ -18,20 +18,31 @@ DEEPSEEK_ANTHROPIC_PATH = "/anthropic"
 ApiType = Literal["responses", "chat", "anthropic"]
 
 
-def _is_deepseek_flash(model_name: str) -> bool:
-    """DeepSeek 官方的 Flash 系模型，即 ``deepseek-flash``（DeepSeek-V4.1-Flash）。
+_DEEPSEEK_FLASH = ("deepseek-flash", "deepseek-v4-flash")
+"""Flash 系模型名前缀。
 
-    旧模型名 ``deepseek-v4-flash`` / ``deepseek-v4-flash-vision-exp`` 已下线，
-    请求同样由 V4.1-Flash 承接，因此一并算进来。
+``deepseek-flash`` 即 DeepSeek-V4.1-Flash；旧名 ``deepseek-v4-flash`` /
+``deepseek-v4-flash-vision-exp`` 已下线，请求同样由它承接，因此一并算进来。
+"""
 
-    Flash 系比 ``deepseek-v4-pro`` 多两项能力，两者都靠本函数判定：
 
-    - Responses API：v4-pro 调 /responses 会返回 400，只能回落到 chat completions
-      （见 https://api-docs.deepseek.com/zh-cn/guides/responses_api）
-    - 图片输入：V4.1-Flash 原生多模态，v4-pro 不支持
-      （见 https://api-docs.deepseek.com/zh-cn/guides/vision）
+def _deepseek_supports_responses(model_name: str) -> bool:
+    """DeepSeek 官方开放了 Responses API 的模型：Flash 系与 ``deepseek-v4-pro``。
+
+    官方文档仍写着只有 ``deepseek-flash`` 支持，但 2026-09-13 实测 v4-pro 调
+    /responses 返回 200，响应里回显的 model 也是它自己，并非被悄悄转给了 Flash。
+    未列入的模型回落到 chat completions。
+    见 https://api-docs.deepseek.com/zh-cn/guides/responses_api
     """
-    return model_name.startswith(("deepseek-flash", "deepseek-v4-flash"))
+    return model_name.startswith((*_DEEPSEEK_FLASH, "deepseek-v4-pro"))
+
+
+def _deepseek_supports_vision(model_name: str) -> bool:
+    """DeepSeek 官方接受图片输入的模型：只有原生多模态的 Flash 系，v4-pro 不支持。
+
+    见 https://api-docs.deepseek.com/zh-cn/guides/vision
+    """
+    return model_name.startswith(_DEEPSEEK_FLASH)
 
 
 class ModelEndpoint(BaseModel):
@@ -58,7 +69,7 @@ class ModelEndpoint(BaseModel):
     def resolved_api_type(self) -> ApiType:
         if self.api_type:
             return self.api_type
-        if self.is_deepseek_official and _is_deepseek_flash(self.name):
+        if self.is_deepseek_official and _deepseek_supports_responses(self.name):
             return "responses"
         return "chat"
 
@@ -71,7 +82,7 @@ class ModelEndpoint(BaseModel):
         """
         if self.vision is not None:
             return self.vision
-        return self.is_deepseek_official and _is_deepseek_flash(self.name)
+        return self.is_deepseek_official and _deepseek_supports_vision(self.name)
 
     @property
     def resolved_base_url(self) -> str:
