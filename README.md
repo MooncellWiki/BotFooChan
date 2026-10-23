@@ -17,3 +17,15 @@
 ## 简介
 
 在 QQ 等平台查询阿里云业务状态，查询 FGO/明日方舟 相关动态及推送
+
+## GitHub 功能
+
+合并自 yanyongyu [QQ-GitHub-Bot](https://github.com/cscs181/QQ-GitHub-Bot)：查看 Issue/PR 时间线截图、订阅仓库事件推送、回复推送消息进行评论/合并/打标签等操作、`/status` 查看运行状态。命令与原版一致，但都需要带 `/` 前缀。
+
+与原版的差别：
+
+- 数据库用 ORM 默认的 SQLite，不再需要 Postgres；原 Redis 里的缓存改存在 `LOCALSTORE_CACHE_DIR` 下（`src/providers/cache`）
+- 截图走项目自己的 Playwright（远程 Firefox），不再在 bot 容器里装浏览器
+- 没有配置 `GITHUB_APPS` 时 GitHub 插件只打警告、不加载，不影响其它功能
+
+从原版迁移数据见 `scripts/import_qq_github_bot.py` 的说明。

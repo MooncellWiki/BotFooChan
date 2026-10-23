@@ -24,7 +24,10 @@ _playwright: Playwright | None = None
 async def init(**kwargs) -> Browser:
     global _browser
     global _playwright
-    _playwright = await async_playwright().start()
+    # 断线重连时复用已经起来的 driver：每次 start() 都会多拉起一个 node 进程，
+    # 旧的又没人 stop，远端一直连不上时（/health 还会反复来探）会越积越多
+    if _playwright is None:
+        _playwright = await async_playwright().start()
 
     if config.browser_ws_endpoint:
         _browser = await connect_browser(**kwargs)

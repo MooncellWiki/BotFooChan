@@ -35,7 +35,18 @@ dependencies = [
   "mdit-py-plugins >=0.6.1, <1.0.0",
   "pygments >=2.20.0, <3.0.0",
   "jinja2 >=3.1.6, <4.0.0",
+  "nonebot-adapter-github >=0.6.0, <1.0.0",
+  "nonebot-plugin-status >=0.9.0, <1.0.0",
+  "humanize >=4.0.0, <5.0.0",
+  "unidiff >=0.7.0, <2.0.0",
+  "mdit-py-emoji >=0.1.1, <1.0.0",
+  "linkify-it-py >=2.0.0, <3.0.0",
 ]
+
+[tool.uv]
+# mdit-py-emoji 0.1.1 声明了 markdown-it-py <4，但它只用到 common.utils 里那几个
+# 辅助函数，4.x 仍然保留着；不放开的话会和上面的 markdown-it-py >=4.2 冲突
+override-dependencies = ["markdown-it-py >=4.2.0, <5.0.0"]
 
 [dependency-groups]
 dev = [
@@ -53,6 +64,7 @@ adapters = [
   { name = "QQ", module_name = "nonebot.adapters.qq" },
   { name = "Feishu", module_name = "nonebot.adapters.feishu" },
   { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" },
+  { name = "GitHub", module_name = "nonebot.adapters.github" },
 ]
 plugins = [
   "nonebot_plugin_sentry",
@@ -100,6 +112,12 @@ ignore = [
   "TC002",  # typing-only-third-party-import
   "TC003",  # typing-only-standard-library-import
 ]
+
+[tool.ruff.lint.per-file-ignores]
+# 搬自 QQ-GitHub-Bot 的代码保持原样：依赖注入靠 `X: TypeAlias = Annotated[..., Depends()]`，
+# 改成 PEP 695 的 type 语句后 NoneBot 认不出里面的 Depends；泛型和枚举的写法也不去动
+"src/plugins/github/**" = ["UP040", "UP042", "UP046"]
+"src/providers/platform/**" = ["UP040", "UP042", "UP046"]
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true

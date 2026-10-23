@@ -1,0 +1,16 @@
+{% from "icons/branch.html.jinja" import octicon_branch %}
+
+{#
+created_at: datetime
+#}
+{% macro automatic_base_change_succeeded(created_at) %}
+<div class="TimelineItem">
+  <div class="TimelineItem-badge color-fg-on-emphasis color-bg-open-emphasis">
+    {{ octicon_branch() }}
+  </div>
+  <div class="TimelineItem-body">
+    Base automatically changed
+    <a class="Link--secondary">{{ created_at|relative_time }}</a>
+  </div>
+</div>
+{% endmacro %}

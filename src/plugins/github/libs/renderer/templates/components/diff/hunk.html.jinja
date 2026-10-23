@@ -1,0 +1,12 @@
+{% from "components/diff/hunk-header.html.jinja" import diff_hunk_header %}
+{% from "components/diff/hunk-line.html.jinja" import diff_hunk_line %}
+
+{#
+hunk: Hunk
+#}
+{% macro diff_hunk(hunk) %}
+{{ diff_hunk_header(hunk) }}
+{% for line in hunk %}
+{{ diff_hunk_line(line) }}
+{% endfor %}
+{% endmacro %}

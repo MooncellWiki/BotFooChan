@@ -1,0 +1,28 @@
+{#
+hunk: Hunk
+#}
+{% macro diff_hunk_header(hunk) %}
+<tr>
+  <td
+    class="blob-num color-fg-muted color-bg-accent"
+    style="vertical-align: middle;"
+  >
+    ...
+  </td>
+  <td
+    class="blob-num color-fg-muted color-bg-accent"
+    style="vertical-align: middle;"
+  >
+    ...
+  </td>
+  {# ensure render in one line #}
+  <td class="blob-code blob-code-inner blob-code-hunk">{{
+    "@@ -%d,%d +%d,%d @@%s"|format(
+    hunk.source_start,
+    hunk.source_length,
+    hunk.target_start,
+    hunk.target_length,
+    " " + hunk.section_header if hunk.section_header else "")
+    }}</td>
+</tr>
+{% endmacro %}

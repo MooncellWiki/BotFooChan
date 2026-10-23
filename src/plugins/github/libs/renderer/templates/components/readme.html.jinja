@@ -1,0 +1,18 @@
+{% from "icons/book.html.jinja" import octicon_book %}
+
+{#
+content: str
+#}
+{% macro readme(content) %}
+<div class="Box mb-3">
+  <div class="Box-header">
+    <h2 class="Box-title">
+      {{ octicon_book() }}
+      README
+    </h2>
+  </div>
+  <div class="Box-body">
+    {{ content }}
+  </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,17 @@
+{#
+number: int
+title: str
+#}
+{% macro issue_title(number, title) %}
+<div>
+  <div class="d-flex flex-column flex-md-row">
+    <h1 class="text-normal mb-2 lh-condensed f1 mr-0 flex-auto wb-break-word">
+      <span
+        {# for css #}
+        class="markdown-title"
+      >{{ title|markdown_title }}</span>
+      <span class="f1-light color-fg-muted">#{{ number|escape }}</span>
+    </h1>
+  </div>
+</div>
+{% endmacro %}
