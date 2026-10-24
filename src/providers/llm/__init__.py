@@ -14,7 +14,8 @@
 服务商与模型的注册方式见 :mod:`.config`。
 """
 
-from collections.abc import Sequence
+from collections.abc import Generator, Sequence
+from contextlib import contextmanager
 import re
 import time
 from typing import Any
@@ -179,23 +180,41 @@ def extract_content_and_thinking(result: AgentRunResult[str]) -> tuple[str, str]
 
 
 class UsageTracker:
-    """按模型累计一次处理流程中的 token 消耗，并统计总用时
+    """按模型累计一次处理流程中的 token 消耗，并统计总用时与各阶段用时
 
     渲染结果形如::
 
-        --- 5.0s
+        --- 12.3s
+        读取链接 3.1s ×2
+        生成回答 8.0s
         deepseek-v4-flash  I:1966 O:383 A:2349 C:1152
 
-    其中 I 为输入、O 为输出、A 为合计、C 为命中缓存的输入 token。
+    阶段后的 ×N 为该阶段执行的次数（多次读取、失败重试），只执行一次时省略；
+    I 为输入、O 为输出、A 为合计、C 为命中缓存的输入 token。
     """
 
     def __init__(self) -> None:
         self.started_at = time.perf_counter()
         self.usages: dict[str, RunUsage] = {}
+        self.stages: dict[str, tuple[float, int]] = {}
+        """阶段名 -> (累计耗时, 次数)，按首次进入的顺序排列"""
 
     def record(self, model: str, result: AgentRunResult[Any]) -> None:
         """记录一次模型调用的用量"""
         self.usages.setdefault(model, RunUsage()).incr(result.usage)
+
+    @contextmanager
+    def stage(self, name: str) -> Generator[None]:
+        """统计一个阶段的耗时，同名阶段累加；阶段内抛异常也照样计入"""
+        started_at = time.perf_counter()
+        try:
+            yield
+        finally:
+            elapsed, count = self.stages.get(name, (0.0, 0))
+            self.stages[name] = (
+                elapsed + time.perf_counter() - started_at,
+                count + 1,
+            )
 
     @property
     def elapsed(self) -> float:
@@ -203,8 +222,10 @@ class UsageTracker:
         return time.perf_counter() - self.started_at
 
     def render(self) -> str:
-        """渲染用时与各模型的 token 统计"""
+        """渲染用时、各阶段用时与各模型的 token 统计"""
         lines = [f"--- {self.elapsed:.1f}s"]
+        for name, (elapsed, count) in self.stages.items():
+            lines.append(f"{name} {elapsed:.1f}s" + (f" ×{count}" if count > 1 else ""))
         for model, usage in self.usages.items():
             stats = [
                 f"I:{usage.input_tokens}",
