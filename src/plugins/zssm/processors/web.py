@@ -1,6 +1,9 @@
-from nonebot import logger
+from nonebot import get_plugin_config, logger
 
+from src.plugins.zssm.config import Config
 from src.providers.playwright import get_browser, get_proxy_settings
+
+config = get_plugin_config(Config)
 
 
 async def process_web_page(url: str) -> str | None:
@@ -35,6 +38,15 @@ async def process_web_page(url: str) -> str | None:
             content_text = await page_content.inner_text()
 
         await context.close()
+
+        if content_text and len(content_text) > config.zssm_web_max_chars:
+            logger.info(
+                f"网页内容过长，已截取前{config.zssm_web_max_chars}个字符，"
+                f"原长度: {len(content_text)}"
+            )
+            content_text = (
+                content_text[: config.zssm_web_max_chars] + "\n...[内容过长已截断]"
+            )
 
     except Exception as e:
         logger.opt(exception=e).error(f"处理网页失败: {url}, 错误: {e}")

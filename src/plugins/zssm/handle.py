@@ -1,6 +1,8 @@
+from datetime import datetime
 from pathlib import Path
 import random
 import re
+from zoneinfo import ZoneInfo
 
 from arclet.alconna import AllParam
 import httpx
@@ -19,6 +21,7 @@ from nonebot_plugin_alconna.uniseg import (
     message_reaction,
 )
 
+from src.providers.chat_history import HistoryWindow, format_records, scope_id
 from src.providers.llm import UsageTracker
 
 from .config import Config
@@ -26,11 +29,21 @@ from .processors.ai import generate_ai_response
 from .processors.image import process_image
 from .processors.pdf import process_pdf
 from .processors.web import process_web_page
+from .reply import send_answer
 
 # 从文件加载系统提示词
 SYSTEM_PROMPT_RAW = (
     Path(__file__).parent.joinpath("prompt.txt").read_text(encoding="utf-8")
 )
+SEARCH_PROMPT = """
+
+## 联网搜索
+- 你可以联网搜索
+- 遇到不认识的新词、网络梗、近期事件或拿不准的事实，先搜索再解释，不要凭印象编造
+- 搜索只是帮你弄懂内容，最终仍然只按约定输出一个 json 对象
+- 今天是 {today:%Y-%m-%d}"""
+"""开启联网搜索时追加在系统提示词之后；不给日期的话模型连「近期」指什么都不知道"""
+TZ = ZoneInfo("Asia/Shanghai")
 config = get_plugin_config(Config)
 
 zssm = on_alconna(
@@ -59,6 +72,8 @@ async def handle(
     tracker = UsageTracker()
     random_number = str(random.randint(10000000, 99999999))
     system_prompt = SYSTEM_PROMPT_RAW + random_number
+    if config.zssm_ai_web_search:
+        system_prompt += SEARCH_PROMPT.format(today=datetime.now(TZ))
     user_prompt = ""
     image_list: list[Image] = []
     url_pattern = r"\b(?:https?):\/\/[^\s\/?#]+[^\s]*\b"
@@ -79,12 +94,13 @@ async def handle(
             reply_msg_raw = msg.__class__(reply_msg_raw)
 
         reply_msg = UniMessage.generate_sync(message=reply_msg_raw)  # pyright: ignore[reportAttributeAccessIssue]
-        image_list.extend(reply_msg.get(Image))
 
         reply_msg_display = ""
         for item in reply_msg:
             if isinstance(item, Image):
-                reply_msg_display += f"[图片 {hash(item.url)}]"
+                # 图片按出现顺序编号，与下面 <type: image, id: N> 的识别结果对应
+                image_list.append(item)
+                reply_msg_display += f"[图片 {len(image_list)}]"
             elif isinstance(item, Reference):
                 return await UniMessage(Text("不支持引用消息")).send(
                     reply_to=Reply(msg_id)
@@ -93,7 +109,8 @@ async def handle(
                 return await UniMessage(Text("不支持商城表情")).send(
                     reply_to=Reply(msg_id)
                 )
-            reply_msg_display += str(item)
+            else:
+                reply_msg_display += str(item)
 
         user_prompt += f"<type: text>\n{reply_msg_display}\n</type: text>"
         raw_user_input += reply_msg_display
@@ -101,13 +118,14 @@ async def handle(
     # 处理输入内容
     if content.available:
         any_content = content.result
-        image_list.extend(any_content.get(Image))
 
         any_content_display = ""
         for item in any_content:
             if isinstance(item, Image):
-                any_content_display += f"[图片 {hash(item.url)}]"
-            any_content_display += str(item)
+                image_list.append(item)
+                any_content_display += f"[图片 {len(image_list)}]"
+            else:
+                any_content_display += str(item)
 
         if reply:
             user_prompt += f"<type: interest>\n{any_content_display}\n</type: interest>"
@@ -132,10 +150,9 @@ async def handle(
             reply_to=Reply(msg_id)
         )
 
-    for image in image_list:
+    for image_id, image in enumerate(image_list, 1):
         image_content = await process_image(image, tracker)
         if image_content:
-            image_id = hash(image.url)
             user_prompt += (
                 f"\n<type: image, id: {image_id}>\n"
                 f"{image_content}\n</type: image, id: {image_id}>"
@@ -166,7 +183,8 @@ async def handle(
             # 处理PDF链接
             await UniMessage(Text("正在尝试处理PDF文件")).send(reply_to=Reply(msg_id))
 
-            pdf_content = await process_pdf(url)
+            with tracker.stage("读取链接"):
+                pdf_content = await process_pdf(url)
             if pdf_content:
                 user_prompt += f"\n<type: pdf, url: {url}>\n{pdf_content}\n</type: pdf>"
             else:
@@ -177,14 +195,16 @@ async def handle(
             # 处理普通网页链接
             await UniMessage(Text("正在尝试打开链接")).send(reply_to=Reply(msg_id))
 
-            page_content = await process_web_page(url)
+            with tracker.stage("读取链接"):
+                page_content = await process_web_page(url)
             if page_content:
                 user_prompt += (
                     f"\n<type: web_page, url: {url}>\n{page_content}\n</type: web_page>"
                 )
             else:
                 # 最后尝试作为PDF处理
-                pdf_content = await process_pdf(url)
+                with tracker.stage("读取链接"):
+                    pdf_content = await process_pdf(url)
                 if pdf_content:
                     user_prompt += (
                         f"\n<type: pdf, url: {url}>\n{pdf_content}\n</type: pdf>"
@@ -198,6 +218,20 @@ async def handle(
     if msg_urls or image_list:
         await message_reaction("314", msg_id, event, bot)
 
+    # 附带被解释内容之前的几条聊天，更早的交给模型用工具自己翻。
+    # 回复了某条就锚在那条上，否则锚在命令本身之前
+    scope = scope_id(event)
+    window = (
+        HistoryWindow.at_message(scope, reply.id)
+        if reply
+        else HistoryWindow.at_now(scope, msg_id)
+    )
+    if window and (context := window.recent(config.zssm_context_size)):
+        user_prompt = (
+            f"<type: context>\n{format_records(context)}\n</type: context>\n"
+            f"{user_prompt}"
+        )
+
     # 准备最终的用户提示
     user_prompt = (
         f"<random number: {random_number}>\n"
@@ -206,11 +240,13 @@ async def handle(
     logger.info(f"最终用户提示: \n{user_prompt}")
 
     # 生成AI响应
-    response = await generate_ai_response(system_prompt, user_prompt, tracker)
+    response = await generate_ai_response(system_prompt, user_prompt, tracker, window)
     # 如果失败，进行一次重试
     if response is None:
         logger.warning("AI 回复解析失败，正在重试...")
-        response = await generate_ai_response(system_prompt, user_prompt, tracker)
+        response = await generate_ai_response(
+            system_prompt, user_prompt, tracker, window
+        )
 
     if response is None:
         return await UniMessage(Text("AI 回复解析失败, 请重试")).send(
@@ -218,4 +254,4 @@ async def handle(
         )
 
     await message_reaction("144", msg_id, event, bot)
-    await UniMessage(Text(f"{response}\n\n{tracker.render()}")).send(reply_to=reply)
+    await send_answer(bot, event, response, tracker, window, reply_to=reply)
