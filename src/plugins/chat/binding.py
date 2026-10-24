@@ -5,6 +5,9 @@ OneBot 侧只认真实群号，官方机器人侧只认脱敏的 group_openid，
 
 group_openid 是按 AppID 分发的（同一个群，换个机器人就是另一串 openid），
 因此绑定里连 AppID 一起记下来，多机器人同时在线时才能挑对发送方。
+
+绑定表原先存在 deepseek 插件的数据目录下，插件并入通用对话后改存本插件目录；
+新位置还没有文件时从旧位置读一次，下次保存就落到新位置。
 """
 
 import json
@@ -30,17 +33,20 @@ class GroupBindingStore:
         self.load()
 
     def load(self) -> None:
-        if not self.file.exists():
-            return
+        source = self.file
+        if not source.exists():
+            source = store.get_data_dir(None) / "deepseek" / self.file.name
+            if not source.exists():
+                return
 
         try:
-            data = json.loads(self.file.read_text(encoding="utf-8"))
+            data = json.loads(source.read_text(encoding="utf-8"))
             self.bindings = {
                 str(group_id): GroupBinding.model_validate(binding)
                 for group_id, binding in data.items()
             }
         except Exception as e:
-            logger.opt(exception=e).error(f"群 markdown 绑定表读取失败：{self.file}")
+            logger.opt(exception=e).error(f"群 markdown 绑定表读取失败：{source}")
 
     def save(self) -> None:
         self.file.parent.mkdir(parents=True, exist_ok=True)

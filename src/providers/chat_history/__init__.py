@@ -4,8 +4,7 @@
 这里用一个全局的 ``on_message`` 钩子把每个会话最近的消息记在内存里（见
 :mod:`.buffer`），供各插件拼上下文：
 
-- 通用对话被 @ 时直接带上最近的若干条
-- 需要按需往前翻的用 :class:`.window.HistoryWindow`：预先给几条，
+- 通用对话与 zssm 都用 :class:`.window.HistoryWindow`：预先给最近几条，
   不够再由模型用工具自己往前翻
 """
 

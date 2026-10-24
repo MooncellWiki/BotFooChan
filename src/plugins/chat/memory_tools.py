@@ -7,17 +7,22 @@
 抄错一位就把张三的事记到李四头上，所以这里挡一道。
 """
 
+from typing import Any
+
 from nonebot import logger
 from pydantic_ai import Agent, ModelRetry
 
 from src.providers.user_memory import append_memory, replace_memory
+
+TOOL_NAMES = frozenset({"remember", "update_memory"})
+"""下面注册的工具名，排版回答时据此把记忆操作藏起来"""
 
 
 def _choices(participants: dict[str, str]) -> str:
     return "、".join(f"{name}(id:{uid})" for uid, name in participants.items())
 
 
-def register(agent: Agent, participants: dict[str, str]) -> None:
+def register(agent: Agent[Any, Any], participants: dict[str, str]) -> None:
     """把写记忆的工具挂到 agent 上。
 
     participants 为本轮上下文里出现过的 ``用户 id -> 展示名``。

@@ -1,4 +1,4 @@
-"""deepseek 专用的 markdown 渲染，替代 htmlrender 内置的 Python-Markdown 管线。
+"""长回答排版用的 markdown 渲染，替代 htmlrender 内置的 Python-Markdown 管线。
 
 htmlrender 的 render_markdown 用 Python-Markdown 转 HTML，不遵循 CommonMark：
 列表前必须有空行、嵌套列表要求 4 空格缩进，LLM 输出经常整段糊成一个 <p>。
