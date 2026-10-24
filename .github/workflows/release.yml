@@ -194,32 +194,3 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           short-description: ${{ github.event.repository.description }}
           repository: starheart/${{ github.event.repository.name }}
-
-  deploy:
-    runs-on: ubuntu-latest
-    environment: official-bot
-    needs: push
-    permissions: {}
-    if: |-
-      ${{
-        always() &&
-        startsWith(github.ref, 'refs/tags/v') &&
-        needs.push.result == 'success'
-      }}
-
-    steps:
-      - name: Run Remote SSH Command
-        uses: appleboy/ssh-action@master
-        env:
-          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          password: ${{ secrets.DEPLOY_PASSWORD }}
-          use_insecure_cipher: true
-          envs: DEPLOY_PATH
-          script: |
-            cd $DEPLOY_PATH
-            docker compose pull
-            docker compose up -d
-            docker system prune -a -f
