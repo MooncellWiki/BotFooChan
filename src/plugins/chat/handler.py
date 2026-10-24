@@ -22,12 +22,20 @@ from nonebot_plugin_alconna.uniseg import (
 )
 from pydantic_ai.settings import ModelSettings
 
+from src.providers.chat_history import (
+    TZ,
+    Record,
+    history_config,
+    recorder,
+    render_text,
+    scope_id,
+    sender_name,
+)
 from src.providers.llm import create_agent, split_inline_thinking
 from src.providers.user_memory import get_memories
 
 from . import memory_tools
 from .config import chat_config, get_endpoint, self_name
-from .recorder import TZ, Record, recorder, render_text, scope_id, sender_name
 from .rule import ignored_ids
 
 FAILED_REPLY = "脑子卡了一下，等会儿再问我一次吧"
@@ -63,7 +71,7 @@ INSTRUCTIONS = """\
 def _format_records(records: list[Record]) -> str:
     lines = []
     for record in records:
-        text = record.text[: chat_config.max_text_length]
+        text = record.text[: history_config.max_text_length]
         who = f"{record.name}（你自己）" if record.is_self else _who(record)
         lines.append(f"[{record.at:%H:%M}] {who}: {text}")
     return "\n".join(lines)
@@ -136,7 +144,7 @@ def _build_prompt(
         who = "你自己" if replied.is_self else _who(replied)
         lines.append(
             f"他是回复着这条说的——[{replied.at:%H:%M}] {who}: "
-            f"{replied.text[: chat_config.max_text_length]}"
+            f"{replied.text[: history_config.max_text_length]}"
         )
     lines.append("请接话。")
     return "\n".join(lines)

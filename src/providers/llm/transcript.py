@@ -52,8 +52,11 @@ _TOOL_ALIASES = {
     "code_execution": "代码执行",
     "image_generation": "图片生成",
     "memory": "记忆",
+    "read_chat_history": "翻聊天记录",
+    "search_chat_history": "搜索聊天记录",
 }
-"""服务商内置工具的中文名，未收录的直接显示原始工具名"""
+"""工具的中文名（服务商内置的，加上 providers.chat_history 的翻记录工具），
+未收录的直接显示原始工具名"""
 
 _OUTCOMES = {
     "failed": "失败",

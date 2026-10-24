@@ -1,22 +1,26 @@
 """群聊消息环形缓冲。
 
-被 @ 时光看那一句话经常不知所云——「这个怎么搞」指的是上面哪条得看上下文。
-这里用一个全局的 ``on_message`` 钩子把每个会话最近的消息记在内存里，
-被 @ 时一并拼进提示词。
-
-只放内存、不落库：需要的本来就只有最近几十条，重启后重新积累即可，
+只放内存、不落库：需要的本来就只有最近一两百条，重启后重新积累即可，
 也免得把整个群的聊天记录长期存下来。
 """
 
 from collections import deque
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from nonebot.adapters import Event
-from nonebot_plugin_alconna.uniseg import At, AtAll, Emoji, Image, Text, UniMessage
+from nonebot_plugin_alconna.uniseg import (
+    At,
+    AtAll,
+    Emoji,
+    Image,
+    Segment,
+    Text,
+    UniMessage,
+)
 
-from .config import chat_config
+from .config import history_config
 
 TZ = ZoneInfo("Asia/Shanghai")
 
@@ -32,6 +36,8 @@ class Record:
     message_id: str
     is_self: bool = False
     """是不是机器人自己说的"""
+    seq: int = 0
+    """会话内的递增编号，进缓冲时分配；模型翻记录时用它指认「从哪条往前翻」"""
 
 
 def scope_id(event: Event) -> str:
@@ -45,38 +51,44 @@ def scope_id(event: Event) -> str:
     return session_id.removesuffix(f"_{user_id}") or user_id
 
 
-def sender_name(event: Event) -> str:
-    """发送者的展示名。
+def display_name(source: object) -> str | None:
+    """事件或被回复消息（``Reply.origin``）里发送者的展示名，取不到时为 None。
 
     各适配器把昵称放在不同地方（OneBot 在 ``sender.card/nickname``、
     QQ 官方在 ``author.username``），没有统一接口，只能按已知的字段挨个试。
     """
-    for owner in (getattr(event, "sender", None), getattr(event, "author", None)):
+    for owner in (getattr(source, "sender", None), getattr(source, "author", None)):
         if owner is None:
             continue
         for attr in ("card", "nickname", "username", "name"):
             if value := getattr(owner, attr, None):
                 return str(value)
-    return event.get_user_id()
+    return None
+
+
+def sender_name(event: Event) -> str:
+    """发送者的展示名，取不到时退回用户 id"""
+    return display_name(event) or event.get_user_id()
+
+
+def segment_text(seg: Segment) -> str:
+    """单个消息段的文本形式，非文本段落用占位符表示"""
+    if isinstance(seg, Text):
+        return seg.text
+    if isinstance(seg, At):
+        return f"@{seg.display or seg.target}"
+    if isinstance(seg, AtAll):
+        return "@全体成员"
+    if isinstance(seg, Emoji):
+        return seg.name or "[表情]"
+    if isinstance(seg, Image):
+        return "[图片]"
+    return f"[{seg.__class__.__name__.lower()}]"
 
 
 def render_text(msg: UniMessage) -> str:
     """把消息渲染成一行纯文本，非文本段落用占位符表示"""
-    chunks: list[str] = []
-    for seg in msg:
-        if isinstance(seg, Text):
-            chunks.append(seg.text)
-        elif isinstance(seg, At):
-            chunks.append(f"@{seg.display or seg.target}")
-        elif isinstance(seg, AtAll):
-            chunks.append("@全体成员")
-        elif isinstance(seg, Emoji):
-            chunks.append(seg.name or "[表情]")
-        elif isinstance(seg, Image):
-            chunks.append("[图片]")
-        else:
-            chunks.append(f"[{seg.__class__.__name__.lower()}]")
-    return " ".join("".join(chunks).split())
+    return " ".join("".join(segment_text(seg) for seg in msg).split())
 
 
 class Recorder:
@@ -85,13 +97,20 @@ class Recorder:
     def __init__(self, size: int) -> None:
         self.size = size
         self._buffers: dict[str, deque[Record]] = {}
+        self._next_seqs: dict[str, int] = {}
 
     def _buffer(self, scope: str) -> deque[Record]:
         return self._buffers.setdefault(scope, deque(maxlen=self.size))
 
+    def next_seq(self, scope: str) -> int:
+        """下一条进缓冲的消息将拿到的编号"""
+        return self._next_seqs.get(scope, 1)
+
     def push(self, scope: str, record: Record) -> None:
         if record.text:
-            self._buffer(scope).append(record)
+            seq = self.next_seq(scope)
+            self._next_seqs[scope] = seq + 1
+            self._buffer(scope).append(replace(record, seq=seq))
 
     def record_event(self, event: Event, msg: UniMessage, message_id: str) -> None:
         self.push(
@@ -121,12 +140,13 @@ class Recorder:
             ),
         )
 
+    def records(self, scope: str) -> list[Record]:
+        """缓冲里的全部消息，旧的在前"""
+        return list(self._buffers.get(scope, ()))
+
     def recent(self, scope: str, limit: int) -> list[Record]:
         """最近的消息，旧的在前"""
-        buffer = self._buffers.get(scope)
-        if not buffer:
-            return []
-        return list(buffer)[-limit:]
+        return self.records(scope)[-limit:]
 
     def find(self, scope: str, message_id: str) -> Record | None:
         """按消息 id 找回被回复的那条"""
@@ -138,5 +158,5 @@ class Recorder:
         return next((r for r in buffer if r.message_id == message_id), None)
 
 
-recorder = Recorder(chat_config.history_size)
-"""全局缓冲：记录器、触发规则、对话流程共用这一份"""
+recorder = Recorder(history_config.size)
+"""全局缓冲：记录钩子写入，各插件拼上下文时读取"""

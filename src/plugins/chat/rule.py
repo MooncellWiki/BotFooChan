@@ -16,8 +16,9 @@ from nonebot import get_bots
 from nonebot.adapters import Bot, Event
 from nonebot_plugin_alconna.uniseg import At, Reply, UniMessage, UniMsg, get_target
 
+from src.providers.chat_history import recorder, scope_id
+
 from .config import chat_config
-from .recorder import recorder, scope_id
 
 _ID_ATTRS = ("user_id", "id", "open_id", "union_id", "user_openid", "tiny_id")
 

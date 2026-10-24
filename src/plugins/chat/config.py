@@ -11,12 +11,8 @@ class ScopedConfig(BaseModel):
     """自称；留空则取全局 NICKNAME 的第一个"""
     prompt: str = ""
     """追加在内置要求之后的人设"""
-    history_size: int = Field(default=60, gt=0)
-    """每个会话在内存里保留的消息条数"""
     context_size: int = Field(default=25, gt=0)
-    """拼进提示词的最近消息条数"""
-    max_text_length: int = Field(default=300, gt=0)
-    """单条消息进提示词时的截断长度（字符）"""
+    """拼进提示词的最近消息条数（缓冲大小与单条截断长度见 CHAT_HISTORY__*）"""
     timeout: int = Field(default=100, gt=0)
     """请求超时（秒）"""
     temperature: float | None = Field(default=None, ge=0, le=2)
