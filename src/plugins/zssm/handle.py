@@ -1,6 +1,5 @@
 from datetime import datetime
 from pathlib import Path
-import random
 import re
 from zoneinfo import ZoneInfo
 
@@ -22,11 +21,11 @@ from nonebot_plugin_alconna.uniseg import (
 )
 
 from src.providers.chat_history import HistoryWindow, format_records, scope_id
-from src.providers.llm import UsageTracker
+from src.providers.llm import UsageTracker, resolve_endpoint
+from src.providers.llm.media import as_model_inputs
 
 from .config import Config
 from .processors.ai import generate_ai_response
-from .processors.image import process_image
 from .processors.pdf import process_pdf
 from .processors.web import process_web_page
 from .reply import send_answer
@@ -36,7 +35,6 @@ SYSTEM_PROMPT_RAW = (
     Path(__file__).parent.joinpath("prompt.txt").read_text(encoding="utf-8")
 )
 SEARCH_PROMPT = """
-
 ## 联网搜索
 - 你可以联网搜索
 - 遇到不认识的新词、网络梗、近期事件或拿不准的事实，先搜索再解释，不要凭印象编造
@@ -70,8 +68,7 @@ async def handle(
     """
     msg = event.get_message()
     tracker = UsageTracker()
-    random_number = str(random.randint(10000000, 99999999))
-    system_prompt = SYSTEM_PROMPT_RAW + random_number
+    system_prompt = SYSTEM_PROMPT_RAW
     if config.zssm_ai_web_search:
         system_prompt += SEARCH_PROMPT.format(today=datetime.now(TZ))
     user_prompt = ""
@@ -98,7 +95,7 @@ async def handle(
         reply_msg_display = ""
         for item in reply_msg:
             if isinstance(item, Image):
-                # 图片按出现顺序编号，与下面 <type: image, id: N> 的识别结果对应
+                # 图片按出现顺序编号，与随消息附上的图片一一对应
                 image_list.append(item)
                 reply_msg_display += f"[图片 {len(image_list)}]"
             elif isinstance(item, Reference):
@@ -137,7 +134,8 @@ async def handle(
         return await UniMessage(Text("请回复或输入内容")).send(reply_to=Reply(msg_id))
 
     # 验证API配置
-    if not config.zssm_ai_text_model or not config.zssm_ai_vl_model:
+    endpoint = resolve_endpoint(config.zssm_ai_model) if config.zssm_ai_model else None
+    if endpoint is None:
         return await UniMessage(Text("未配置 AI 模型, 暂时无法使用")).send(
             reply_to=Reply(msg_id)
         )
@@ -150,15 +148,18 @@ async def handle(
             reply_to=Reply(msg_id)
         )
 
-    for image_id, image in enumerate(image_list, 1):
-        image_content = await process_image(image, tracker)
-        if image_content:
-            user_prompt += (
-                f"\n<type: image, id: {image_id}>\n"
-                f"{image_content}\n</type: image, id: {image_id}>"
-            )
-        else:
-            return await UniMessage(Text("图片识别失败")).send(reply_to=Reply(msg_id))
+    # 图片直接交给模型看，不再先让另一个模型转述成文字
+    image_inputs = []
+    if image_list:
+        if not endpoint.supports_vision:
+            return await UniMessage(
+                Text(f"当前模型 {config.zssm_ai_model} 看不了图片")
+            ).send(reply_to=Reply(msg_id))
+        with tracker.stage("读取图片"):
+            image_inputs = await as_model_inputs(image_list)
+        # 少一张 [图片 N] 就对不上号了，干脆整体报错
+        if len(image_inputs) < len(image_list):
+            return await UniMessage(Text("图片获取失败")).send(reply_to=Reply(msg_id))
 
     # 处理URL和PDF - 只从原始用户输入中提取URL，而不是从完整的user_prompt中提取
     msg_urls = re.findall(url_pattern, raw_user_input)
@@ -232,21 +233,15 @@ async def handle(
             f"{user_prompt}"
         )
 
-    # 准备最终的用户提示
-    user_prompt = (
-        f"<random number: {random_number}>\n"
-        f"{user_prompt}\n</random number: {random_number}>"
-    )
     logger.info(f"最终用户提示: \n{user_prompt}")
 
     # 生成AI响应
-    response = await generate_ai_response(system_prompt, user_prompt, tracker, window)
+    prompt = [user_prompt, *image_inputs] if image_inputs else user_prompt
+    response = await generate_ai_response(system_prompt, prompt, tracker, window)
     # 如果失败，进行一次重试
     if response is None:
         logger.warning("AI 回复解析失败，正在重试...")
-        response = await generate_ai_response(
-            system_prompt, user_prompt, tracker, window
-        )
+        response = await generate_ai_response(system_prompt, prompt, tracker, window)
 
     if response is None:
         return await UniMessage(Text("AI 回复解析失败, 请重试")).send(

@@ -2,14 +2,11 @@ from pydantic import BaseModel, Field
 
 
 class Config(BaseModel):
-    zssm_ai_text_model: str | None = None
-    """文本模型引用：LLM__MODELS 中的别名，或 '服务商:模型名'"""
-    zssm_ai_vl_model: str | None = None
-    """视觉模型引用"""
-    zssm_ai_check_model: str | None = None
-    """审查模型引用（缺省时跳过 system prompt 泄露审查）"""
+    zssm_ai_model: str | None = None
+    """模型引用：LLM__MODELS 中的别名，或 '服务商:模型名'。
+    图片直接交给它看，所以要选支持图片输入的模型（DeepSeek 官方只有 Flash 系）"""
     zssm_ai_web_search: bool = False
-    """文本模型启用服务商内置的联网搜索（仅 anthropic 协议能用，见 providers.llm）"""
+    """启用服务商内置的联网搜索（仅 anthropic 协议能用，见 providers.llm）"""
     zssm_context_size: int = Field(default=8, ge=0)
     """预先附带的、被解释消息之前的聊天记录条数；更早的由模型用工具自己翻，0 为不附带"""
 
