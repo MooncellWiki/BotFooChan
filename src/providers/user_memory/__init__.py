@@ -20,8 +20,8 @@ from nonebot_plugin_orm import Model, get_session
 from sqlalchemy import DateTime, String, Text, select
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .compress import compress as compress
-from .compress import trim as trim
+from .compression import compress as compress
+from .compression import trim as trim
 from .config import memory_config as memory_config
 
 EMPTY_HINT = "（暂无记录）"
