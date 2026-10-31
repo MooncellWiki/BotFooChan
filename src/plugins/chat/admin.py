@@ -18,7 +18,6 @@ from nonebot_plugin_alconna import (
 from nonebot_plugin_alconna.uniseg import get_target
 
 from src.providers.llm import list_models
-from src.providers.qq_dual_bot import shared_groups
 
 from .binding import QQ_CLIENT_ADAPTERS, GroupBinding, group_bindings
 from .config import current_model, runtime
@@ -123,16 +122,10 @@ async def _(
 
     if not openid.available:
         if (binding := group_bindings.get(group_id)) is None:
-            # 两边机器人同群时官方机器人不处理没 @ 它的消息，但同群关系里有 openid
-            known = "".join(
-                f"\n已认出官方机器人 {shared.app_id} 在本群的 group_openid，"
-                f"发送 /llm bind {shared.group_openid} -b {shared.app_id} 即可绑定"
-                for shared in shared_groups.shared_by_group_id(int(group_id))
-            )
             await llm.finish(
                 f"群 {group_id} 尚未绑定\n"
                 "用法：/llm bind <group_openid> [-b <AppID>]\n"
-                "group_openid 可在同一个群里 @ 官方机器人执行 /llm bind 获取" + known
+                "group_openid 可在官方机器人所在的同一个群里执行 /llm bind 获取"
             )
         await llm.finish(
             f"群 {group_id} 已绑定 {binding.group_openid}"
