@@ -1,13 +1,18 @@
 import asyncio
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+from typing import Any, override
 
 import nonebot
 from nonebot import logger
 from nonebot.adapters.feishu import Adapter as FeishuAdapter
 from nonebot.adapters.github import Adapter as BaseGitHubAdapter
 from nonebot.adapters.github.config import GitHubApp, OAuthApp
-from nonebot.adapters.milky import Adapter as MilkyAdapter
+from nonebot.adapters.milky import Adapter as BaseMilkyAdapter
+from nonebot.adapters.milky.config import ClientInfo as MilkyClientInfo
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
 from nonebot.adapters.qq import Adapter as QQAdapter
+from nonebot.drivers import Driver, Request, WebSocket
 
 GITHUB_RETRY_INTERVAL = 60
 
@@ -41,6 +46,37 @@ class GitHubAdapter(BaseGitHubAdapter):
             else:
                 logger.success(f"GitHub App {app.id} 重试启动成功")
                 return
+
+
+class HeaderAuthMilkyClientInfo(MilkyClientInfo):
+    @override
+    def ws_url(self):
+        return super().ws_url().with_query(None)
+
+
+class MilkyAdapter(BaseMilkyAdapter):
+    """事件 WebSocket 的 access token 改放在 Authorization 头里。
+
+    原版把 token 拼进 ``/event?access_token=...``，协议端连不上时每 3 秒打一条带完整
+    URL 的 ERROR 日志，token 跟着进了日志和 Sentry。Milky 协议端两种方式都认。
+    """
+
+    def __init__(self, driver: Driver, **kwargs: Any):
+        super().__init__(driver, **kwargs)
+        # 连接在 on_ready 时才按这份配置发起，这里换掉还来得及
+        self.milky_config.milky_clients = [
+            HeaderAuthMilkyClientInfo(**info.model_dump())
+            for info in self.milky_config.milky_clients
+        ]
+
+    @override
+    @asynccontextmanager
+    async def websocket(self, setup: Request) -> AsyncGenerator[WebSocket]:
+        for info in self.milky_config.milky_clients:
+            if info.access_token and setup.url == info.ws_url():
+                setup.headers["Authorization"] = f"Bearer {info.access_token}"
+        async with super().websocket(setup) as ws:
+            yield ws
 
 
 nonebot.init()
