@@ -7,7 +7,7 @@ from nonebot.adapters.qq import (
     Bot,
     C2CMessageCreateEvent,
     DirectMessageCreateEvent,
-    GroupAtMessageCreateEvent,
+    GroupMessageCreateEvent,
     GuildMessageEvent,
     MessageCreateEvent,
     MessageEvent,
@@ -63,7 +63,7 @@ class QQExtractor(
                 type=TargetType.QQ_OFFICIAL_USER,
                 qq_user_open_id=event.author.user_openid,
             )
-        elif isinstance(event, GroupAtMessageCreateEvent):
+        elif isinstance(event, GroupMessageCreateEvent):
             return QQOfficialUserInfo(
                 type=TargetType.QQ_OFFICIAL_USER,
                 qq_user_open_id=event.author.member_openid,
@@ -79,7 +79,7 @@ class QQExtractor(
                 qq_guild_id=event.guild_id,
                 qq_channel_id=event.channel_id,
             )
-        elif isinstance(event, GroupAtMessageCreateEvent):
+        elif isinstance(event, GroupMessageCreateEvent):
             return QQOfficialGroupInfo(
                 type=TargetType.QQ_OFFICIAL_GROUP, qq_group_open_id=event.group_openid
             )
@@ -95,7 +95,7 @@ class QQExtractor(
                     return RoleLevel.ADMIN
                 return RoleLevel.MEMBER
             return RoleLevel.GUEST
-        elif isinstance(event, GroupAtMessageCreateEvent):
+        elif isinstance(event, GroupMessageCreateEvent):
             return RoleLevel.MEMBER
 
     @classmethod
@@ -115,7 +115,7 @@ class QQExtractor(
             )
         elif isinstance(event, DirectMessageCreateEvent):
             return QQGuildUserMessageInfo(type=TargetType.QQGUILD_USER, id=event.id)
-        elif isinstance(event, GroupAtMessageCreateEvent):
+        elif isinstance(event, GroupMessageCreateEvent):
             return QQOfficialGroupMessageInfo(
                 type=TargetType.QQ_OFFICIAL_GROUP, id=event.id
             )
