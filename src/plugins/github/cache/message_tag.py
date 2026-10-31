@@ -67,9 +67,7 @@ async def create_message_tag(message: MessageInfo, tag: Tag) -> None:
     """
 
     await cache.set(
-        MESSAGE_TAG_CACHE_KEY.format(
-            type=message.type.value, message_id=str(message.id)
-        ),
+        MESSAGE_TAG_CACHE_KEY.format(type=message.type.value, message_id=message.key),
         tag.model_dump_json(),
         ex=MESSAGE_TAG_CACHE_EXPIRE,
     )
@@ -89,7 +87,7 @@ async def get_message_tag(message: MessageInfo) -> Tag | None:
     if (
         data := await cache.get(
             MESSAGE_TAG_CACHE_KEY.format(
-                type=message.type.value, message_id=str(message.id)
+                type=message.type.value, message_id=message.key
             )
         )
     ) is not None:

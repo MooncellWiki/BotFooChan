@@ -2,9 +2,8 @@ import re
 import secrets
 
 from nonebot import logger, on_command
-from nonebot.adapters import Message
+from nonebot.adapters import Bot, Message
 from nonebot.adapters.github import ActionFailed, ActionTimeout
-from nonebot.adapters.onebot.v11 import MessageSegment as QQMS
 from nonebot.adapters.qq import MessageSegment as QQOfficialMS
 from nonebot.params import CommandArg
 from nonebot.typing import T_State
@@ -25,6 +24,7 @@ from src.providers.platform import (
     TargetType,
     extract_sent_message,
 )
+from src.providers.platform.qq_client import image_segment
 
 release = on_command(
     "release",
@@ -72,6 +72,7 @@ async def check_repo(repo: REPOSITORY): ...
 
 @release.handle()
 async def handle_content(
+    event_bot: Bot,
     state: T_State,
     target_info: TARGET_INFO,
     message_info: MESSAGE_INFO,
@@ -122,7 +123,7 @@ async def handle_content(
     )
     match target_info.type:
         case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await release.send(QQMS.image(image_url))
+            result = await release.send(image_segment(event_bot, image_url))
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER

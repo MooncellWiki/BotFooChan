@@ -4,9 +4,6 @@ from typing import Annotated, Generic, TypeAlias, TypeVar, cast
 from nonebot import logger
 from nonebot.adapters.github import Event
 from nonebot.adapters.github.utils import get_attr_or_item
-from nonebot.adapters.onebot.v11 import Bot as QQBot
-from nonebot.adapters.onebot.v11 import Message as QQMessage
-from nonebot.adapters.onebot.v11 import MessageSegment as QQMS
 from nonebot.adapters.qq import Bot as QQOfficialBot
 from nonebot.adapters.qq.exception import ActionFailed as QQOfficialActionFailed
 from nonebot.matcher import Matcher
@@ -17,6 +14,7 @@ from src.plugins.github.helpers import qqofficial_conditional_image
 from src.plugins.github.models import Subscription
 from src.providers import cache
 from src.providers.platform import TargetInfo, extract_sent_message, get_target_bot
+from src.providers.platform.qq_client import send_image, send_text
 from src.providers.platform.targets import (
     QQGroupInfo,
     QQGuildChannelInfo,
@@ -67,14 +65,8 @@ async def send_subscriber_text(target_info: TargetInfo, text: str, tag: Tag) -> 
 
     try:
         match target_info:
-            case QQUserInfo():
-                result = await cast("QQBot", bot).send_private_msg(
-                    user_id=target_info.qq_user_id, message=text
-                )
-            case QQGroupInfo():
-                result = await cast("QQBot", bot).send_group_msg(
-                    group_id=target_info.qq_group_id, message=text
-                )
+            case QQUserInfo() | QQGroupInfo():
+                result = await send_text(bot, target_info, text)
             case QQOfficialUserInfo():
                 result = await cast("QQOfficialBot", bot).post_c2c_messages(
                     openid=target_info.qq_user_open_id, msg_type=0, content=text
@@ -109,15 +101,8 @@ async def send_subscriber_image(
 
     try:
         match target_info:
-            case QQUserInfo():
-                result = await cast("QQBot", bot).send_private_msg(
-                    user_id=target_info.qq_user_id, message=QQMessage(QQMS.image(image))
-                )
-            case QQGroupInfo():
-                result = await cast("QQBot", bot).send_group_msg(
-                    group_id=target_info.qq_group_id,
-                    message=QQMessage(QQMS.image(image)),
-                )
+            case QQUserInfo() | QQGroupInfo():
+                result = await send_image(bot, target_info, image)
             case QQOfficialUserInfo():
                 result = await cast("QQOfficialBot", bot).send_to_c2c(
                     openid=target_info.qq_user_open_id,
@@ -154,15 +139,8 @@ async def send_subscriber_image_url(
 
     try:
         match target_info:
-            case QQUserInfo():
-                result = await cast("QQBot", bot).send_private_msg(
-                    user_id=target_info.qq_user_id, message=QQMessage(QQMS.image(image))
-                )
-            case QQGroupInfo():
-                result = await cast("QQBot", bot).send_group_msg(
-                    group_id=target_info.qq_group_id,
-                    message=QQMessage(QQMS.image(image)),
-                )
+            case QQUserInfo() | QQGroupInfo():
+                result = await send_image(bot, target_info, image)
             case QQOfficialUserInfo():
                 result = await cast("QQOfficialBot", bot).post_c2c_files(
                     openid=target_info.qq_user_open_id, file_type=1, url=image

@@ -1,9 +1,8 @@
 import re
 
 from nonebot import logger, on_command
-from nonebot.adapters import Message
+from nonebot.adapters import Bot, Message
 from nonebot.adapters.github import ActionTimeout
-from nonebot.adapters.onebot.v11 import MessageSegment as QQMS
 from nonebot.adapters.qq import MessageSegment as QQOfficialMS
 from nonebot.params import CommandArg
 from nonebot.typing import T_State
@@ -29,6 +28,7 @@ from src.providers.platform import (
     TargetType,
     extract_sent_message,
 )
+from src.providers.platform.qq_client import image_segment
 
 diff = on_command(
     "diff",
@@ -75,6 +75,7 @@ async def check_issue(state: T_State, issue: ISSUE):
 
 @diff.handle()
 async def handle_diff(
+    event_bot: Bot,
     state: T_State,
     target_info: TARGET_INFO,
     message_info: MESSAGE_INFO,
@@ -105,7 +106,7 @@ async def handle_diff(
 
     match target_info.type:
         case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await diff.send(QQMS.image(img))
+            result = await diff.send(image_segment(event_bot, img))
         case TargetType.QQ_OFFICIAL_USER | TargetType.QQ_OFFICIAL_GROUP:
             result = await diff.send(await qqofficial_conditional_image(img))
         case TargetType.QQGUILD_USER | TargetType.QQGUILD_CHANNEL:

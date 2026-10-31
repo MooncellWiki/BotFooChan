@@ -1,4 +1,4 @@
-"""服务器状态：``/status``、``/状态``，OneBot 下还能戳一戳机器人。
+"""服务器状态：``/status``、``/状态``，QQ 客户端（OneBot、Milky）下还能戳一戳机器人。
 
 接的是 QQ-GitHub-Bot 的 multi_status：原版借 Redis 的发布订阅把多个实例的状态
 攒到一起，这里只有一个进程，直接渲染 nonebot-plugin-status 的模板就够了。
@@ -9,6 +9,7 @@
 """
 
 from nonebot import on_command, on_message, on_type, require
+from nonebot.adapters.milky.event import FriendNudgeEvent, GroupNudgeEvent
 from nonebot.adapters.onebot.v11 import PokeNotifyEvent, PrivateMessageEvent
 from nonebot.matcher import Matcher
 from nonebot.params import CommandStart
@@ -53,7 +54,7 @@ if not status_config.server_status_enabled:
         handlers=[server_status],
     )
     on_type(
-        PokeNotifyEvent,
+        (PokeNotifyEvent, FriendNudgeEvent, GroupNudgeEvent),
         rule=to_me(),
         permission=status_permission,
         priority=10,

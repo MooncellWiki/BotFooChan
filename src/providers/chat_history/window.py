@@ -18,7 +18,7 @@ from typing import Any
 
 from pydantic_ai import Agent
 
-from .buffer import TZ, Record, recorder
+from .buffer import TZ, Record, message_key, recorder
 from .config import history_config
 
 MAX_READ = 30
@@ -88,7 +88,7 @@ class HistoryWindow:
         """只看编号小于它的记录"""
         self.anchor = anchor
         """锚点那条消息本身（比如 zssm 要解释的那条）；锚在当前时刻时为 None"""
-        self.exclude_id = exclude_id
+        self.exclude_id = exclude_id and message_key(exclude_id)
         self.with_id = with_id
         """排版时发言人是否带 id（见 :func:`format_record`）"""
         self.self_label = self_label

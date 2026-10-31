@@ -4,8 +4,8 @@
 收进合并转发后群里只占一张卡片，卡片预览里照样能看到每条的开头。每段内容单独
 一个节点，节点昵称就当小标题用。
 
-合并转发是 OneBot v11 的扩展接口（send_group_forward_msg），别的适配器发不了，
-接口报错时也退回普通消息。
+合并转发只有 QQ 号机器人（OneBot v11 的 send_group_forward_msg、Milky 的 forward
+消息段）发得了，别的适配器发普通消息，接口报错时也退回普通消息。
 """
 
 from nonebot import logger
@@ -24,6 +24,8 @@ from src.providers.llm import UsageTracker
 from src.providers.llm.transcript import Source, ToolSection
 
 from .processors.ai import ZssmAnswer
+
+FORWARD_ADAPTERS = frozenset({SupportAdapter.onebot11, SupportAdapter.milky})
 
 
 def render_context(window: HistoryWindow) -> str:
@@ -73,7 +75,7 @@ async def send_answer(
         nodes.append(("联网搜索", render_searches(answer.searches)))
     nodes.append(("耗时与用量", tracker.render()))
 
-    if get_target(event, bot).adapter == SupportAdapter.onebot11:
+    if get_target(event, bot).adapter in FORWARD_ADAPTERS:
         # 内容包成 Text 段而不是裸字符串：OneBot 会把字符串当 CQ 码解析，
         # 模型输出和网页标题里混进一段 [CQ:at,qq=all] 就真的 @ 全体了
         forward = Reference(

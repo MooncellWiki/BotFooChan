@@ -5,9 +5,11 @@ from typing import Any
 
 import httpx
 from nonebot import get_bots, logger
-from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment
 from nonebot_plugin_apscheduler import scheduler
 import nonebot_plugin_localstore as store
+
+from src.providers.platform.qq_client import is_qq_client, send_text
+from src.providers.platform.targets import QQGroupInfo, TargetType
 
 from .data_source import (
     MAINT_ACTION_CN,
@@ -42,17 +44,16 @@ async def _push_to_groups(text: str) -> None:
     if not recv_groups:
         return
 
-    bots = [bot for bot in get_bots().values() if isinstance(bot, Bot)]
+    bots = [bot for bot in get_bots().values() if is_qq_client(bot)]
     if not bots:
-        logger.warning("没有已连接的 OneBot V11 Bot，跳过本次推送")
+        logger.warning("没有已连接的 QQ 客户端 Bot（Milky / OneBot V11），跳过本次推送")
         return
 
     for group_id in recv_groups:
+        target = QQGroupInfo(type=TargetType.QQ_GROUP, qq_group_id=group_id)
         for bot in bots:
             try:
-                await bot.send_group_msg(
-                    group_id=group_id, message=Message(MessageSegment.text(text))
-                )
+                await send_text(bot, target, text)
             except Exception as e:
                 logger.opt(exception=e).error(f"推送维护状态到群 {group_id} 失败")
             else:

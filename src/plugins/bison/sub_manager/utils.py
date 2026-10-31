@@ -67,6 +67,10 @@ def admin_permission():
         from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 
         permission = permission | GROUP_ADMIN | GROUP_OWNER
+    with contextlib.suppress(ImportError):
+        from nonebot.adapters.milky.permission import GROUP_ADMIN, GROUP_OWNER
+
+        permission = permission | GROUP_ADMIN | GROUP_OWNER
 
     return permission
 

@@ -1,6 +1,6 @@
 from nonebot import logger, on_regex
+from nonebot.adapters import Bot
 from nonebot.adapters.github import ActionTimeout
-from nonebot.adapters.onebot.v11 import MessageSegment as QQMS
 from nonebot.adapters.qq import MessageSegment as QQOfficialMS
 from nonebot.plugin import PluginMetadata
 from nonebot.typing import T_State
@@ -36,6 +36,7 @@ from src.providers.platform import (
     TargetType,
     extract_sent_message,
 )
+from src.providers.platform.qq_client import image_segment
 
 __plugin_meta__ = PluginMetadata(
     "GitHub Issue、PR 查看",
@@ -63,6 +64,7 @@ issue_link = on_regex(
 @issue.handle(parameterless=(STORE_REGEX_VARS,))
 @issue_link.handle(parameterless=(STORE_REGEX_VARS,))
 async def handle_issue(
+    event_bot: Bot,
     state: T_State,
     target_info: TARGET_INFO,
     message_info: MESSAGE_INFO,
@@ -103,7 +105,7 @@ async def handle_issue(
     )
     match target_info.type:
         case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await issue.send(QQMS.image(img))
+            result = await issue.send(image_segment(event_bot, img))
         case TargetType.QQ_OFFICIAL_USER | TargetType.QQ_OFFICIAL_GROUP:
             result = await issue.send(await qqofficial_conditional_image(img))
         case TargetType.QQGUILD_USER | TargetType.QQGUILD_CHANNEL:
@@ -122,6 +124,7 @@ pr_diff_link = on_regex(
 
 @pr_diff_link.handle(parameterless=(STORE_REGEX_VARS,))
 async def handle_pr_diff(
+    event_bot: Bot,
     state: T_State,
     target_info: TARGET_INFO,
     message_info: MESSAGE_INFO,
@@ -153,7 +156,7 @@ async def handle_pr_diff(
     tag = PullRequestTag(owner=owner, repo=repo, number=number, is_receive=False)
     match target_info.type:
         case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await pr_diff_link.send(QQMS.image(img))
+            result = await pr_diff_link.send(image_segment(event_bot, img))
         case TargetType.QQ_OFFICIAL_USER | TargetType.QQ_OFFICIAL_GROUP:
             result = await pr_diff_link.send(await qqofficial_conditional_image(img))
         case TargetType.QQGUILD_USER | TargetType.QQGUILD_CHANNEL:
@@ -177,6 +180,7 @@ async def check_bind(state: T_State, group: BINDED_GROUP):
 
 @issue_short.handle()
 async def handle_short(
+    event_bot: Bot,
     state: T_State,
     target_info: TARGET_INFO,
     message_info: MESSAGE_INFO,
@@ -214,7 +218,7 @@ async def handle_short(
     )
     match target_info.type:
         case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await issue_short.send(QQMS.image(img))
+            result = await issue_short.send(image_segment(event_bot, img))
         case TargetType.QQ_OFFICIAL_USER | TargetType.QQ_OFFICIAL_GROUP:
             result = await issue_short.send(await qqofficial_conditional_image(img))
         case TargetType.QQGUILD_USER | TargetType.QQGUILD_CHANNEL:

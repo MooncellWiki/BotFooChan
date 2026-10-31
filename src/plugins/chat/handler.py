@@ -132,6 +132,8 @@ def _receipt_id(receipt: Receipt | None) -> str:
             for key in ("message_id", "id", "msg_id"):
                 if (value := raw.get(key)) is not None:
                     return str(value)
+        elif (seq := getattr(raw, "message_seq", None)) is not None:
+            return str(seq)  # Milky 的 MessageResponse
         elif raw is not None:
             return str(raw)
     return ""

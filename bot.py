@@ -5,6 +5,7 @@ from nonebot import logger
 from nonebot.adapters.feishu import Adapter as FeishuAdapter
 from nonebot.adapters.github import Adapter as BaseGitHubAdapter
 from nonebot.adapters.github.config import GitHubApp, OAuthApp
+from nonebot.adapters.milky import Adapter as MilkyAdapter
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
 from nonebot.adapters.qq import Adapter as QQAdapter
 
@@ -51,6 +52,7 @@ config = driver.config
 driver.register_adapter(QQAdapter)
 driver.register_adapter(FeishuAdapter)
 driver.register_adapter(ONEBOT_V11Adapter)
+driver.register_adapter(MilkyAdapter)
 driver.register_adapter(GitHubAdapter)
 
 nonebot.load_plugins("src/providers")

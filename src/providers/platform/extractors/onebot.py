@@ -70,8 +70,10 @@ class OneBotExtractor(Extractor[MessageEvent, QQUserInfo | QQGroupInfo]):
 
     @classmethod
     @override
-    async def get_target_bot(cls, target) -> Bot:
-        return next(bot for bot in nonebot.get_bots().values() if isinstance(bot, Bot))
+    async def get_target_bot(cls, target) -> Bot | None:
+        return next(
+            (bot for bot in nonebot.get_bots().values() if isinstance(bot, Bot)), None
+        )
 
     @classmethod
     @override

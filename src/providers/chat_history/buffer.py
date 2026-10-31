@@ -7,6 +7,7 @@
 from collections import deque
 from dataclasses import dataclass, replace
 from datetime import datetime
+import re
 from zoneinfo import ZoneInfo
 
 from nonebot.adapters import Event
@@ -23,6 +24,17 @@ from nonebot_plugin_alconna.uniseg import (
 from .config import history_config
 
 TZ = ZoneInfo("Asia/Shanghai")
+
+_PEER_SUFFIX = re.compile(r"@(?:group|friend|temp):\d+$")
+
+
+def message_key(message_id: str) -> str:
+    """消息 id 在会话内的写法。
+
+    alconna 给 Milky 消息的 id 带会话后缀（``seq@group:群号``），被回复、发送回执里
+    拿到的却只有 ``seq``；缓冲本来就按会话分开，去掉后缀两边才对得上。
+    """
+    return _PEER_SUFFIX.sub("", message_id)
 
 
 @dataclass(frozen=True)
@@ -54,15 +66,25 @@ def scope_id(event: Event) -> str:
 def display_name(source: object) -> str | None:
     """事件或被回复消息（``Reply.origin``）里发送者的展示名，取不到时为 None。
 
-    各适配器把昵称放在不同地方（OneBot 在 ``sender.card/nickname``、
-    QQ 官方在 ``author.username``），没有统一接口，只能按已知的字段挨个试。
+    各适配器把昵称放在不同地方（OneBot 在 ``sender.card/nickname``、Milky 在
+    ``data.sender``、QQ 官方在 ``author.username``），没有统一接口，只能按已知的
+    字段挨个试。
     """
-    for owner in (getattr(source, "sender", None), getattr(source, "author", None)):
+    data = getattr(source, "data", None)
+    owners = (
+        getattr(source, "sender", None),
+        getattr(source, "author", None),
+        getattr(data, "sender", None),  # Milky 的消息事件、被回复消息
+    )
+    for owner in owners:
         if owner is None:
             continue
         for attr in ("card", "nickname", "username", "name"):
             if value := getattr(owner, attr, None):
                 return str(value)
+    # Milky 的引用消息段只带一个 sender_name
+    if isinstance(data, dict) and (value := data.get("sender_name")):
+        return str(value)
     return None
 
 
@@ -110,7 +132,9 @@ class Recorder:
         if record.text:
             seq = self.next_seq(scope)
             self._next_seqs[scope] = seq + 1
-            self._buffer(scope).append(replace(record, seq=seq))
+            self._buffer(scope).append(
+                replace(record, seq=seq, message_id=message_key(record.message_id))
+            )
 
     def record_event(self, event: Event, msg: UniMessage, message_id: str) -> None:
         self.push(
@@ -155,7 +179,8 @@ class Recorder:
         buffer = self._buffers.get(scope)
         if not buffer:
             return None
-        return next((r for r in buffer if r.message_id == message_id), None)
+        key = message_key(message_id)
+        return next((r for r in buffer if r.message_id == key), None)
 
 
 recorder = Recorder(history_config.size)

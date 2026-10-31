@@ -2,7 +2,7 @@
 # 就随 GitHub 插件一起启用：没配 GitHub App 时不会因为导入失败而报错
 
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import MessageSegment as QQMS
+from nonebot.adapters import Bot
 from nonebot.adapters.qq import MessageSegment as QQOfficialMS
 from nonebot.plugin import PluginMetadata
 
@@ -15,6 +15,7 @@ from src.providers.platform import (
     TargetType,
     extract_sent_message,
 )
+from src.providers.platform.qq_client import image_segment
 
 __plugin_meta__ = PluginMetadata(
     "关于",
@@ -37,7 +38,9 @@ about = on_command(
 
 
 @about.handle()
-async def handle_about(target_info: TARGET_INFO, message_info: MESSAGE_INFO):
+async def handle_about(
+    event_bot: Bot, target_info: TARGET_INFO, message_info: MESSAGE_INFO
+):
     await create_message_tag(
         message_info, RepoTag(owner=OWNER, repo=REPO, is_receive=True)
     )
@@ -49,7 +52,7 @@ async def handle_about(target_info: TARGET_INFO, message_info: MESSAGE_INFO):
     else:
         match target_info.type:
             case TargetType.QQ_USER | TargetType.QQ_GROUP:
-                result = await about.send(QQMS.image(image))
+                result = await about.send(image_segment(event_bot, image))
             case (
                 TargetType.QQ_OFFICIAL_USER
                 | TargetType.QQGUILD_USER

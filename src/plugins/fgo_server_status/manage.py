@@ -1,7 +1,9 @@
 from nonebot.adapters import Event
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_alconna import Alconna, Args, Match, on_alconna
+
+from src.providers.platform import extract_group
+from src.providers.platform.targets import QQGroupInfo
 
 from .storage import load_recv_groups, save_recv_groups
 
@@ -19,8 +21,8 @@ push_manage = on_alconna(
 def _resolve_group_id(event: Event, group_id: Match[int]) -> int | None:
     if group_id.available:
         return group_id.result
-    if isinstance(event, GroupMessageEvent):
-        return event.group_id
+    if isinstance(group := extract_group(event), QQGroupInfo):
+        return group.qq_group_id
     return None
 
 

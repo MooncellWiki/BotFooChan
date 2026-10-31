@@ -75,8 +75,11 @@ class Extractor(abc.ABC, Generic[E, T]):
 
     @classmethod
     @abc.abstractmethod
-    async def get_target_bot(cls, target: T) -> Bot:
-        """Get the bot for the target"""
+    async def get_target_bot(cls, target: T) -> Bot | None:
+        """Get the bot for the target.
+
+        Return `None` if no bot of this adapter is connected.
+        """
         raise NotImplementedError
 
     @classmethod

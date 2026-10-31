@@ -3,6 +3,8 @@ from datetime import datetime
 
 from nonebot import on_command
 from nonebot.adapters import Bot, MessageTemplate
+from nonebot.adapters.milky import Bot as MilkyBot
+from nonebot.adapters.milky.event import FriendMessageEvent
 from nonebot.adapters.onebot.v11.event import PrivateMessageEvent
 from nonebot.matcher import Matcher
 from nonebot.params import ArgPlainText, ArgStr
@@ -103,15 +105,26 @@ group_manage_matcher = on_command(
 
 group_handle_cancel = gen_handle_cancel(group_manage_matcher, "已取消")
 
+# 群管理只在 QQ 客户端（OneBot、Milky）的好友私聊里用
+QQPrivateMessageEvent = PrivateMessageEvent | FriendMessageEvent
+
+
+async def _group_list(bot: Bot) -> list[tuple[int, str]]:
+    if isinstance(bot, MilkyBot):
+        return [
+            (group.group_id, group.group_name) for group in await bot.get_group_list()
+        ]
+    groups = await bot.call_api("get_group_list")
+    return [(group["group_id"], group["group_name"]) for group in groups]
+
 
 @group_manage_matcher.handle()
-async def send_group_list(bot: Bot, event: PrivateMessageEvent, state: T_State):
-    groups = await bot.call_api("get_group_list")
+async def send_group_list(bot: Bot, event: QQPrivateMessageEvent, state: T_State):
     res_text = "请选择需要管理的群：\n"
     group_number_idx = {}
-    for idx, group in enumerate(groups, 1):
-        group_number_idx[idx] = group["group_id"]
-        res_text += f"{idx}. {group['group_id']} - {group['group_name']}\n"
+    for idx, (group_id, group_name) in enumerate(await _group_list(bot), 1):
+        group_number_idx[idx] = group_id
+        res_text += f"{idx}. {group_id} - {group_name}\n"
     res_text += "请输入左侧序号\n中止操作请输入'取消'"
     # await group_manage_matcher.send(res_text)
     state["_prompt"] = res_text
@@ -124,7 +137,7 @@ async def send_group_list(bot: Bot, event: PrivateMessageEvent, state: T_State):
 async def do_choose_group_number(
     bot: Bot,
     state: T_State,
-    event: PrivateMessageEvent,
+    event: QQPrivateMessageEvent,
     group_idx: str = ArgPlainText(),
 ):
     group_number_idx: dict[int, int] = state["group_number_idx"]
@@ -145,7 +158,7 @@ async def do_choose_group_number(
 )
 async def do_dispatch_command(
     bot: Bot,
-    event: PrivateMessageEvent,
+    event: QQPrivateMessageEvent,
     state: T_State,
     matcher: Matcher,
     command: str = ArgStr(),

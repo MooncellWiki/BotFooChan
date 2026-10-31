@@ -181,6 +181,7 @@ dependencies = [
     { name = "mdit-py-plugins" },
     { name = "nonebot-adapter-feishu" },
     { name = "nonebot-adapter-github" },
+    { name = "nonebot-adapter-milky" },
     { name = "nonebot-adapter-onebot" },
     { name = "nonebot-adapter-qq" },
     { name = "nonebot-plugin-alconna" },
@@ -230,6 +231,7 @@ requires-dist = [
     { name = "mdit-py-plugins", specifier = ">=0.6.1,<1.0.0" },
     { name = "nonebot-adapter-feishu", specifier = ">=2.3.0,<3.0.0" },
     { name = "nonebot-adapter-github", specifier = ">=0.6.0,<1.0.0" },
+    { name = "nonebot-adapter-milky", specifier = ">=1.3.0,<2.0.0" },
     { name = "nonebot-adapter-onebot", specifier = ">=2.3.0,<3.0.0" },
     { name = "nonebot-adapter-qq", specifier = ">=1.1.0,<2.0.0" },
     { name = "nonebot-plugin-alconna", specifier = ">=0.38.0,<1.0.0" },
@@ -1713,6 +1715,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/20/b2/1ef684dfdc79571035ee884de3679e491e208bcc707c7206cedf41496c23/nonebot_adapter_github-0.6.0.tar.gz", hash = "sha256:f746942b9d915acbdcf018a6b3d10e59ec3e591937635365ac7174c2939921de", size = 29757, upload-time = "2025-12-11T08:51:07.333Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/28/ec/df43c1326e49838683d7047e2f7ea5f304e47e22fe14166d358aa653949c/nonebot_adapter_github-0.6.0-py3-none-any.whl", hash = "sha256:b0f26258b873bfb7a1f6c52067562788804a46b1d21599c4f04111fa8af1d6f6", size = 113866, upload-time = "2025-12-11T08:51:08.223Z" },
+]
+
+[[package]]
+name = "nonebot-adapter-milky"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nonebot2" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a3/53/6dad74d4ee3768f292979950d6d682667d39d7e671945589ea465dc72e52/nonebot_adapter_milky-1.3.0.tar.gz", hash = "sha256:8a9b41b56f34633e82ddee31aea1831ee313db0e88f3e412f2105b646e3430b0", size = 28336, upload-time = "2026-09-09T01:58:53.915Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/99/32/485cc8cce3f2ff6d7fa659f27079db9b73a6d13b7bdef0eefa80a39aa857/nonebot_adapter_milky-1.3.0-py3-none-any.whl", hash = "sha256:b5e028dfd80a8336fb975fce1cf9c5adf0c71514bb1f9c8af9952d81c0937071", size = 29847, upload-time = "2026-09-09T01:58:52.856Z" },
 ]
 
 [[package]]

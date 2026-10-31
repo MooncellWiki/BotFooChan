@@ -12,6 +12,8 @@ import time
 
 from pydantic_ai.messages import ModelMessage, ModelRequest, UserPromptPart
 
+from src.providers.chat_history import message_key
+
 MAX_THREADS = 200
 """最多记住多少条回答的对话记录，超出后丢掉最久没用的"""
 TTL = 6 * 60 * 60
@@ -45,7 +47,7 @@ class ThreadStore:
 
     def get(self, scope: str, message_id: str) -> list[ModelMessage] | None:
         """被回复的那条回答之前的对话记录；不是机器人的回答或已过期时为 None"""
-        key = (scope, message_id)
+        key = (scope, message_key(message_id))
         if (item := self._threads.get(key)) is None:
             return None
         saved_at, messages = item
@@ -59,7 +61,7 @@ class ThreadStore:
         """记下截至这条回答的对话；拿不到回答的消息 id 时无从接续，不记"""
         if not message_id:
             return
-        key = (scope, message_id)
+        key = (scope, message_key(message_id))
         self._threads[key] = (time.monotonic(), _trim(messages))
         self._threads.move_to_end(key)
         while len(self._threads) > MAX_THREADS:

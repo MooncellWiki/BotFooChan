@@ -18,6 +18,7 @@ from nonebot_plugin_alconna.uniseg import get_message_id
 from .buffer import TZ as TZ
 from .buffer import Record as Record
 from .buffer import display_name as display_name
+from .buffer import message_key as message_key
 from .buffer import recorder as recorder
 from .buffer import render_text as render_text
 from .buffer import scope_id as scope_id

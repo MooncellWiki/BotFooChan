@@ -13,14 +13,13 @@ from nonebot_plugin_alconna import (
     Option,
     Query,
     Subcommand,
-    SupportAdapter,
     on_alconna,
 )
 from nonebot_plugin_alconna.uniseg import get_target
 
 from src.providers.llm import list_models
 
-from .binding import GroupBinding, group_bindings
+from .binding import QQ_CLIENT_ADAPTERS, GroupBinding, group_bindings
 from .config import current_model, runtime
 
 llm = on_alconna(
@@ -78,10 +77,10 @@ async def _(name: Query[str] = Query("model.name")):
     await llm.finish(f"对话模型已切换为 {name.result}")
 
 
-def _onebot_group_id(event: Event) -> str | None:
-    """事件所在的 OneBot 群号，非 OneBot 群聊时为 None"""
+def _qq_group_id(event: Event) -> str | None:
+    """事件所在的 QQ 群号，不是 QQ 号机器人（OneBot、Milky）的群聊时为 None"""
     target = get_target(event)
-    if target.private or target.adapter != SupportAdapter.onebot11:
+    if target.private or target.adapter not in QQ_CLIENT_ADAPTERS:
         return None
     return target.id
 
@@ -113,13 +112,13 @@ async def _(
         await llm.finish(
             f"本群的 group_openid：{event.group_openid}\n"
             f"官方机器人 AppID：{bot.self_id}\n"
-            f"再到 OneBot 所在的同一个群里执行 "
+            f"再到 QQ 号机器人所在的同一个群里执行 "
             f"/llm bind {event.group_openid} -b {bot.self_id} 完成绑定"
         )
 
-    group_id = _onebot_group_id(event)
+    group_id = _qq_group_id(event)
     if group_id is None:
-        await llm.finish("请在 OneBot 所在的 QQ 群内使用该指令")
+        await llm.finish("请在 QQ 号机器人所在的 QQ 群内使用该指令")
 
     if not openid.available:
         if (binding := group_bindings.get(group_id)) is None:
@@ -146,9 +145,9 @@ async def _(
 
 @llm.assign("unbind")
 async def _(event: Event):
-    group_id = _onebot_group_id(event)
+    group_id = _qq_group_id(event)
     if group_id is None:
-        await llm.finish("请在 OneBot 所在的 QQ 群内使用该指令")
+        await llm.finish("请在 QQ 号机器人所在的 QQ 群内使用该指令")
     if not group_bindings.remove(group_id):
         await llm.finish(f"群 {group_id} 未绑定")
     await llm.finish(f"已解除群 {group_id} 的绑定")
