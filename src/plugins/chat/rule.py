@@ -102,7 +102,8 @@ async def should_reply(bot: Bot, event: Event, msg: UniMsg) -> bool:
         return False
 
     try:
-        if get_target(event).private:
+        # 规则检查时还没有「当前 bot」上下文，不传 bot 会直接抛
+        if get_target(event, bot).private:
             return True
     except Exception:  # 认不出会话类型就按群聊处理，宁可不接话
         pass
