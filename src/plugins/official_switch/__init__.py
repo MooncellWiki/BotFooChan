@@ -5,7 +5,7 @@ QQ 号机器人（Milky）和官方机器人在同一个群、官方机器人又
 和群号对不上，没法可靠地自动判断两边是不是同一个群，所以由超管在群里手动关：
 
 - ``/官q 关``：官方机器人在本群不再处理任何消息（聊天记录照记），只认 ``/官q``
-  这条命令；没开全量消息的群要 @ 官方机器人发
+  和 @ 它的 ``/whoami``；没开全量消息的群要 @ 官方机器人发
 - QQ 号机器人（Milky、OneBot）全部掉线时，关掉的群也照常处理，由官方机器人兜底
 
 开关由官方机器人收到命令时按 group_openid 记下；超管也按官方机器人眼里的
@@ -38,8 +38,9 @@ __plugin_meta__ = PluginMetadata(
     "/官q：查看本群官方机器人是否启用\n/官q 关、/官q 开：停用、启用",
 )
 
-OBSERVERS = frozenset({"chat_history"})
-"""只旁听、不回话的插件：停用的群里照样交给它们"""
+EXEMPT_PLUGINS = frozenset({"chat_history", "whoami"})
+"""停用的群里照样交给它们：chat_history 只旁听不回话；whoami 只在被 @ 时回，
+正是停用之后要拿来查 id 的"""
 
 ON, OFF = frozenset({"开", "on"}), frozenset({"关", "off"})
 
@@ -133,7 +134,7 @@ async def _(bot: Bot, event: GroupMessageCreateEvent, state: Match[str]) -> None
 async def _(matcher: Matcher, bot: Bot, event: Event) -> None:
     if not isinstance(event, GroupMessageCreateEvent):
         return
-    if isinstance(matcher, switch) or matcher.plugin_id in OBSERVERS:
+    if isinstance(matcher, switch) or matcher.plugin_id in EXEMPT_PLUGINS:
         return
     if disabled_groups.disabled(bot.self_id, event.group_openid) and _client_online():
         raise IgnoredException("本群已停用官方机器人")
