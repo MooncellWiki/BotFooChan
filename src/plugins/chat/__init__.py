@@ -35,7 +35,7 @@ __plugin_meta__ = PluginMetadata(
 )
 
 # 聊天记录由 src.providers.chat_history 统一记录，这里只管接话。
-# 排在最末，别的插件都没接手（没有命令匹配并阻断）才轮到它兜底。
+# 排在最末兜底：别的插件跑过（不管阻不阻断，见 rule.py）就不接话。
 # 触发条件不用 to_me()，见 rule.py：那个太宽，两个机器人能靠它自己聊起来
 chat = on_message(rule=should_reply, priority=99, block=True)
 
