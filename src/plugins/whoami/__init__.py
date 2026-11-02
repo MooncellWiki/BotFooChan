@@ -1,7 +1,7 @@
 """/whoami：被 @ 的机器人回它认出来的群 id 和用户 id。
 
 同一个群、同一个人，在 QQ 号机器人（Milky）和官方机器人眼里是两套 id：群号对
-group_openid、QQ 号对 member_openid。配 SUPERUSERS、/llm bind、/官q 时都得知道
+group_openid、QQ 号对 member_openid。配 SUPERUSERS、/官q 时都得知道
 「这个机器人看我是谁」。只认真 @ 了自己的那条（私聊不用 @），由被 @ 的机器人回，
 两个机器人在同一个群里也不会都回。
 """

@@ -16,6 +16,7 @@ from nonebot import logger
 from nonebot.adapters import Event
 from nonebot_plugin_alconna.uniseg import Receipt, UniMessage, get_target
 
+from src.providers.group_binding import QQ_CLIENT_ADAPTERS, group_bindings
 from src.providers.llm.chat import render_chat
 from src.providers.llm.transcript import (
     Section,
@@ -24,7 +25,6 @@ from src.providers.llm.transcript import (
     render_transcript,
 )
 
-from .binding import QQ_CLIENT_ADAPTERS, group_bindings
 from .config import chat_config
 from .markdown import send_group_markdown
 

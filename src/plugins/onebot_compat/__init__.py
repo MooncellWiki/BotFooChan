@@ -4,9 +4,9 @@
 FGONewsMonitor 等）。这里接住其中发消息的几个接口，翻译成官方机器人的消息再发出去，
 调用方不用改。
 
-官方机器人只认 group_openid，调用方给的群号要先在群里用 ``/llm bind`` 绑定
-（见 :mod:`src.plugins.chat.binding`）；没绑定的群也可以直接把 group_openid 当
-group_id 传。私聊同理，只能直接传用户的 openid，QQ 号换算不过去。
+官方机器人只认 group_openid，调用方给的群号要先在群里 @ 官方机器人发
+``/官q 绑定 <群号>`` 登记（见 :mod:`src.providers.group_binding`）；也可以直接把
+group_openid 当 group_id 传。私聊同理，只能直接传用户的 openid，QQ 号换算不过去。
 官方机器人发的是主动消息，受官方的主动推送额度和频率限制，超额时接口直接报错。
 
 Caddy 把 onebot.bakacraft.net 和本机 5700 端口转到 ``/onebot-compat/<action>``；
@@ -20,14 +20,12 @@ from urllib.parse import parse_qsl
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 import nonebot
-from nonebot import logger, require
+from nonebot import logger
 from nonebot.adapters.qq import Bot as QQBot
 from nonebot.adapters.qq.exception import QQAdapterException
 from nonebot.plugin import PluginMetadata
 
-require("chat")
-from src.plugins.chat.binding import group_bindings
-from src.plugins.chat.markdown import get_qq_bots, resolve_bot
+from src.providers.group_binding import get_qq_bots, group_bindings, resolve_bot
 
 from .config import Config, plugin_config
 from .convert import UnsupportedMessage, parse_onebot_message, to_qq
@@ -116,7 +114,7 @@ def _group_target(group_id: str) -> tuple[QQBot, str]:
         bot, openid = _only_bot(), group_id
     else:
         raise UnknownTarget(
-            f"群 {group_id} 没有绑定官方机器人的 group_openid，先在群里 /llm bind"
+            f"群号 {group_id} 还没绑定，先在群里 @ 官方机器人发 /官q 绑定 {group_id}"
         )
     if bot is None:
         raise BotOffline(f"群 {group_id} 对应的官方机器人不在线")

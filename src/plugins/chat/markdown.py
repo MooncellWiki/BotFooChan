@@ -9,30 +9,13 @@
 所以这里是攒完整段回答之后一次性发出。
 """
 
-from nonebot import get_bots, logger
-from nonebot.adapters.qq import Bot as QQBot
+from nonebot import logger
 from nonebot.adapters.qq.models import MessageMarkdown
 
-from .binding import GroupBinding
+from src.providers.group_binding import GroupBinding, resolve_bot
 
 MARKDOWN_MSG_TYPE = 2
 """群消息的 msg_type：0 文本 / 1 图文 / 2 markdown / 3 ark / 4 embed / 7 富媒体"""
-
-
-def get_qq_bots() -> list[QQBot]:
-    return [bot for bot in get_bots().values() if isinstance(bot, QQBot)]
-
-
-def resolve_bot(binding: GroupBinding) -> QQBot | None:
-    """挑出该绑定对应的官方机器人。
-
-    绑定里记了 AppID 就按 AppID 找；没记则只在唯一一个官方机器人在线时才敢用，
-    多个在线时无从判断 group_openid 属于谁，交由调用方提示重新绑定。
-    """
-    bots = get_qq_bots()
-    if binding.bot_id is not None:
-        return next((bot for bot in bots if bot.self_id == binding.bot_id), None)
-    return bots[0] if len(bots) == 1 else None
 
 
 async def send_group_markdown(binding: GroupBinding, content: str) -> bool:
