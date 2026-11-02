@@ -1,17 +1,12 @@
 """QQ 群号 ↔ QQ 官方机器人 group_openid 的绑定表。
 
-官方机器人只认按 AppID 脱敏的 group_openid，外部推送和 QQ 号机器人那边用的都是
+官方机器人只认按 AppID 脱敏的 group_openid，外部推送（OneBot 兼容接口）用的是
 真实群号，没有公开接口能换算。所以由超管在群里 @ 官方机器人发 ``/官q 绑定 <群号>``
 登记一次（见 :mod:`src.plugins.qq_official`）：群号手填，group_openid 和 AppID
 直接取自那条消息。
 
 group_openid 是按 AppID 分发的（同一个群，换个机器人就是另一串 openid），
 因此绑定里连 AppID 一起记下来，多机器人同时在线时才能挑对发送方。
-
-用到它的：
-
-- onebot_compat：OneBot 推送按群号找到 group_openid，由官方机器人发出
-- chat：QQ 号机器人收到的群聊，长回答改由官方机器人发原生 markdown
 
 绑定表原先放在通用对话插件（更早是 deepseek 插件）的数据目录下，新位置还没有
 文件时从旧位置搬过来，旧文件不删。
@@ -23,16 +18,11 @@ from nonebot import get_bots, logger, require
 from nonebot.adapters.qq import Bot as QQBot
 from pydantic import BaseModel
 
-require("nonebot_plugin_alconna")
 require("nonebot_plugin_localstore")
-from nonebot_plugin_alconna import SupportAdapter
 import nonebot_plugin_localstore as store
 
 LEGACY_PLUGINS = ("chat", "deepseek")
 """绑定表以前所在插件的数据目录，按先后找"""
-
-QQ_CLIENT_ADAPTERS = frozenset({SupportAdapter.onebot11, SupportAdapter.milky})
-"""QQ 号机器人的协议端，事件里的群号就是真实群号"""
 
 
 class GroupBinding(BaseModel):

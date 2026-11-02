@@ -3,20 +3,15 @@
 
 模型自己决定回多长（人设里交代了：闲聊短、认真提问给完整回答），这里只看
 写出来的东西像不像「长回答」——够长、带 Markdown 结构，或者联网搜过（搜过就得
-把出处摆出来）。长回答依次尝试：
-
-1. 群绑定了官方机器人的 group_openid：由官方机器人发原生 markdown
-2. 渲染成 DeepSeek 网页版样式的图片
-3. 纯文本
+把出处摆出来）。长回答渲染成 DeepSeek 网页版样式的图片，渲染失败或关掉了图片
+渲染时发纯文本。
 """
 
 import re
 
 from nonebot import logger
-from nonebot.adapters import Event
-from nonebot_plugin_alconna.uniseg import Receipt, UniMessage, get_target
+from nonebot_plugin_alconna.uniseg import Receipt, UniMessage
 
-from src.providers.group_binding import QQ_CLIENT_ADAPTERS, group_bindings
 from src.providers.llm.chat import render_chat
 from src.providers.llm.transcript import (
     Section,
@@ -26,7 +21,6 @@ from src.providers.llm.transcript import (
 )
 
 from .config import chat_config
-from .markdown import send_group_markdown
 
 RICH_LENGTH = 200
 """超过这么多字就按长回答排版"""
@@ -43,24 +37,10 @@ def is_rich(answer: str, sections: list[Section]) -> bool:
     )
 
 
-async def send_answer(
-    event: Event, message_id: str, answer: str, sections: list[Section]
-) -> Receipt | None:
-    """发出回答，返回回执；由官方机器人代发时没有可接续的回执，返回 None"""
+async def send_answer(message_id: str, answer: str, sections: list[Section]) -> Receipt:
+    """发出回答，返回回执"""
     if not is_rich(answer, sections):
         return await UniMessage.text(answer).send(reply_to=message_id)
-
-    target = get_target(event)
-    # 官方接口有主动消息额度、原生 markdown 权限等限制，发不出去就退回本机发送
-    if (
-        not target.private
-        and target.adapter in QQ_CLIENT_ADAPTERS
-        and (binding := group_bindings.get(target.id)) is not None
-        and await send_group_markdown(
-            binding, render_transcript(sections, flavor="markdown", fallback=answer)
-        )
-    ):
-        return None
 
     if chat_config.render_image:
         try:

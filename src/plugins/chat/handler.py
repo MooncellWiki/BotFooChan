@@ -121,7 +121,7 @@ def _format_memories(participants: dict[str, str], memories: dict[str, str]) -> 
     )
 
 
-def _receipt_id(receipt: Receipt | None) -> str:
+def _receipt_id(receipt: Receipt) -> str:
     """从发送回执里取出消息 id，好让下一轮认出「被回复的是机器人这条」。
 
     各适配器回执结构不一样，取不到就算了：拿不到 id 只是少一条精确指认、
@@ -304,7 +304,7 @@ async def handle(bot: Bot, event: Event, msg: UniMessage) -> None:
             isinstance(section, ToolSection) and section.name in memory_tools.TOOL_NAMES
         )
     ]
-    receipt = await send_answer(event, message_id, content, sections)
+    receipt = await send_answer(message_id, content, sections)
 
     # 带上真实消息 id：下一轮有人回复这条时才认得出「回的是机器人自己」，
     # 也才能从这条回答接着聊

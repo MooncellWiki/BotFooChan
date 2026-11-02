@@ -28,7 +28,7 @@ class ScopedConfig(BaseModel):
     max_images: int = Field(default=4, ge=0)
     """单次最多交给模型几张图片（仅对支持图片输入的模型生效），0 为不看图"""
     render_image: bool = True
-    """长回答渲染成图片；关闭时发纯文本（绑定了官方机器人的群照旧走原生 markdown）"""
+    """长回答渲染成图片；关闭时发纯文本"""
     send_thinking: bool = False
     """长回答排版时附上思维链"""
     blacklist: set[str] = Field(default_factory=set)
