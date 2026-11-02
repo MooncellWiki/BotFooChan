@@ -55,9 +55,10 @@ __plugin_meta__ = PluginMetadata(
     "/官q 解绑：去掉本群的群号",
 )
 
-EXEMPT_PLUGINS = frozenset({"chat_history", "whoami"})
+EXEMPT_PLUGINS = frozenset({"chat_history", "whoami", "markdown_test"})
 """停用的群里照样交给它们：chat_history 只旁听不回话；whoami 只在被 @ 时回，
-正是停用之后要拿来查 id 的"""
+正是停用之后要拿来查 id 的；markdown_test 只在官方机器人上响应，不会和 QQ 号
+机器人重复"""
 
 
 def _client_online() -> bool:
