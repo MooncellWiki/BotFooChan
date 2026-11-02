@@ -40,7 +40,10 @@ llm = on_alconna(
                 dest="bot",
                 help_text="指定发送用的官方机器人 AppID",
             ),
-            help_text="绑定本群与官方机器人的 group_openid，之后长回答走原生 markdown",
+            help_text=(
+                "绑定本群与官方机器人的 group_openid，之后长回答走原生 markdown，"
+                "OneBot 兼容接口往本群的推送也由官方机器人发"
+            ),
         ),
         Subcommand("unbind", help_text="解除本群的 group_openid 绑定"),
         meta=CommandMeta(
@@ -139,7 +142,8 @@ async def _(
     group_bindings.set(group_id, binding)
     await llm.finish(
         f"已绑定群 {group_id} -> {binding.group_openid}\n"
-        "本群的长回答将改由官方机器人以原生 markdown 发出"
+        "本群的长回答将改由官方机器人以原生 markdown 发出，"
+        "OneBot 兼容接口的推送也走官方机器人"
     )
 
 

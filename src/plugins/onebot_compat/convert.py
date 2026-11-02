@@ -1,16 +1,32 @@
-"""OneBot v11 消息（CQ 码字符串、消息段数组）转成 Milky 消息。
+"""OneBot v11 消息（CQ 码字符串、消息段数组）转成 QQ 官方机器人的消息。
 
-只认外部推送用得到的几种段；别的段直接报错，不悄悄丢掉。
+只认外部推送用得到的 text 和图片、语音、视频，别的段直接报错。at 段例外，直接
+去掉：官方机器人只认 member_openid，QQ 号换算不过去，推送里的 at 也不影响正文。
 """
 
+from base64 import b64decode
+import binascii
+from collections.abc import Callable
 from typing import Any
 
-from nonebot.adapters.milky import Message as MilkyMessage
-from nonebot.adapters.milky import MessageSegment as MilkyMS
 from nonebot.adapters.onebot.v11 import Message as OneBotMessage
 from nonebot.adapters.onebot.v11 import MessageSegment as OneBotMS
+from nonebot.adapters.qq import Message as QQMessage
+from nonebot.adapters.qq import MessageSegment as QQMS
 
-URI_SCHEMES = ("http://", "https://", "base64://")
+MEDIA_BY_URL: dict[str, Callable[[str], QQMS]] = {
+    "image": QQMS.image,
+    "record": QQMS.audio,
+    "video": QQMS.video,
+}
+MEDIA_BY_DATA: dict[str, Callable[[bytes], QQMS]] = {
+    "image": QQMS.file_image,
+    "record": QQMS.file_audio,
+    "video": QQMS.file_video,
+}
+QQ_MEDIA_TYPES = frozenset(
+    {"image", "audio", "video", "file_image", "file_audio", "file_video"}
+)
 
 
 class UnsupportedMessage(ValueError):
@@ -33,40 +49,56 @@ def parse_onebot_message(message: Any, auto_escape: bool = False) -> OneBotMessa
     raise UnsupportedMessage(f"message 应为字符串、消息段或消息段数组：{message!r}")
 
 
-def _media_uri(seg: OneBotMS) -> str:
-    # 调用方和协议端不在一台机器上，本地文件路径传过去也读不到
+def _media(seg: OneBotMS) -> QQMS:
+    # http(s) 的文件由 QQ 服务器自己去拉，得是公网能访问的地址；
+    # 调用方不在本机，本地文件路径传过来也读不到
     file = str(seg.data.get("url") or seg.data.get("file") or "")
-    if not file.startswith(URI_SCHEMES):
-        raise UnsupportedMessage(f"{seg.type} 段只支持 http(s):// 或 base64:// 的文件")
-    return file
+    if file.startswith(("http://", "https://")):
+        return MEDIA_BY_URL[seg.type](file)
+    if file.startswith("base64://"):
+        try:
+            data = b64decode(file.removeprefix("base64://"))
+        except binascii.Error as e:
+            raise UnsupportedMessage(f"{seg.type} 段的 base64 不对：{e}") from e
+        if not data:
+            raise UnsupportedMessage(f"{seg.type} 段的 base64 是空的")
+        return MEDIA_BY_DATA[seg.type](data)
+    raise UnsupportedMessage(f"{seg.type} 段只支持 http(s):// 或 base64:// 的文件")
 
 
-def to_milky(message: OneBotMessage) -> MilkyMessage:
-    result = MilkyMessage()
+def _has_media(message: QQMessage) -> bool:
+    return any(seg.type in QQ_MEDIA_TYPES for seg in message)
+
+
+def to_qq(message: OneBotMessage) -> list[QQMessage]:
+    """转成一条或几条官方机器人的消息。
+
+    官方的富媒体消息一条只能带一个文件，有几个文件就拆成几条：每条带一个文件和它
+    前面的文字，最后一个文件后面的文字跟着最后一条。只有一个文件时不拆。
+    """
+    chunks: list[QQMessage] = []
+    current = QQMessage()
     for seg in message:
         match seg.type:
             case "text":
-                result.append(MilkyMS.text(str(seg.data.get("text", ""))))
+                if not (text := str(seg.data.get("text", ""))):
+                    continue
+                converted = QQMS.text(text)
+            case "image" | "record" | "video":
+                converted = _media(seg)
             case "at":
-                qq = str(seg.data.get("qq", ""))
-                if qq == "all":
-                    result.append(MilkyMS.mention_all())
-                elif qq.isdigit():
-                    result.append(MilkyMS.mention(int(qq)))
-                else:
-                    raise UnsupportedMessage(f"at 段的 qq 不对：{qq!r}")
-            case "face":
-                result.append(MilkyMS.face(str(seg.data.get("id", ""))))
-            case "reply":
-                result.append(MilkyMS.reply(int(seg.data["id"])))
-            case "image":
-                result.append(MilkyMS.image(_media_uri(seg)))
-            case "record":
-                result.append(MilkyMS.record(_media_uri(seg)))
-            case "video":
-                result.append(MilkyMS.video(_media_uri(seg)))
+                continue
             case _:
                 raise UnsupportedMessage(f"不支持 {seg.type} 消息段")
-    if not result:
+        if _has_media(current):
+            chunks.append(current)
+            current = QQMessage()
+        current.append(converted)
+
+    if chunks and not _has_media(current):
+        chunks[-1].extend(current)
+    elif current:
+        chunks.append(current)
+    if not chunks:
         raise UnsupportedMessage("消息为空")
-    return result
+    return chunks
