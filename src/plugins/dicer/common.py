@@ -22,10 +22,19 @@ from .investigator import Investigator
 from .madness import li, ti
 from .san_check import sc
 
+DICE_EXPR = r"{dabp:[\dabcdfhkmpqxABCDFHKMPQX#+\-*/^%()（）\s]+}"
+"""r/rh 后面的骰子表达式：diro 文法（见 diro/parser.py）加 rd0 的 # 多轮
+
+原先写的是 ``{dabp}``，Alconna 展开成 ``.+``，又带着 / 前缀和 compact，
+/readme、/repo、/release、/reopen 这类 r 开头的命令都会被当成骰子，
+解析失败后回一段骰子帮助。这里只放行表达式里会出现的字符（大小写都要，
+rd0 才转小写；正则里不能写冒号，Alconna 按冒号切分 {名字:模式}）
+"""
+
 rd_matcher = on_alconna(
     Alconna(
         [".", "/"],
-        "r( )?{dabp}",
+        f"r( )?{DICE_EXPR}",
         Args["a_number", int | None],
         meta=CommandMeta(compact=True),
     ),
@@ -33,7 +42,7 @@ rd_matcher = on_alconna(
 rhd_matcher = on_alconna(
     Alconna(
         [".", "/"],
-        "rh( )?{dabp}",
+        f"rh( )?{DICE_EXPR}",
         Args["a_number", int | None],
         meta=CommandMeta(compact=True),
     ),
