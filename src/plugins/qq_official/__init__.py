@@ -13,7 +13,7 @@
 
 绑定：``/官q 绑定 <群号>`` 把本群的 group_openid 登记到这个群号下（见
 :mod:`src.providers.group_binding`），OneBot 兼容接口往这个群号的推送就由官方机器人
-发到本群，bison 订阅在这个群号上的推送也一并转给官方机器人。
+发到本群，bison 订阅、FGO 维护推送在这个群号上的推送也一并转给官方机器人。
 """
 
 from typing import NoReturn

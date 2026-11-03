@@ -4,12 +4,11 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-from nonebot import get_bots, logger
+from nonebot import logger
 from nonebot_plugin_apscheduler import scheduler
 import nonebot_plugin_localstore as store
 
-from src.providers.platform.qq_client import is_qq_client, send_text
-from src.providers.platform.targets import QQGroupInfo, TargetType
+from src.providers.group_binding import group_bindings, resolve_bot
 
 from .data_source import (
     MAINT_ACTION_CN,
@@ -40,24 +39,21 @@ def _save_data(file: Path, data: dict[str, Any]) -> None:
 
 
 async def _push_to_groups(text: str) -> None:
-    recv_groups = load_recv_groups()
-    if not recv_groups:
-        return
-
-    bots = [bot for bot in get_bots().values() if is_qq_client(bot)]
-    if not bots:
-        logger.warning("没有已连接的 QQ 客户端 Bot（Milky / OneBot V11），跳过本次推送")
-        return
-
-    for group_id in recv_groups:
-        target = QQGroupInfo(type=TargetType.QQ_GROUP, qq_group_id=group_id)
-        for bot in bots:
-            try:
-                await send_text(bot, target, text)
-            except Exception as e:
-                logger.opt(exception=e).error(f"推送维护状态到群 {group_id} 失败")
-            else:
-                break
+    """按群号推送，由 /官q 绑定 登记的官方机器人发；发的是主动消息，占主动推送额度"""
+    for group_id in load_recv_groups():
+        if (binding := group_bindings.get(str(group_id))) is None:
+            logger.warning(
+                f"群号 {group_id} 还没绑定官方机器人，跳过维护推送"
+                f"（在群里 @ 官方机器人发 /官q 绑定 {group_id}）"
+            )
+            continue
+        if (bot := resolve_bot(binding)) is None:
+            logger.warning(f"群号 {group_id} 对应的官方机器人不在线，跳过维护推送")
+            continue
+        try:
+            await bot.send_to_group(binding.group_openid, message=text)
+        except Exception as e:
+            logger.opt(exception=e).error(f"推送维护状态到群 {group_id} 失败")
 
 
 async def _check_server(
