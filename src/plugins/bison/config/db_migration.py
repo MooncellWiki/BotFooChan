@@ -8,7 +8,7 @@
    这一列的 JSON 结构不同。
 
 除了 saa 格式，``user_target`` 历史上还有过带 ``adapter``/``platforms`` 字段的旧
-uniseg dump（从事件里拿到的）和群管理流程手写的无 adapter 版本。订阅命令按
+uniseg dump（从事件里拿到的）和以前的群管理流程手写的无 adapter 版本。订阅命令按
 ``user_target`` 匹配订阅者，格式不一致会让同一个群「推送正常但查询/删除是空的」，
 还会被存成多条 User。所以启动时统一重写成 ``dump_send_target`` 的规范格式，再把
 指向同一会话的重复 User 合并掉。

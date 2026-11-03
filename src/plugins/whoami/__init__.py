@@ -1,9 +1,8 @@
 """/whoami：被 @ 的机器人回它认出来的群 id 和用户 id。
 
-同一个群、同一个人，在 QQ 号机器人（Milky）和官方机器人眼里是两套 id：群号对
-group_openid、QQ 号对 member_openid。配 SUPERUSERS、/官q 时都得知道
-「这个机器人看我是谁」。只认真 @ 了自己的那条（私聊不用 @），由被 @ 的机器人回，
-两个机器人在同一个群里也不会都回。
+官方机器人眼里的群和人都是按 AppID 脱敏的 group_openid、member_openid，和群号、
+QQ 号对不上。配 SUPERUSERS、/官q 时都得知道「这个机器人看我是谁」。只认真 @ 了
+自己的那条（私聊不用 @），由被 @ 的机器人回，几个机器人在同一个群里也不会都回。
 """
 
 from nonebot import require
@@ -26,13 +25,11 @@ from src.providers.platform.mentions import mentions_bot
 
 __plugin_meta__ = PluginMetadata(
     "我是谁",
-    "@ 机器人查看它认出来的群 id 和用户 id，QQ 号机器人和官方机器人各是一套",
+    "@ 机器人查看它认出来的群 id 和用户 id",
     "@机器人 /whoami：由被 @ 的机器人回复本群 id、你的用户 id、是否超管（私聊不用 @）",
 )
 
 CHANNELS: dict[str, str] = {
-    SupportAdapter.milky.value: "QQ 号机器人（Milky）",
-    SupportAdapter.onebot11.value: "QQ 号机器人（OneBot）",
     SupportAdapter.qq.value: "QQ 官方机器人",
     SupportAdapter.feishu.value: "飞书",
 }

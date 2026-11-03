@@ -112,8 +112,6 @@ async def handle_content(
         )
 
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await deployment.send(msg)
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER

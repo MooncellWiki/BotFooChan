@@ -128,8 +128,6 @@ async def handle_comment(
 
     message = f"成功评论 {owner}/{repo}#{number}"
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await comment.send(message)
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER

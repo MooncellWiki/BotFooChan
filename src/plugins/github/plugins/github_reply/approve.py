@@ -122,8 +122,6 @@ async def handle_approve(
 
     message = f"成功批准了 PR {owner}/{repo}#{number}"
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await approve.send(message)
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER

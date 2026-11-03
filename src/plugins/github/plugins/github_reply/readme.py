@@ -1,7 +1,7 @@
 import re
 
 from nonebot import logger, on_command
-from nonebot.adapters import Bot, Message
+from nonebot.adapters import Message
 from nonebot.adapters.github import ActionFailed, ActionTimeout
 from nonebot.adapters.qq import MessageSegment as QQOfficialMS
 from nonebot.params import CommandArg
@@ -28,7 +28,6 @@ from src.providers.platform import (
     TargetType,
     extract_sent_message,
 )
-from src.providers.platform.qq_client import image_segment
 
 readme = on_command(
     "readme",
@@ -103,7 +102,6 @@ async def handle_content(
 
 @readme.handle()
 async def render_content(
-    event_bot: Bot,
     state: T_State,
     target_info: TARGET_INFO,
     context: GITHUB_PUBLIC_CONTEXT,
@@ -125,8 +123,6 @@ async def render_content(
         await readme.finish("生成图片出错！请稍后再试")
 
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await readme.send(image_segment(event_bot, img))
         case TargetType.QQ_OFFICIAL_USER | TargetType.QQ_OFFICIAL_GROUP:
             result = await readme.send(await qqofficial_conditional_image(img))
         case TargetType.QQGUILD_USER | TargetType.QQGUILD_CHANNEL:

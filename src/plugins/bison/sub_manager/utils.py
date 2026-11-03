@@ -1,4 +1,3 @@
-import contextlib
 from itertools import groupby
 from operator import attrgetter
 from typing import Annotated
@@ -62,17 +61,7 @@ async def set_target_user_info(bot: Bot, event: Event, state: T_State):
 
 
 def admin_permission():
-    permission = SUPERUSER
-    with contextlib.suppress(ImportError):
-        from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
-
-        permission = permission | GROUP_ADMIN | GROUP_OWNER
-    with contextlib.suppress(ImportError):
-        from nonebot.adapters.milky.permission import GROUP_ADMIN, GROUP_OWNER
-
-        permission = permission | GROUP_ADMIN | GROUP_OWNER
-
-    return permission
+    return SUPERUSER
 
 
 async def generate_sub_list_text(

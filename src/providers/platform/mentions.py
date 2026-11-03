@@ -16,8 +16,8 @@ _ID_ATTRS = ("user_id", "id", "open_id", "union_id", "user_openid", "tiny_id")
 def ids_of(owner: object) -> set[str]:
     """从「某个人」的模型对象里把 id 抠出来。
 
-    各适配器的字段名不统一（OneBot 是 ``user_id``、QQ 是 ``id``、飞书是
-    ``open_id``），认不出来的就当没有，多收一个 id 也只是多挡一次。
+    各适配器的字段名不统一（QQ 是 ``id``、飞书是 ``open_id``），认不出来的就当
+    没有，多收一个 id 也只是多挡一次。
     """
     return {str(value) for attr in _ID_ATTRS if (value := getattr(owner, attr, None))}
 
@@ -25,8 +25,8 @@ def ids_of(owner: object) -> set[str]:
 def bot_ids(bot: Bot) -> set[str]:
     """一个账号在别人眼里可能是什么 id。
 
-    ``self_id`` 未必就是群里露出来的那个：OneBot 的是 QQ 号没错，官方 QQ 的却是
-    AppID、发言时用的是 ``self_info.id``，飞书则要看 ``bot_info.open_id``。
+    ``self_id`` 未必就是群里露出来的那个：官方 QQ 的是 AppID、发言时用的是
+    ``self_info.id``，飞书则要看 ``bot_info.open_id``。
     """
     ids = {str(bot.self_id)}
     for attr in ("self_info", "bot_info"):
@@ -42,8 +42,8 @@ def at_targets(bot: Bot, event: Event, msg: UniMessage) -> set[str]:
     """这条消息 @ 了谁。
 
     不能只看 msg：适配器判定 to_me 时，做的正是把开头/结尾那个「@机器人」从消息
-    里删掉。OneBot、Milky 和 QQ 把原文留在 ``original_message`` 里（QQ 官方的群 @
-    事件会补回一个 @ 自己），飞书没留原文、但另存了一份 mentions，两处都翻一遍。
+    里删掉。QQ 把原文留在 ``original_message`` 里（群 @ 事件会补回一个 @ 自己），
+    飞书没留原文、但另存了一份 mentions，两处都翻一遍。
     """
     if (raw := getattr(event, "original_message", None)) is not None:
         try:

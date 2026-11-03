@@ -1,6 +1,4 @@
-import contextlib
-
-from nonebot.adapters import Bot, Event, Message, MessageTemplate
+from nonebot.adapters import Message, MessageTemplate
 from nonebot.matcher import Matcher
 from nonebot.params import Arg, ArgPlainText
 from nonebot.typing import T_State
@@ -69,36 +67,14 @@ def do_add_sub(add_sub: type[Matcher]):
             state["name"] = await check_sub_target(state["platform"], Target(""))
 
     @add_sub.got("raw_id", MessageTemplate("{_prompt}"), [handle_cancel])
-    async def got_id(bot: Bot, event: Event, state: T_State, raw_id: Message = Arg()):
+    async def got_id(state: T_State, raw_id: Message = Arg()):
         raw_id_text = raw_id.extract_plain_text()
         try:
             if raw_id_text == "查询":
-                url = "https://nonebot-bison.netlify.app/usage/#%E6%89%80%E6%94%AF%E6%8C%81%E5%B9%B3%E5%8F%B0%E7%9A%84-uid"
-                with contextlib.suppress(ImportError):
-                    from nonebot.adapters.onebot.v11 import Bot as OB11Bot
-                    from nonebot.adapters.onebot.v11 import Event as OB11Event
-                    from nonebot.adapters.onebot.v11 import MessageSegment
-
-                    # OneBot V11 能发分享卡片，其他适配器退化成纯文本链接
-                    if isinstance(bot, OB11Bot) and isinstance(event, OB11Event):
-                        await bot.send(
-                            event,
-                            MessageSegment.share(
-                                url=url,
-                                title="Bison所支持的平台UID",
-                                content="查询相关平台的uid格式或获取方式",
-                                image="https://s3.bmp.ovh/imgs/2022/03/ab3cc45d83bd3dd3.jpg",
-                            ),
-                        )
-                        await add_sub.reject()
-                await add_sub.reject(url)
+                await add_sub.reject(
+                    "https://nonebot-bison.netlify.app/usage/#%E6%89%80%E6%94%AF%E6%8C%81%E5%B9%B3%E5%8F%B0%E7%9A%84-uid"
+                )
             platform = platform_manager[state["platform"]]
-            with contextlib.suppress(ImportError):
-                from nonebot.adapters.onebot.v11 import Message
-                from nonebot.adapters.onebot.v11.utils import unescape
-
-                if isinstance(raw_id, Message):
-                    raw_id_text = unescape(raw_id_text)
             raw_id_text = await platform.parse_target(raw_id_text)
             name = await check_sub_target(state["platform"], raw_id_text)
             if not name:

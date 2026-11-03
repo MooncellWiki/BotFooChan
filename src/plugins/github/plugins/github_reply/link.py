@@ -55,8 +55,6 @@ async def handle_link(
             url += f"/releases/tag/{tag.tag}"
 
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await link.send(url)
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER

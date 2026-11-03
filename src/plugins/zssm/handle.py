@@ -249,4 +249,4 @@ async def handle(
         )
 
     await message_reaction("144", msg_id, event, bot)
-    await send_answer(bot, event, response, tracker, window, reply_to=reply)
+    await send_answer(response, tracker, window, reply_to=reply)

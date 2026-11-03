@@ -128,8 +128,6 @@ async def handle_label(
 
     message = f"成功为 {owner}/{repo}#{number} 添加了标签 {', '.join(labels)}"
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await label.send(message)
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER

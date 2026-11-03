@@ -13,26 +13,13 @@ from ._base import BaseTargetInfo, TargetType
 class BaseUserInfo(abc.ABC, BaseTargetInfo):
     """User entity."""
 
-    type: Literal[
-        TargetType.QQ_USER, TargetType.QQ_OFFICIAL_USER, TargetType.QQGUILD_USER
-    ]
+    type: Literal[TargetType.QQ_OFFICIAL_USER, TargetType.QQGUILD_USER]
 
     @property
     @abc.abstractmethod
     def user_id(self) -> str:
         """User id to show"""
         raise NotImplementedError
-
-
-class QQUserInfo(BaseUserInfo):
-    """QQ user entity."""
-
-    type: Literal[TargetType.QQ_USER]
-    qq_user_id: int
-
-    @property
-    def user_id(self) -> str:
-        return str(self.qq_user_id)
 
 
 class QQOfficialUserInfo(BaseUserInfo):
@@ -58,5 +45,5 @@ class QQGuildUserInfo(BaseUserInfo):
 
 
 UserInfo: TypeAlias = Annotated[
-    QQUserInfo | QQOfficialUserInfo | QQGuildUserInfo, Field(discriminator="type")
+    QQOfficialUserInfo | QQGuildUserInfo, Field(discriminator="type")
 ]

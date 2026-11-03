@@ -14,14 +14,11 @@ from src.plugins.github.helpers import qqofficial_conditional_image
 from src.plugins.github.models import Subscription
 from src.providers import cache
 from src.providers.platform import TargetInfo, extract_sent_message, get_target_bot
-from src.providers.platform.qq_client import send_image, send_text
 from src.providers.platform.targets import (
-    QQGroupInfo,
     QQGuildChannelInfo,
     QQGuildUserInfo,
     QQOfficialGroupInfo,
     QQOfficialUserInfo,
-    QQUserInfo,
 )
 
 T = TypeVar("T", bound=Event)
@@ -65,8 +62,6 @@ async def send_subscriber_text(target_info: TargetInfo, text: str, tag: Tag) -> 
 
     try:
         match target_info:
-            case QQUserInfo() | QQGroupInfo():
-                result = await send_text(bot, target_info, text)
             case QQOfficialUserInfo():
                 result = await cast("QQOfficialBot", bot).post_c2c_messages(
                     openid=target_info.qq_user_open_id, msg_type=0, content=text
@@ -101,8 +96,6 @@ async def send_subscriber_image(
 
     try:
         match target_info:
-            case QQUserInfo() | QQGroupInfo():
-                result = await send_image(bot, target_info, image)
             case QQOfficialUserInfo():
                 result = await cast("QQOfficialBot", bot).send_to_c2c(
                     openid=target_info.qq_user_open_id,
@@ -139,8 +132,6 @@ async def send_subscriber_image_url(
 
     try:
         match target_info:
-            case QQUserInfo() | QQGroupInfo():
-                result = await send_image(bot, target_info, image)
             case QQOfficialUserInfo():
                 result = await cast("QQOfficialBot", bot).post_c2c_files(
                     openid=target_info.qq_user_open_id, file_type=1, url=image

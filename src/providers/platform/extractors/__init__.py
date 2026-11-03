@@ -7,14 +7,9 @@ from src.providers.platform.roles import RoleLevel
 from src.providers.platform.targets import GroupInfo, TargetInfo, UserInfo
 
 from ._base import Extractor as Extractor
-from .milky import MilkyExtractor as MilkyExtractor
-from .onebot import OneBotExtractor as OneBotExtractor
 from .qq import QQExtractor as QQExtractor
 
-# Milky 与 OneBot 共用 QQ 号/群号目标，按目标找 bot 时先找 Milky
-EXTRACTORS = cast(
-    "tuple[type[Extractor], ...]", (MilkyExtractor, OneBotExtractor, QQExtractor)
-)
+EXTRACTORS = cast("tuple[type[Extractor], ...]", (QQExtractor,))
 
 
 def is_supported_event(event: Event) -> bool:
@@ -65,7 +60,7 @@ def extract_reply_message(event: Event) -> MessageInfo | None:
 
 
 async def get_target_bot(target: TargetInfo) -> Bot | None:
-    """同一种目标可能由多个适配器负责（QQ 号/群号：Milky、OneBot），取第一个在线的"""
+    """同一种目标可能由多个适配器负责，取第一个在线的"""
     for extractor in EXTRACTORS:
         if isinstance(target, extractor.TARGETS):  # type: ignore
             if (bot := await extractor.get_target_bot(target)) is not None:

@@ -16,7 +16,7 @@ from pydantic import TypeAdapter
 from sqlalchemy import JSON, Index, String, UniqueConstraint, select, update
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.providers.platform import TargetInfo
+from src.providers.platform import TargetInfo, TargetType
 
 from ._types import CanonicalJSON
 
@@ -170,10 +170,14 @@ class Subscription(Model):
             result = await session.execute(list_sql)
             subscriptions = result.scalars().all()
 
+        # 平台已经不支持的订阅者（QQ 号机器人时代按 QQ 号、群号存的）解析不了，
+        # 也发不出去，跳过；库里的行原样留着
+        known = {target_type.value for target_type in TargetType}
         # action is NULL means all actions are subscribed,
         # otherwise the action list should contain the event action
         return [
             sub
             for sub in subscriptions
-            if sub.action is None or (action is not None and action in sub.action)
+            if sub.subscriber.get("type") in known
+            and (sub.action is None or (action is not None and action in sub.action))
         ]

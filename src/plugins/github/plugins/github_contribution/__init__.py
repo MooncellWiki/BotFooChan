@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 from nonebot import logger, on_command
-from nonebot.adapters import Bot, Message
+from nonebot.adapters import Message
 from nonebot.adapters.github import ActionFailed, ActionTimeout, GraphQLError
 from nonebot.adapters.qq import MessageSegment as QQOfficialMS
 from nonebot.params import CommandArg
@@ -14,7 +14,6 @@ from src.plugins.github.helpers import NO_GITHUB_EVENT, PREFIXED_COMMAND
 from src.plugins.github.libs.renderer import user_contribution_to_image
 from src.plugins.github.utils import get_github_bot
 from src.providers.platform import TARGET_INFO, TargetType
-from src.providers.platform.qq_client import image_segment
 
 __plugin_meta__ = PluginMetadata(
     "GitHub 贡献查询", "查询 GitHub 贡献", "/contribution: 查看个人贡献"
@@ -56,7 +55,6 @@ contribution = on_command(
 
 @contribution.handle()
 async def handle_contribution(
-    event_bot: Bot,
     target_info: TARGET_INFO,
     user: AUTHORIZED_USER,
     args: Message = CommandArg(),
@@ -149,8 +147,6 @@ async def handle_contribution(
         await contribution.finish("生成图片出错！请稍后再试")
 
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            await contribution.send(image_segment(event_bot, img))
         case TargetType.QQ_OFFICIAL_USER | TargetType.QQ_OFFICIAL_GROUP:
             await contribution.send(QQOfficialMS.file_image(img))
         case TargetType.QQGUILD_USER | TargetType.QQGUILD_CHANNEL:

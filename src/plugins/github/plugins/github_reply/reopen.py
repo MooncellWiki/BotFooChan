@@ -119,8 +119,6 @@ async def handle_reopen(
         await reopen.finish("未知错误发生，请尝试重试或联系管理员")
 
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await reopen.send(message)
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER

@@ -1,5 +1,4 @@
 from nonebot import on_regex
-from nonebot.adapters import Bot
 from nonebot.adapters.qq import MessageSegment as QQOfficialMS
 from nonebot.plugin import PluginMetadata
 
@@ -31,7 +30,6 @@ from src.providers.platform import (
     TargetType,
     extract_sent_message,
 )
-from src.providers.platform.qq_client import image_segment
 
 __plugin_meta__ = PluginMetadata(
     "GitHub OpenGraph 查看",
@@ -57,7 +55,6 @@ repo_link_graph = on_regex(
 @repo_graph.handle(parameterless=(STORE_REGEX_VARS,))
 @repo_link_graph.handle(parameterless=(STORE_REGEX_VARS,))
 async def handle(
-    event_bot: Bot,
     target_info: TARGET_INFO,
     message_info: MESSAGE_INFO,
     repo: REPOSITORY,
@@ -73,8 +70,6 @@ async def handle(
         return
 
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await repo_graph.send(image_segment(event_bot, image))
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER
@@ -103,7 +98,6 @@ pr_commit_graph = on_regex(
 @commit_graph.handle(parameterless=(STORE_REGEX_VARS,))
 @pr_commit_graph.handle(parameterless=(STORE_REGEX_VARS,))
 async def handle_commit(
-    event_bot: Bot,
     target_info: TARGET_INFO,
     message_info: MESSAGE_INFO,
     repo: REPOSITORY,
@@ -122,8 +116,6 @@ async def handle_commit(
         return
 
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await commit_graph.send(image_segment(event_bot, image))
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER
@@ -148,7 +140,6 @@ release_graph = on_regex(
 
 @release_graph.handle(parameterless=(STORE_REGEX_VARS,))
 async def handle_release(
-    event_bot: Bot,
     target_info: TARGET_INFO,
     message_info: MESSAGE_INFO,
     repo: REPOSITORY,
@@ -167,8 +158,6 @@ async def handle_release(
         return
 
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await release_graph.send(image_segment(event_bot, image))
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER

@@ -1,18 +1,6 @@
-import asyncio
-from datetime import datetime
-
 from nonebot import on_command
-from nonebot.adapters import Bot, MessageTemplate
-from nonebot.adapters.milky import Bot as MilkyBot
-from nonebot.adapters.milky.event import FriendMessageEvent
-from nonebot.adapters.onebot.v11.event import PrivateMessageEvent
-from nonebot.matcher import Matcher
-from nonebot.params import ArgPlainText, ArgStr
 from nonebot.permission import SUPERUSER
-from nonebot.rule import Rule, to_me
-from nonebot.typing import T_State
-from nonebot_plugin_alconna.uniseg import SupportScope
-from nonebot_plugin_alconna.uniseg import Target as SendTarget
+from nonebot.rule import to_me
 
 from .add_cookie import do_add_cookie
 from .add_cookie_target import do_add_cookie_target
@@ -25,11 +13,8 @@ from .utils import (
     admin_permission,
     common_platform,
     configurable_to_me,
-    gen_handle_cancel,
     set_target_user_info,
 )
-
-_COMMAND_DISPATCH_TASKS: set[asyncio.Task] = set()
 
 add_sub_matcher = on_command(
     "添加订阅",
@@ -99,110 +84,12 @@ del_cookie_matcher = on_command(
 )
 do_del_cookie(del_cookie_matcher)
 
-group_manage_matcher = on_command(
-    "群管理", rule=to_me(), permission=SUPERUSER, priority=4, block=True
-)
-
-group_handle_cancel = gen_handle_cancel(group_manage_matcher, "已取消")
-
-# 群管理只在 QQ 客户端（OneBot、Milky）的好友私聊里用
-QQPrivateMessageEvent = PrivateMessageEvent | FriendMessageEvent
-
-
-async def _group_list(bot: Bot) -> list[tuple[int, str]]:
-    if isinstance(bot, MilkyBot):
-        return [
-            (group.group_id, group.group_name) for group in await bot.get_group_list()
-        ]
-    groups = await bot.call_api("get_group_list")
-    return [(group["group_id"], group["group_name"]) for group in groups]
-
-
-@group_manage_matcher.handle()
-async def send_group_list(bot: Bot, event: QQPrivateMessageEvent, state: T_State):
-    res_text = "请选择需要管理的群：\n"
-    group_number_idx = {}
-    for idx, (group_id, group_name) in enumerate(await _group_list(bot), 1):
-        group_number_idx[idx] = group_id
-        res_text += f"{idx}. {group_id} - {group_name}\n"
-    res_text += "请输入左侧序号\n中止操作请输入'取消'"
-    # await group_manage_matcher.send(res_text)
-    state["_prompt"] = res_text
-    state["group_number_idx"] = group_number_idx
-
-
-@group_manage_matcher.got(
-    "group_idx", MessageTemplate("{_prompt}"), [group_handle_cancel]
-)
-async def do_choose_group_number(
-    bot: Bot,
-    state: T_State,
-    event: QQPrivateMessageEvent,
-    group_idx: str = ArgPlainText(),
-):
-    group_number_idx: dict[int, int] = state["group_number_idx"]
-    assert group_number_idx
-    idx = int(group_idx)
-    if idx not in group_number_idx.keys():
-        await group_manage_matcher.reject("请输入正确序号")
-    group_id = group_number_idx[idx]
-    state["target_user_info"] = SendTarget(
-        str(group_id), self_id=bot.self_id, scope=SupportScope.qq_client
-    )
-
-
-@group_manage_matcher.got(
-    "command",
-    "请输入需要使用的命令：添加订阅，查询订阅，删除订阅，取消",
-    [group_handle_cancel],
-)
-async def do_dispatch_command(
-    bot: Bot,
-    event: QQPrivateMessageEvent,
-    state: T_State,
-    matcher: Matcher,
-    command: str = ArgStr(),
-):
-    if command not in {"添加订阅", "查询订阅", "删除订阅", "取消"}:
-        await group_manage_matcher.reject("请输入正确的命令")
-    permission = await matcher.update_permission(bot, event)
-    new_matcher = Matcher.new(
-        "message",
-        Rule(),
-        permission,
-        handlers=None,
-        temp=True,
-        priority=0,
-        block=True,
-        plugin=matcher.plugin,
-        module=matcher.module,
-        # NoneBot 内部是拿不带时区的 datetime.now() 和它比的（见 nonebot/message.py），
-        # 传 aware 的进去会在事件分发时抛 TypeError，所以这里也得是 naive 本地时间
-        expire_time=datetime.now().astimezone().replace(tzinfo=None),
-        default_state=matcher.state,
-        default_type_updater=matcher.__class__._default_type_updater,
-        default_permission_updater=matcher.__class__._default_permission_updater,
-    )
-    if command == "查询订阅":
-        do_query_sub(new_matcher)
-    elif command == "添加订阅":
-        do_add_sub(new_matcher)
-    else:
-        do_del_sub(new_matcher)
-    new_matcher_ins = new_matcher()
-
-    task = asyncio.create_task(new_matcher_ins.run(bot, event, state))
-    _COMMAND_DISPATCH_TASKS.add(task)
-    task.add_done_callback(_COMMAND_DISPATCH_TASKS.discard)
-
-
 no_permission_matcher = on_command(
     "添加订阅",
     rule=configurable_to_me,
     # 没有搬 web 后台，所以不含“管理后台”
     aliases={
         "删除订阅",
-        "群管理",
         "添加cookie",
         "删除cookie",
         "关联cookie",
@@ -226,7 +113,6 @@ __all__ = [
     "del_cookie_matcher",
     "del_cookie_target_matcher",
     "del_sub_matcher",
-    "group_manage_matcher",
     "no_permission_matcher",
     "query_sub_matcher",
 ]

@@ -12,16 +12,7 @@ from ._base import BaseTargetInfo, TargetType
 class BaseGroupInfo(BaseTargetInfo):
     """Group entity."""
 
-    type: Literal[
-        TargetType.QQ_GROUP, TargetType.QQ_OFFICIAL_GROUP, TargetType.QQGUILD_CHANNEL
-    ]
-
-
-class QQGroupInfo(BaseGroupInfo):
-    """QQ group entity."""
-
-    type: Literal[TargetType.QQ_GROUP]
-    qq_group_id: int
+    type: Literal[TargetType.QQ_OFFICIAL_GROUP, TargetType.QQGUILD_CHANNEL]
 
 
 class QQOfficialGroupInfo(BaseGroupInfo):
@@ -40,5 +31,5 @@ class QQGuildChannelInfo(BaseGroupInfo):
 
 
 GroupInfo: TypeAlias = Annotated[
-    QQGroupInfo | QQOfficialGroupInfo | QQGuildChannelInfo, Field(discriminator="type")
+    QQOfficialGroupInfo | QQGuildChannelInfo, Field(discriminator="type")
 ]

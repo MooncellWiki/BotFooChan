@@ -66,8 +66,6 @@ async def handle_content(
 
     message = f"https://github.com/{owner}/{repo_name}"
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await repo.send(message)
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER

@@ -1,31 +1,12 @@
-"""把解释结果折叠进一条合并转发（聊天记录）发出去。
+"""把解释结果连同参考的聊天记录、联网来源和用量统计拼成一条消息发出去。"""
 
-解释动辄几百字，再带上参考的聊天记录、联网来源和用量统计，直接发出去会刷屏；
-收进合并转发后群里只占一张卡片，卡片预览里照样能看到每条的开头。每段内容单独
-一个节点，节点昵称就当小标题用。
-
-合并转发只有 QQ 号机器人（OneBot v11 的 send_group_forward_msg、Milky 的 forward
-消息段）发得了，别的适配器发普通消息，接口报错时也退回普通消息。
-"""
-
-from nonebot import logger
-from nonebot.adapters import Bot, Event
-from nonebot_plugin_alconna import SupportAdapter
-from nonebot_plugin_alconna.uniseg import (
-    CustomNode,
-    Reference,
-    Reply,
-    UniMessage,
-    get_target,
-)
+from nonebot_plugin_alconna.uniseg import Reply, UniMessage
 
 from src.providers.chat_history import HistoryWindow, format_record, format_records
 from src.providers.llm import UsageTracker
 from src.providers.llm.transcript import Source, ToolSection
 
 from .processors.ai import ZssmAnswer
-
-FORWARD_ADAPTERS = frozenset({SupportAdapter.onebot11, SupportAdapter.milky})
 
 
 def render_context(window: HistoryWindow) -> str:
@@ -61,36 +42,15 @@ def render_searches(searches: list[ToolSection]) -> str:
 
 
 async def send_answer(
-    bot: Bot,
-    event: Event,
     answer: ZssmAnswer,
     tracker: UsageTracker,
     window: HistoryWindow | None,
     reply_to: Reply | None,
 ) -> None:
-    nodes = [("zssm", answer.text)]
+    parts = [answer.text]
     if window is not None and window.seen:
-        nodes.append((f"参考上下文（{len(window.seen)} 条）", render_context(window)))
+        parts.append(render_context(window))
     if answer.searches:
-        nodes.append(("联网搜索", render_searches(answer.searches)))
-    nodes.append(("耗时与用量", tracker.render()))
-
-    if get_target(event, bot).adapter in FORWARD_ADAPTERS:
-        # 内容包成 Text 段而不是裸字符串：OneBot 会把字符串当 CQ 码解析，
-        # 模型输出和网页标题里混进一段 [CQ:at,qq=all] 就真的 @ 全体了
-        forward = Reference(
-            nodes=[
-                CustomNode(bot.self_id, name, UniMessage.text(content))
-                for name, content in nodes
-            ]
-        )
-        try:
-            await UniMessage(forward).send()
-        except Exception as e:
-            logger.opt(exception=e).warning("合并转发发送失败，改发普通消息")
-        else:
-            return
-
-    await UniMessage.text("\n\n".join(content for _, content in nodes)).send(
-        reply_to=reply_to
-    )
+        parts.append(render_searches(answer.searches))
+    parts.append(tracker.render())
+    await UniMessage.text("\n\n".join(parts)).send(reply_to=reply_to)

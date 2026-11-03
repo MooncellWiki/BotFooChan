@@ -185,8 +185,6 @@ async def handle_merge(
 
     message = f"成功合并了 PR {owner}/{repo}#{number}"
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await merge.send(message)
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER

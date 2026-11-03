@@ -127,8 +127,6 @@ async def handle_unlabel(
 
     message = f"成功为 {owner}/{repo}#{number} 移除了标签 {label_}"
     match target_info.type:
-        case TargetType.QQ_USER | TargetType.QQ_GROUP:
-            result = await unlabel.send(message)
         case (
             TargetType.QQ_OFFICIAL_USER
             | TargetType.QQGUILD_USER
