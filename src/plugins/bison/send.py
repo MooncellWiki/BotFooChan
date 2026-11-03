@@ -3,7 +3,15 @@ from collections import deque
 from datetime import datetime
 
 from nonebot.log import logger
-from nonebot_plugin_alconna.uniseg import CustomNode, Reference, Target, UniMessage
+from nonebot_plugin_alconna.uniseg import (
+    CustomNode,
+    Reference,
+    SupportScope,
+    Target,
+    Text,
+    UniMessage,
+)
+from nonebot_plugin_alconna.uniseg.segment import Media
 
 from .plugin_config import plugin_config
 
@@ -88,7 +96,43 @@ def _to_forward(msgs: list[UniMessage]) -> UniMessage:
     )
 
 
+def _has_media(msg: UniMessage) -> bool:
+    return any(isinstance(seg, Media) for seg in msg)
+
+
+def _pack_for_qq_official(msgs: list[UniMessage]) -> list[UniMessage]:
+    """把一条推送的几条消息重新拼成 QQ 官方机器人发得出去的样子
+
+    官方机器人不支持合并转发，富媒体消息一条只能带一个文件（多了只发最后一个），
+    推送又是主动消息，每条都占额度。所以按顺序重新拼：每条最多一个文件，文件前面的
+    文字跟着它一起发，最后一个文件后面的文字跟着最后一条；原本分开的几条消息里的
+    文字用换行隔开。
+    """
+    chunks: list[UniMessage] = []
+    current = UniMessage()
+    for i, msg in enumerate(msgs):
+        for j, seg in enumerate(msg):
+            if _has_media(current):
+                chunks.append(current)
+                current = UniMessage()
+            elif i and not j and current and isinstance(seg, Text):
+                current.append(Text("\n"))
+            current.append(seg)
+
+    if chunks and not _has_media(current):
+        if any(isinstance(seg, Text) for seg in chunks[-1]):
+            chunks[-1].append(Text("\n"))
+        chunks[-1].extend(current)
+    elif current:
+        chunks.append(current)
+    return chunks
+
+
 async def send_msgs(send_target: Target, msgs: list[UniMessage]):
+    if send_target.scope == SupportScope.qq_api:
+        for msg in _pack_for_qq_official(msgs):
+            await _send_msgs_dispatch(send_target, msg)
+        return
     if not plugin_config.bison_use_pic_merge:
         for msg in msgs:
             await _send_msgs_dispatch(send_target, msg)

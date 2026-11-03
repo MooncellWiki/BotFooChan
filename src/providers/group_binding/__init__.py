@@ -10,8 +10,12 @@ group_openid 是按 AppID 分发的（同一个群，换个机器人就是另一
 
 绑定表原先放在通用对话插件（更早是 deepseek 插件）的数据目录下，新位置还没有
 文件时从旧位置搬过来，旧文件不删。
+
+按群号存着推送关系的插件（bison）用 ``on_bind`` 登记回调，绑定一成就把这个群号的
+推送转给官方机器人，不用等重启。
 """
 
+from collections.abc import Awaitable, Callable
 import json
 
 from nonebot import get_bots, logger, require
@@ -35,13 +39,22 @@ class GroupBinding(BaseModel):
         return self.group_openid == group_openid and self.bot_id in (None, bot_id)
 
 
+BindListener = Callable[[str, GroupBinding], Awaitable[str | None]]
+"""绑定成功后的回调，收到群号和新绑定，返回的话附在绑定结果后面回给超管"""
+
+
 class GroupBindingStore:
     """群号 -> 绑定信息，持久化到 localstore"""
 
     def __init__(self) -> None:
         self.file = store.get_plugin_data_file("group_bindings.json")
         self.bindings: dict[str, GroupBinding] = {}
+        self._bind_listeners: list[BindListener] = []
         self.load()
+
+    def on_bind(self, listener: BindListener) -> BindListener:
+        self._bind_listeners.append(listener)
+        return listener
 
     def load(self) -> None:
         source = self.file
@@ -97,17 +110,28 @@ class GroupBindingStore:
             None,
         )
 
-    def bind(self, group_id: str, bot_id: str, group_openid: str) -> None:
-        """登记群号；同一个群只留一个群号，原先绑的群号一并去掉"""
+    async def bind(self, group_id: str, bot_id: str, group_openid: str) -> list[str]:
+        """登记群号；同一个群只留一个群号，原先绑的群号一并去掉
+
+        返回各回调要附带告诉超管的话；回调出错只记日志，绑定照样算成功。
+        """
         self.bindings = {
             other: binding
             for other, binding in self.bindings.items()
             if not binding.belongs_to(bot_id, group_openid)
         }
-        self.bindings[str(group_id)] = GroupBinding(
-            group_openid=group_openid, bot_id=bot_id
-        )
+        binding = GroupBinding(group_openid=group_openid, bot_id=bot_id)
+        self.bindings[str(group_id)] = binding
         self.save()
+
+        notes: list[str] = []
+        for listener in self._bind_listeners:
+            try:
+                if note := await listener(str(group_id), binding):
+                    notes.append(note)
+            except Exception as e:
+                logger.opt(exception=e).error(f"群号 {group_id} 绑定后的回调出错")
+        return notes
 
     def remove(self, group_id: str) -> bool:
         if self.bindings.pop(str(group_id), None) is None:

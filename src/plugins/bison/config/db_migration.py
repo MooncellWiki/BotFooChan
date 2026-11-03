@@ -13,8 +13,13 @@ uniseg dump（从事件里拿到的）和群管理流程手写的无 adapter 版
 还会被存成多条 User。所以启动时统一重写成 ``dump_send_target`` 的规范格式，再把
 指向同一会话的重复 User 合并掉。
 
+QQ 号机器人（Milky、OneBot）已经不再使用，按真实群号存的订阅发不出去。群号在
+:mod:`src.providers.group_binding` 里绑定了官方机器人的，整理时一并改成官方机器人的
+群目标，推送和订阅管理都转到官方机器人；之后新绑定的群号在绑定时当场改（见
+``bootstrap``）。没绑定的群照旧按群号存，等绑定以后再改。
+
 所有步骤都是幂等的：库里已经有订阅时不再从旧库搬，``user_target`` 已经是规范格式
-时不再改写。
+时不再改写，已经改成官方机器人的群不会再改。
 """
 
 from pathlib import Path
@@ -28,6 +33,8 @@ from nonebot_plugin_orm import get_session
 from sqlalchemy import func, insert, inspect, select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import selectinload
+
+from src.providers.group_binding import group_bindings
 
 from .db_model import Cookie, CookieTarget, ScheduleTimeWeight, Subscribe, Target, User
 from .utils import dump_send_target, load_send_target, same_send_target
@@ -155,13 +162,30 @@ def _convert_saa_target(data: dict[str, Any]) -> SendTarget | None:
             return None
 
 
-async def _normalize_user_targets() -> None:
+def _to_official(target: SendTarget) -> SendTarget | None:
+    """群号绑定了官方机器人的 QQ 群，换成官方机器人眼里的这个群
+
+    私聊不换：QQ 号换不成官方机器人的用户 openid。
+    """
+    if target.scope != SupportScope.qq_client or target.private or target.channel:
+        return None
+    if (binding := group_bindings.get(target.id)) is None:
+        return None
+    return SendTarget(
+        binding.group_openid, self_id=binding.bot_id, scope=SupportScope.qq_api
+    )
+
+
+async def normalize_user_targets() -> dict[str, int]:
+    """整理 ``user_target``，返回这次改成官方机器人的群号及其订阅数"""
     async with get_session() as session:
         users = (
             await session.scalars(select(User).options(selectinload(User.subscribes)))
         ).all()
         converted = 0
         normalized = 0
+        moved: dict[str, int] = {}
+        unbound: list[str] = []
         valid: list[User] = []
         for user in users:
             data = user.user_target
@@ -183,10 +207,16 @@ async def _normalize_user_targets() -> None:
                         f"user {user.id} 的订阅将无法管理，请删除后重新订阅"
                     )
                     continue
+            if official := _to_official(target):
+                moved[target.id] = moved.get(target.id, 0) + len(user.subscribes)
+                target = official
+            elif target.scope == SupportScope.qq_client and not target.private:
+                unbound.append(target.id)
             canonical = dump_send_target(target)
             if canonical != data:
                 user.user_target = canonical
-                normalized += 1
+                if not official:
+                    normalized += 1
             valid.append(user)
 
         # 合并指向同一会话的重复 User：不同入口写入的格式不同（有无 self_id 等），
@@ -221,18 +251,26 @@ async def _normalize_user_targets() -> None:
             await session.delete(drop)
             merged += 1
 
-        if converted or normalized or merged:
+        if converted or normalized or moved or merged:
             await session.commit()
             parts = []
             if converted:
                 parts.append(f"saa 格式转换 {converted} 条")
             if normalized:
                 parts.append(f"重写为规范格式 {normalized} 条")
+            if moved:
+                parts.append(f"群号 {'、'.join(moved)} 改由官方机器人推送")
             if merged:
                 parts.append(f"合并重复记录 {merged} 条")
             logger.success(f"已整理订阅者数据：{'，'.join(parts)}")
+        if unbound:
+            logger.warning(
+                f"群号 {'、'.join(unbound)} 还按 QQ 号机器人推送，"
+                "在群里 @ 官方机器人发 /官q 绑定 <群号> 后改由官方机器人推送"
+            )
+        return moved
 
 
 async def data_migrate() -> None:
     await _migrate_from_datastore()
-    await _normalize_user_targets()
+    await normalize_user_targets()

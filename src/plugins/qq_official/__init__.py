@@ -13,7 +13,7 @@
 
 绑定：``/官q 绑定 <群号>`` 把本群的 group_openid 登记到这个群号下（见
 :mod:`src.providers.group_binding`），OneBot 兼容接口往这个群号的推送就由官方机器人
-发到本群。
+发到本群，bison 订阅在这个群号上的推送也一并转给官方机器人。
 """
 
 from typing import NoReturn
@@ -157,16 +157,14 @@ async def _(
         await official.finish(f"群号应为数字：{group_id.result}")
 
     previous = group_bindings.get(group_id.result)
-    group_bindings.bind(group_id.result, app_id, group_openid)
+    notes = await group_bindings.bind(group_id.result, app_id, group_openid)
     logger.info(f"官方机器人 {app_id} 的群 {group_openid} 绑定为群号 {group_id.result}")
-    await official.finish(
+    lines = [
         f"已把本群绑定为群号 {group_id.result}，往这个群号的推送改由官方机器人发到本群"
-        + (
-            f"\n（群号 {group_id.result} 原先绑定的另一个群已被覆盖）"
-            if previous is not None and not previous.belongs_to(app_id, group_openid)
-            else ""
-        )
-    )
+    ]
+    if previous is not None and not previous.belongs_to(app_id, group_openid):
+        lines.append(f"（群号 {group_id.result} 原先绑定的另一个群已被覆盖）")
+    await official.finish("\n".join(lines + notes))
 
 
 @official.assign("解绑")
