@@ -45,9 +45,10 @@ def dump_send_target(target: SendTarget) -> dict[str, Any]:
     - ``adapter``/``platforms`` 用 ``only_scope=True`` 统一不存：只有从事件 dump
       出来的目标带这两个字段，手动构造（已删掉的群管理流程）和从 saa 迁移来的都没有，
       存了反而让同一个群出现多种序列化结果；发送时靠 scope/self_id 选 bot 已经足够。
-    - ``self_id`` 保留：本项目同时接了两个 QQ 官方 bot，而群/私聊的 openid 是按 bot
-      区分的，只靠 scope 选 bot 会发错。代价是换 bot 账号后旧订阅在管理命令里会变成
-      另一个目标（推送仍然可用，``Target.select`` 找不到 self_id 时会回退到 scope）。
+    - ``self_id`` 保留：群/私聊的 openid 是按 bot 区分的，现在虽然只接了一个 QQ
+      官方 bot，再加一个时只靠 scope 选 bot 就会发错。代价是换 bot 账号后旧订阅在
+      管理命令里会变成另一个目标（推送仍然可用，``Target.select`` 找不到 self_id
+      时会回退到 scope）。
     """
     data = target.dump(only_scope=True)
     data["extra"] = {}
