@@ -37,8 +37,8 @@ def _official_group(group_id: str) -> dict | None:
     ).model_dump()
 
 
-async def move_to_official() -> dict[str, int]:
-    """改写绑定过的群号，返回这次改成官方机器人的群号及其订阅数"""
+async def move_to_official() -> None:
+    """改写绑定过的群号"""
     moved: dict[str, int] = {}
     unbound: set[str] = set()
 
@@ -81,13 +81,13 @@ async def move_to_official() -> dict[str, int]:
         await session.commit()
 
     if moved:
-        logger.success(f"群号 {'、'.join(moved)} 的 GitHub 订阅改由官方机器人推送")
+        detail = "、".join(f"{group}（{count} 条）" for group, count in moved.items())
+        logger.success(f"群号 {detail} 的 GitHub 订阅改由官方机器人推送")
     if unbound:
         logger.warning(
             f"群号 {'、'.join(sorted(unbound))} 的 GitHub 订阅发不出去，"
             "在群里 @ 官方机器人发 /官q 绑定 <群号> 后改由官方机器人推送"
         )
-    return moved
 
 
 @get_driver().on_startup
@@ -96,8 +96,6 @@ async def _startup() -> None:
 
 
 @group_bindings.on_bind
-async def _move_after_bind(group_id: str, binding: GroupBinding) -> str | None:
+async def _move_after_bind(group_id: str, binding: GroupBinding) -> None:
     """群号刚绑定上官方机器人，这个群号上的订阅当场转过去，不用等重启"""
-    if count := (await move_to_official()).get(group_id):
-        return f"这个群号上的 {count} 条 GitHub 订阅也改由官方机器人推送了"
-    return None
+    await move_to_official()

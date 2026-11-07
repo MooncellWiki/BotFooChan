@@ -39,8 +39,8 @@ class GroupBinding(BaseModel):
         return self.group_openid == group_openid and self.bot_id in (None, bot_id)
 
 
-BindListener = Callable[[str, GroupBinding], Awaitable[str | None]]
-"""绑定成功后的回调，收到群号和新绑定，返回的话附在绑定结果后面回给超管"""
+BindListener = Callable[[str, GroupBinding], Awaitable[None]]
+"""绑定成功后的回调，收到群号和新绑定"""
 
 
 class GroupBindingStore:
@@ -110,10 +110,10 @@ class GroupBindingStore:
             None,
         )
 
-    async def bind(self, group_id: str, bot_id: str, group_openid: str) -> list[str]:
+    async def bind(self, group_id: str, bot_id: str, group_openid: str) -> None:
         """登记群号；同一个群只留一个群号，原先绑的群号一并去掉
 
-        返回各回调要附带告诉超管的话；回调出错只记日志，绑定照样算成功。
+        回调出错只记日志，绑定照样算成功。
         """
         self.bindings = {
             other: binding
@@ -124,14 +124,11 @@ class GroupBindingStore:
         self.bindings[str(group_id)] = binding
         self.save()
 
-        notes: list[str] = []
         for listener in self._bind_listeners:
             try:
-                if note := await listener(str(group_id), binding):
-                    notes.append(note)
+                await listener(str(group_id), binding)
             except Exception as e:
                 logger.opt(exception=e).error(f"群号 {group_id} 绑定后的回调出错")
-        return notes
 
     def remove(self, group_id: str) -> bool:
         if self.bindings.pop(str(group_id), None) is None:

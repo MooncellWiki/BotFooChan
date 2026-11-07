@@ -19,7 +19,6 @@ async def startup():
 
 
 @group_bindings.on_bind
-async def _move_to_official(group_id: str, binding: GroupBinding) -> str | None:
+async def _move_to_official(group_id: str, binding: GroupBinding) -> None:
     """群号刚绑定上官方机器人，订阅在这个群号上的推送当场转过去，不用等重启"""
-    if count := (await normalize_user_targets()).get(group_id):
-        return f"这个群号上的 {count} 个 bison 订阅也改由官方机器人推送了"
+    await normalize_user_targets()

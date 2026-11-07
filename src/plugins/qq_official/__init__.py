@@ -103,14 +103,13 @@ async def _(
         await official.finish(f"群号应为数字：{group_id.result}")
 
     previous = group_bindings.get(group_id.result)
-    notes = await group_bindings.bind(group_id.result, app_id, group_openid)
+    await group_bindings.bind(group_id.result, app_id, group_openid)
     logger.info(f"官方机器人 {app_id} 的群 {group_openid} 绑定为群号 {group_id.result}")
-    lines = [
-        f"已把本群绑定为群号 {group_id.result}，往这个群号的推送改由官方机器人发到本群"
-    ]
     if previous is not None and not previous.belongs_to(app_id, group_openid):
-        lines.append(f"（群号 {group_id.result} 原先绑定的另一个群已被覆盖）")
-    await official.finish("\n".join(lines + notes))
+        logger.warning(
+            f"群号 {group_id.result} 原先绑定的群 {previous.group_openid} 已被覆盖"
+        )
+    await official.finish(f"已把本群绑定为群号 {group_id.result}")
 
 
 @official.assign("解绑")

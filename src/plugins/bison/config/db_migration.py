@@ -176,8 +176,8 @@ def _to_official(target: SendTarget) -> SendTarget | None:
     )
 
 
-async def normalize_user_targets() -> dict[str, int]:
-    """整理 ``user_target``，返回这次改成官方机器人的群号及其订阅数"""
+async def normalize_user_targets() -> None:
+    """整理 ``user_target``"""
     async with get_session() as session:
         users = (
             await session.scalars(select(User).options(selectinload(User.subscribes)))
@@ -259,7 +259,10 @@ async def normalize_user_targets() -> dict[str, int]:
             if normalized:
                 parts.append(f"重写为规范格式 {normalized} 条")
             if moved:
-                parts.append(f"群号 {'、'.join(moved)} 改由官方机器人推送")
+                detail = "、".join(
+                    f"{group}（{count} 个订阅）" for group, count in moved.items()
+                )
+                parts.append(f"群号 {detail} 改由官方机器人推送")
             if merged:
                 parts.append(f"合并重复记录 {merged} 条")
             logger.success(f"已整理订阅者数据：{'，'.join(parts)}")
@@ -268,7 +271,6 @@ async def normalize_user_targets() -> dict[str, int]:
                 f"群号 {'、'.join(unbound)} 还按 QQ 号机器人推送，"
                 "在群里 @ 官方机器人发 /官q 绑定 <群号> 后改由官方机器人推送"
             )
-        return moved
 
 
 async def data_migrate() -> None:
