@@ -171,7 +171,7 @@ class Subscription(Model):
             subscriptions = result.scalars().all()
 
         # 平台已经不支持的订阅者（QQ 号机器人时代按 QQ 号、群号存的）解析不了，
-        # 也发不出去，跳过；库里的行原样留着
+        # 也发不出去，跳过；群号绑定官方机器人后这些行会被改写，见 bootstrap
         known = {target_type.value for target_type in TargetType}
         # action is NULL means all actions are subscribed,
         # otherwise the action list should contain the event action

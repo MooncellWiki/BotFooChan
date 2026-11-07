@@ -11,6 +11,8 @@ from pydantic import ValidationError
 
 require("nonebot_plugin_orm")
 
+from . import bootstrap as bootstrap
+
 # 模型不管有没有配置 GitHub App 都要加载：ORM 的启动检查只认得已加载模型的插件的
 # 迁移，库里记着 github 的迁移版本、这边却找不到对应脚本时，整个 bot 都起不来
 from . import models as models
