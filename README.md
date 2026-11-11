@@ -29,3 +29,28 @@
 - 没有配置 `GITHUB_APPS` 时 GitHub 插件只打警告、不加载，不影响其它功能
 
 从原版迁移数据见 `scripts/import_qq_github_bot.py` 的说明。
+
+## WebUI
+
+管理后台和机器人跑在同一个进程、同一个端口：页面在 `/admin/`，接口在 `/admin/api`（`src/plugins/webui`）。前端在 `web/`（Nuxt 4 + Nuxt UI），镜像构建时生成静态文件一起打进去。
+
+启用：
+
+1. `.env.prod` 里配 `WEBUI__SECRET_KEY`、`WEBUI__PUBLIC_URL`、`WEBUI__ADMINS`，说明见 `.env`
+2. 在 GitHub App 的设置里把 `<WEBUI__PUBLIC_URL>/admin/api/auth/callback` 加进 Callback URL
+3. 反向代理把 `/admin` 转给 bot，要走 HTTPS（cookie 带 `Secure`）
+
+本地开发（Node 26 + pnpm）：
+
+```sh
+# 后端照常起 bot；.env.dev 里配 WEBUI__DEV_ADMIN=<GitHub 用户名> 可以免登录
+uv run python bot.py
+# 前端：打开 http://localhost:3000/admin/，接口转给 127.0.0.1:8086（换端口用 WEBUI_DEV_API）
+cd web && pnpm install && pnpm dev
+```
+
+改了接口之后重新生成前端的客户端，CI 会检查两边是否一致：
+
+```sh
+uv run python scripts/dump_webui_openapi.py > web/openapi.json && (cd web && pnpm gen)
+```

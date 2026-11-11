@@ -1,0 +1,36 @@
+{
+  "name": "botfoochan-webui",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "lint": "eslint .",
+    "gen": "openapi-ts"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.153",
+    "@nuxt/ui": "^4.12.0",
+    "@pinia/colada": "^1.4.9",
+    "@pinia/colada-nuxt": "^1.2.1",
+    "@pinia/nuxt": "^1.0.3",
+    "nuxt": "^4.6.4",
+    "pinia": "^4.1.0",
+    "tailwindcss": "^4.3.5"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
+    "@nuxt/eslint": "^1.17.0",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.14"
+  }
+}

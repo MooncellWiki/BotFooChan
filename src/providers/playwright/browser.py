@@ -59,6 +59,11 @@ async def get_browser(**kwargs) -> Browser:
     return _browser if _browser and _browser.is_connected() else await init(**kwargs)
 
 
+def is_connected() -> bool:
+    """浏览器现在是否连着；只看不动，不会为了检查去启动或重连"""
+    return _browser is not None and _browser.is_connected()
+
+
 @asynccontextmanager
 async def get_new_page(
     device_scale_factor: float = 2, **kwargs

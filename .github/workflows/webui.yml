@@ -1,0 +1,54 @@
+name: WebUI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "web/**"
+      - "src/plugins/webui/**"
+      - "scripts/dump_webui_openapi.py"
+      - ".github/workflows/webui.yml"
+
+jobs:
+  webui:
+    name: WebUI Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Python environment
+        uses: ./.github/actions/setup-python
+
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: web/package.json
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: web/.nvmrc
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      # 后端接口改了却没重新生成前端客户端时报错
+      - name: Check API client is up to date
+        run: |
+          uv run python ../scripts/dump_webui_openapi.py > openapi.json
+          pnpm gen
+          if [ -n "$(git status --porcelain -- openapi.json app/client)" ]; then
+            git status --short -- openapi.json app/client
+            echo "::error::接口和前端客户端对不上，在仓库根目录跑：uv run python scripts/dump_webui_openapi.py > web/openapi.json && (cd web && pnpm gen)"
+            exit 1
+          fi
+
+      - run: pnpm lint
+
+      - run: pnpm typecheck
+
+      - run: pnpm generate

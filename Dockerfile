@@ -29,6 +29,21 @@ RUN --mount=type=bind,source=./.git/,target=/tmp/.git/ \
   || git rev-parse --short HEAD > /tmp/VERSION \
   && echo "Building version: $(cat /tmp/VERSION)"
 
+# 管理后台的前端（web/），生成纯静态文件，最后拷进镜像由 bot 进程托管
+FROM node:26-slim AS web-stage
+
+WORKDIR /web
+
+# Node 25 起不再自带 corepack，按 package.json 里的 packageManager 装 pnpm
+COPY ./web/package.json /web/package.json
+
+RUN npm install -g "$(node -p 'require("./package.json").packageManager')"
+
+COPY ./web/ /web/
+
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+  pnpm install --frozen-lockfile && pnpm generate
+
 FROM python:3.14-slim-bookworm
 
 WORKDIR /app
@@ -55,5 +70,7 @@ RUN --mount=type=bind,from=build-stage,source=/wheel,target=/wheel \
 COPY --from=metadata-stage /tmp/VERSION /app/VERSION
 
 COPY . /app/
+
+COPY --from=web-stage /web/.output/public /app/web/.output/public
 
 CMD ["/start.sh"]

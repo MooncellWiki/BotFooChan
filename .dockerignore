@@ -8,3 +8,7 @@
 .prettier*
 docker-compose.yml
 Dockerfile
+web/node_modules/
+web/.nuxt/
+web/.output/
+web/dist
