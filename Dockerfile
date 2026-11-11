@@ -47,8 +47,10 @@ ENV APP_MODULE=bot:app
 
 # 浏览器与字体都不在这个镜像里：渲染走远程 Playwright Server（见 docker/playwright/）。
 # 这里只保留 playwright 的 Python 客户端。
+# 直接装 build-stage 打好的 wheel，不再读 requirements.txt：里面 git 来源的依赖
+# 是 `name @ git+…` 的写法，pip 照着它装会去调 git，而 slim 镜像里没有 git
 RUN --mount=type=bind,from=build-stage,source=/wheel,target=/wheel \
-  pip install --no-cache-dir --no-index --no-deps --find-links=/wheel -r /wheel/requirements.txt
+  pip install --no-cache-dir --no-index --no-deps /wheel/*.whl
 
 COPY --from=metadata-stage /tmp/VERSION /app/VERSION
 
