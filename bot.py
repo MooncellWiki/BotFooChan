@@ -2,6 +2,7 @@ import asyncio
 
 import nonebot
 from nonebot import logger
+from nonebot.adapters.discord import Adapter as DiscordAdapter
 from nonebot.adapters.feishu import Adapter as FeishuAdapter
 from nonebot.adapters.github import Adapter as BaseGitHubAdapter
 from nonebot.adapters.github.config import GitHubApp, OAuthApp
@@ -49,6 +50,7 @@ config = driver.config
 
 driver.register_adapter(QQAdapter)
 driver.register_adapter(FeishuAdapter)
+driver.register_adapter(DiscordAdapter)
 driver.register_adapter(GitHubAdapter)
 
 nonebot.load_plugins("src/providers")

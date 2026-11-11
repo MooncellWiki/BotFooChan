@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from pydantic_ai.output import PromptedOutput
 from pydantic_ai.settings import ModelSettings
 
+from src.providers.chat_history import scope_id
 from src.providers.llm import create_agent
 from src.providers.user_memory import EMPTY_HINT, get_memory
 
@@ -137,17 +138,6 @@ drink_matcher = on_alconna(
 )
 
 
-def _scope_id(event: Event) -> str:
-    """去重的范围：尽量落到群/频道，同一个群里连着问也不会重样"""
-    user_id = event.get_user_id()
-    try:
-        session_id = event.get_session_id()
-    except ValueError:
-        return user_id
-    # 各适配器的群/频道会话 id 都以 _{user_id} 结尾，去掉后就是会话本身
-    return session_id.removesuffix(f"_{user_id}") or user_id
-
-
 def _pick_count() -> int:
     """随机决定这次给几样：中间的数量更常见，偶尔一锤定音或者多摆几样"""
     low = w2e_config.min_suggestions
@@ -195,7 +185,8 @@ async def _recommend(event: Event, kind: Kind) -> str:
         retries=2,
     )
 
-    scope = _scope_id(event)
+    # 去重的范围：尽量落到群/频道，同一个群里连着问也不会重样
+    scope = scope_id(event)
     count = _pick_count()
     avoid = history.recent(scope, kind.key)
 

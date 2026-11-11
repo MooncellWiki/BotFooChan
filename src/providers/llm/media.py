@@ -1,10 +1,13 @@
 """把消息里的图片整理成模型能直接吃的多模态输入。
 
 聊天平台给过来的图片形态不一：官方机器人给短时效 URL，飞书只给一个 image_key，
-格式上还可能是模型不认的 BMP/TIFF。这里统一成「取字节 → 规整 → BinaryContent」：
+Discord 是附件，格式上还可能是模型不认的 BMP/TIFF。这里统一成「取字节 → 规整 →
+BinaryContent」：
 
-- 取字节优先走 uniseg 的 :func:`image_fetch`（各适配器的差异它都兜住了），
-  失败再用 httpx 直连 URL 兜底（QQ 图床对 TLS 握手挑剔，需要放宽参数）
+- 取字节优先走 uniseg 的 :func:`image_fetch`（各适配器的差异它大多兜住了），
+  失败再用 httpx 直连 URL 兜底（QQ 图床对 TLS 握手挑剔，需要放宽参数）。
+  Discord 例外：uniseg 转出来的图片只有文件名、没有地址，改由适配器按消息段里的
+  地址下载，顺带走上 ``DISCORD_PROXY``
 - 规整保证媒体类型落在 JPEG/PNG/GIF/WebP 内，并把过大的图等比缩小：模型侧本来
   就会缩到约 1300×1300 等效像素（每张图最多 1024 token），再大只是白占请求体
 
@@ -18,6 +21,8 @@ import ssl
 
 import httpx
 from nonebot import logger
+from nonebot.adapters.discord import Bot as DiscordBot
+from nonebot.adapters.discord import MessageSegment as DiscordSegment
 from nonebot.matcher import current_bot, current_event
 from nonebot.utils import run_sync
 from nonebot_plugin_alconna.uniseg import Image, image_fetch
@@ -84,12 +89,29 @@ def normalize_image(data: bytes) -> BinaryContent | None:
     return BinaryContent(data=buffer.getvalue(), media_type="image/jpeg")
 
 
+async def _fetch_discord_attachment(bot: DiscordBot, image: Image) -> bytes | None:
+    """Discord 附件：按接收时消息段里的 url/proxy_url 下载"""
+    if not isinstance(origin := image.origin, DiscordSegment):
+        return None
+    if origin.type != "attachment":
+        return None
+    fetched = await bot.fetch_attachments(origin, on_error="skip")
+    file = fetched[0].data.get("file") if fetched else None
+    return file.content if file is not None else None
+
+
 async def fetch_image(image: Image) -> bytes | None:
     """取出一张图片的原始字节，取不到时返回 None"""
     if image.raw:
         return image.raw_bytes
+    if isinstance(bot := current_bot.get(), DiscordBot):
+        try:
+            if data := await _fetch_discord_attachment(bot, image):
+                return data
+        except Exception as e:
+            logger.opt(exception=e).warning("Discord 附件下载失败")
     try:
-        if data := await image_fetch(current_event.get(), current_bot.get(), {}, image):
+        if data := await image_fetch(current_event.get(), bot, {}, image):
             return data
     except Exception as e:
         logger.opt(exception=e).debug("适配器取图失败，改为直连下载")

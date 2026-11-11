@@ -33,6 +33,11 @@ from .extractors import extract_user as extract_user
 from .extractors import get_target_bot as get_target_bot
 from .extractors import is_supported_event as is_supported_event
 
+# isort: split
+
+# 只为注册发送前的钩子：Discord 超长消息自动拆成几条
+from . import long_message as long_message
+
 OPTIONAL_USER_INFO: TypeAlias = Annotated[
     UserInfo | None, Depends(extract_user, use_cache=True)
 ]

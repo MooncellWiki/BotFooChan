@@ -179,6 +179,7 @@ dependencies = [
     { name = "matplotlib" },
     { name = "mdit-py-emoji" },
     { name = "mdit-py-plugins" },
+    { name = "nonebot-adapter-discord" },
     { name = "nonebot-adapter-feishu" },
     { name = "nonebot-adapter-github" },
     { name = "nonebot-adapter-onebot" },
@@ -229,6 +230,7 @@ requires-dist = [
     { name = "matplotlib", specifier = ">=3.8.0,<4.0.0" },
     { name = "mdit-py-emoji", specifier = ">=0.1.1,<1.0.0" },
     { name = "mdit-py-plugins", specifier = ">=0.6.1,<1.0.0" },
+    { name = "nonebot-adapter-discord", specifier = ">=1.1.10,<2.0.0" },
     { name = "nonebot-adapter-feishu", specifier = ">=3.1.0,<4.0.0" },
     { name = "nonebot-adapter-github", specifier = ">=0.6.0,<1.0.0" },
     { name = "nonebot-adapter-onebot", specifier = ">=2.3.0,<3.0.0" },
@@ -1714,6 +1716,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/9a/8e/105de02c1322cfada6d9710d9146ef8026419d433c9d08359a2d35805811/nodeenv-1.11.0.tar.gz", hash = "sha256:3ce8fe5b71d16e8af7039ca65257354100bc772965d6bc549070649e53b1b146", size = 99301, upload-time = "2026-09-26T11:29:21.367Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/c8/12811c9b48fde162bb72b6f2e78fada9a247a09d7bb5be2050a5d099c77b/nodeenv-1.11.0-py2.py3-none-any.whl", hash = "sha256:edaa16e6c14d7cf395d75d4bbd5a26390f4dc06501a33b4e76282b02cc688a25", size = 34277, upload-time = "2026-09-26T11:29:19.933Z" },
+]
+
+[[package]]
+name = "nonebot-adapter-discord"
+version = "1.1.10"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nonebot2" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/51/32/990ceba038f2ab9fb8141c8863e1f01c477cf3c3050d07f294e3b5fedf14/nonebot_adapter_discord-1.1.10.tar.gz", hash = "sha256:61cae5ac49d8c0171c8c673bd14cd4cb45e14b3a1e25e77e826d3bccf1aa8e6c", size = 113958, upload-time = "2026-09-11T17:25:16.043Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ff/bb/3f2821a67344a6b80429fa721a0f3b76473aceab0518025c1845cf8557b5/nonebot_adapter_discord-1.1.10-py3-none-any.whl", hash = "sha256:c4d5a41d84884521e5fbd448427757989f98e73760a39f4df7c66aff8f9ccdad", size = 121300, upload-time = "2026-09-11T17:25:15.037Z" },
 ]
 
 [[package]]

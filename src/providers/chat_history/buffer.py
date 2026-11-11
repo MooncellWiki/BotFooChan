@@ -10,6 +10,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from nonebot.adapters import Event
+from nonebot.adapters.discord import GuildMessageCreateEvent
 from nonebot_plugin_alconna.uniseg import (
     At,
     AtAll,
@@ -41,7 +42,10 @@ class Record:
 
 
 def scope_id(event: Event) -> str:
-    """消息归属的会话（群/频道/私聊），与 what2eat 的取法保持一致"""
+    """消息归属的会话（群/频道/私聊）"""
+    # Discord 的 session id 就是用户 id，不带频道，只能自己取；私聊仍按人算
+    if isinstance(event, GuildMessageCreateEvent):
+        return str(event.channel_id)
     user_id = event.get_user_id()
     try:
         session_id = event.get_session_id()
@@ -54,10 +58,19 @@ def scope_id(event: Event) -> str:
 def display_name(source: object) -> str | None:
     """事件或被回复消息（``Reply.origin``）里发送者的展示名，取不到时为 None。
 
-    没有统一接口：QQ 官方放在 ``author.username``，飞书的事件里不带昵称。
+    没有统一接口：先看群里的昵称 ``member.nick``（Discord、QQ 频道），再看
+    Discord 的显示名 ``author.global_name``，最后是 ``author.username``（QQ 官方、
+    Discord 的账号名）。飞书的事件里不带昵称。Discord 没给的字段是 UNSET 而不是
+    None，所以只认字符串。
     """
-    if value := getattr(getattr(source, "author", None), "username", None):
-        return str(value)
+    author = getattr(source, "author", None)
+    for value in (
+        getattr(getattr(source, "member", None), "nick", None),
+        getattr(author, "global_name", None),
+        getattr(author, "username", None),
+    ):
+        if isinstance(value, str) and value:
+            return value
     return None
 
 
@@ -147,6 +160,8 @@ class Recorder:
         """按消息 id 找回被回复的那条"""
         if not message_id:
             return None
+        # Discord 的 Reply.id 是 Snowflake（int 子类），和记下来的 str 对不上
+        message_id = str(message_id)
         buffer = self._buffers.get(scope)
         if not buffer:
             return None

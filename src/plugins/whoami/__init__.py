@@ -32,6 +32,7 @@ __plugin_meta__ = PluginMetadata(
 CHANNELS: dict[str, str] = {
     SupportAdapter.qq.value: "QQ 官方机器人",
     SupportAdapter.feishu.value: "飞书",
+    SupportAdapter.discord.value: "Discord",
 }
 """适配器名 -> 展示的渠道名"""
 
@@ -62,6 +63,8 @@ async def _(bot: Bot, event: Event) -> None:
     lines = [f"渠道：{CHANNELS.get(adapter, adapter)} {bot.self_id}"]
     if target.private:
         lines.append("会话：私聊")
+    elif target.parent_id and adapter == SupportAdapter.discord.value:
+        lines.append(f"服务器：{target.parent_id}，频道：{target.id}")
     elif target.parent_id:  # QQ 频道：频道 id 在 parent_id，子频道在 id
         lines.append(f"频道：{target.parent_id}，子频道：{target.id}")
     else:
