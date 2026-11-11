@@ -2,19 +2,24 @@ import json
 
 from nonebot import get_driver, get_plugin_config, logger
 import nonebot_plugin_localstore as store
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_ai.settings import ModelSettings
 
 from src.providers.llm import ModelEndpoint, list_models, resolve_endpoint
+from src.providers.settings import register
 
 
 class ScopedConfig(BaseModel):
-    model: str | None = None
-    """对话使用的模型（LLM__MODELS 中的别名）；未配置时插件不响应。
-    运行时可用 /llm model 切换，切换结果优先于这里"""
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    model: str | None = Field(default=None, json_schema_extra={"model_ref": True})
+    """对话使用的模型（模型注册表里的别名）；未配置时插件不响应。
+    也可以用 /llm model 切换"""
     name: str = ""
     """自称；留空则取全局 NICKNAME 的第一个"""
-    prompt: str = ""
+    prompt: str = Field(
+        default="", json_schema_extra={"prompt": True, "multiline": True}
+    )
     """追加在内置要求之后的人设"""
     context_size: int = Field(default=25, gt=0)
     """拼进提示词的最近消息条数（缓冲大小与单条截断长度见 CHAT_HISTORY__*）"""
@@ -67,44 +72,39 @@ class Config(BaseModel):
     """Chat Plugin Config"""
 
 
-chat_config = get_plugin_config(Config).chat
+def _legacy_runtime_model() -> str | None:
+    """以前 /llm model 切换的结果存在 localstore 的 runtime.json 里，迁进库时一起带上"""
+    file = store.get_plugin_config_file("runtime.json")
+    if not file.exists():
+        return None
+    try:
+        model = json.loads(file.read_text(encoding="utf-8")).get("model")
+    except Exception as e:
+        logger.opt(exception=e).error(f"对话运行时配置读取失败：{file}")
+        return None
+    # 注册表改过、别名没了的话就当没切换过，免得插件一声不吭
+    return model if model in list_models() else None
 
 
-class RuntimeConfig:
-    """运行时用 /llm model 切换的对话模型，持久化到 localstore"""
-
-    def __init__(self) -> None:
-        self.file = store.get_plugin_config_file("runtime.json")
-        self.model: str | None = None
-        """切换后的模型别名；没切换过时为 None，用 CHAT__MODEL"""
-        self.load()
-
-    def load(self) -> None:
-        if not self.file.exists():
-            return
-        try:
-            data = json.loads(self.file.read_text(encoding="utf-8"))
-        except Exception as e:
-            logger.opt(exception=e).error(f"对话运行时配置读取失败：{self.file}")
-            return
-        model = data.get("model")
-        # 注册表改过、别名没了的话就当没切换过，免得插件一声不吭
-        if model in list_models():
-            self.model = model
-
-    def save(self) -> None:
-        self.file.write_text(
-            json.dumps({"model": self.model}, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
+def _env_config() -> ScopedConfig:
+    config = get_plugin_config(Config).chat
+    if model := _legacy_runtime_model():
+        config = config.model_copy(update={"model": model})
+    return config
 
 
-runtime = RuntimeConfig()
+chat_config = register(
+    "chat",
+    ScopedConfig,
+    title="群聊对话",
+    description="被 @ 或被回复时接话",
+    env=_env_config,
+)
 
 
 def current_model() -> str | None:
     """当前生效的对话模型引用"""
-    return runtime.model or chat_config.model
+    return chat_config.model
 
 
 def get_endpoint() -> ModelEndpoint | None:

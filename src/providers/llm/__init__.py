@@ -37,6 +37,8 @@ from pydantic_ai.providers.openai import OpenAIProvider
 from pydantic_ai.settings import ModelSettings
 from pydantic_ai.usage import RunUsage
 
+from src.providers.settings import on_change
+
 from .config import ApiType as ApiType
 from .config import Config as Config
 from .config import ModelEndpoint as ModelEndpoint
@@ -46,6 +48,13 @@ from .config import require_endpoint as require_endpoint
 from .config import resolve_endpoint as resolve_endpoint
 
 _model_cache: dict[tuple[str | None, ...], Model] = {}
+
+
+@on_change("llm")
+def _clear_model_cache(_old: object, _new: object) -> None:
+    # 换了 Key 或地址后旧的 Model 还带着旧 provider，缓存键里虽有这些字段，
+    # 删掉的服务商对应的 Model 却会一直留着
+    _model_cache.clear()
 
 
 def get_model(endpoint: ModelEndpoint) -> Model:

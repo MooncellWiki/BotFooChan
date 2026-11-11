@@ -50,7 +50,7 @@ if reason := _disabled_reason():
     logger.warning(f"WebUI 没有启用：{reason}")
 else:
     if not webui_config.admins and dev_admin() is None:
-        logger.warning("WEBUI__ADMINS 是空的，谁也登录不了 WebUI")
+        logger.warning("WEBUI__ADMINS 是空的：后台里也没加过管理员的话，谁也登录不了")
     app: FastAPI = nonebot.get_app()
     app.mount(API_PATH, build_api())
     mount_spa(app, Path(webui_config.dist))

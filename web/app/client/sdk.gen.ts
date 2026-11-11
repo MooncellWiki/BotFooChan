@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetMeData, GetMeResponses, GetOverviewData, GetOverviewResponses, LogoutData, LogoutResponses } from './types.gen';
+import type { AddAdminData, AddAdminErrors, AddAdminResponses, DeleteModelData, DeleteModelErrors, DeleteModelResponses, DeleteProviderData, DeleteProviderErrors, DeleteProviderResponses, GetLlmData, GetLlmResponses, GetMeData, GetMeResponses, GetOverviewData, GetOverviewResponses, GetSettingsData, GetSettingsErrors, GetSettingsHistoryData, GetSettingsHistoryErrors, GetSettingsHistoryResponses, GetSettingsResponses, ListAdminsData, ListAdminsResponses, ListAuditData, ListAuditErrors, ListAuditResponses, ListPromptsData, ListPromptsResponses, ListRemoteModelsData, ListRemoteModelsErrors, ListRemoteModelsResponses, ListRoutesData, ListRoutesResponses, ListSettingsData, ListSettingsResponses, LogoutData, LogoutResponses, PutModelData, PutModelErrors, PutModelResponses, PutPromptData, PutPromptErrors, PutPromptResponses, PutProviderData, PutProviderErrors, PutProviderResponses, PutRouteData, PutRouteErrors, PutRouteResponses, PutSettingsData, PutSettingsErrors, PutSettingsResponses, RemoveAdminData, RemoveAdminErrors, RemoveAdminResponses, TestModelData, TestModelErrors, TestModelResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -38,3 +38,178 @@ export const getMe = <ThrowOnError extends boolean = false>(options?: Options<Ge
  * 运行状态概览
  */
 export const getOverview = <ThrowOnError extends boolean = false>(options?: Options<GetOverviewData, ThrowOnError>): RequestResult<GetOverviewResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetOverviewResponses, unknown, ThrowOnError>({ url: '/overview', ...options });
+
+/**
+ * List Settings
+ *
+ * 所有配置段
+ */
+export const listSettings = <ThrowOnError extends boolean = false>(options?: Options<ListSettingsData, ThrowOnError>): RequestResult<ListSettingsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListSettingsResponses, unknown, ThrowOnError>({ url: '/settings', ...options });
+
+/**
+ * Get Settings
+ *
+ * 一个配置段的 schema 和当前值
+ */
+export const getSettings = <ThrowOnError extends boolean = false>(options: Options<GetSettingsData, ThrowOnError>): RequestResult<GetSettingsResponses, GetSettingsErrors, ThrowOnError> => (options.client ?? client).get<GetSettingsResponses, GetSettingsErrors, ThrowOnError>({ url: '/settings/{key}', ...options });
+
+/**
+ * Put Settings
+ *
+ * 整段保存
+ */
+export const putSettings = <ThrowOnError extends boolean = false>(options: Options<PutSettingsData, ThrowOnError>): RequestResult<PutSettingsResponses, PutSettingsErrors, ThrowOnError> => (options.client ?? client).put<PutSettingsResponses, PutSettingsErrors, ThrowOnError>({
+    url: '/settings/{key}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get Settings History
+ *
+ * 配置段的修改历史，新的在前
+ */
+export const getSettingsHistory = <ThrowOnError extends boolean = false>(options: Options<GetSettingsHistoryData, ThrowOnError>): RequestResult<GetSettingsHistoryResponses, GetSettingsHistoryErrors, ThrowOnError> => (options.client ?? client).get<GetSettingsHistoryResponses, GetSettingsHistoryErrors, ThrowOnError>({ url: '/settings/{key}/history', ...options });
+
+/**
+ * Get Llm
+ *
+ * 服务商和模型
+ */
+export const getLlm = <ThrowOnError extends boolean = false>(options?: Options<GetLlmData, ThrowOnError>): RequestResult<GetLlmResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetLlmResponses, unknown, ThrowOnError>({ url: '/llm', ...options });
+
+/**
+ * Delete Provider
+ *
+ * 删除服务商（还有模型引用它时不让删）
+ */
+export const deleteProvider = <ThrowOnError extends boolean = false>(options: Options<DeleteProviderData, ThrowOnError>): RequestResult<DeleteProviderResponses, DeleteProviderErrors, ThrowOnError> => (options.client ?? client).delete<DeleteProviderResponses, DeleteProviderErrors, ThrowOnError>({ url: '/llm/providers/{name}', ...options });
+
+/**
+ * Put Provider
+ *
+ * 新增或修改服务商
+ */
+export const putProvider = <ThrowOnError extends boolean = false>(options: Options<PutProviderData, ThrowOnError>): RequestResult<PutProviderResponses, PutProviderErrors, ThrowOnError> => (options.client ?? client).put<PutProviderResponses, PutProviderErrors, ThrowOnError>({
+    url: '/llm/providers/{name}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete Model
+ *
+ * 删除模型别名（还有路由引用它时不让删）
+ */
+export const deleteModel = <ThrowOnError extends boolean = false>(options: Options<DeleteModelData, ThrowOnError>): RequestResult<DeleteModelResponses, DeleteModelErrors, ThrowOnError> => (options.client ?? client).delete<DeleteModelResponses, DeleteModelErrors, ThrowOnError>({ url: '/llm/models/{alias}', ...options });
+
+/**
+ * Put Model
+ *
+ * 新增或修改模型别名
+ */
+export const putModel = <ThrowOnError extends boolean = false>(options: Options<PutModelData, ThrowOnError>): RequestResult<PutModelResponses, PutModelErrors, ThrowOnError> => (options.client ?? client).put<PutModelResponses, PutModelErrors, ThrowOnError>({
+    url: '/llm/models/{alias}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Test Model
+ *
+ * 用这个模型发一句话，看通不通
+ */
+export const testModel = <ThrowOnError extends boolean = false>(options: Options<TestModelData, ThrowOnError>): RequestResult<TestModelResponses, TestModelErrors, ThrowOnError> => (options.client ?? client).post<TestModelResponses, TestModelErrors, ThrowOnError>({ url: '/llm/models/{alias}/test', ...options });
+
+/**
+ * List Remote Models
+ *
+ * 向服务商查它有哪些模型（OpenAI 的 /models 或 Anthropic 的 /v1/models）
+ */
+export const listRemoteModels = <ThrowOnError extends boolean = false>(options: Options<ListRemoteModelsData, ThrowOnError>): RequestResult<ListRemoteModelsResponses, ListRemoteModelsErrors, ThrowOnError> => (options.client ?? client).post<ListRemoteModelsResponses, ListRemoteModelsErrors, ThrowOnError>({ url: '/llm/providers/{name}/remote-models', ...options });
+
+/**
+ * List Routes
+ *
+ * 各功能用的模型
+ */
+export const listRoutes = <ThrowOnError extends boolean = false>(options?: Options<ListRoutesData, ThrowOnError>): RequestResult<ListRoutesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListRoutesResponses, unknown, ThrowOnError>({ url: '/llm/routes', ...options });
+
+/**
+ * Put Route
+ *
+ * 改某个功能用的模型
+ */
+export const putRoute = <ThrowOnError extends boolean = false>(options: Options<PutRouteData, ThrowOnError>): RequestResult<PutRouteResponses, PutRouteErrors, ThrowOnError> => (options.client ?? client).put<PutRouteResponses, PutRouteErrors, ThrowOnError>({
+    url: '/llm/routes/{section}/{field}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List Prompts
+ *
+ * 可以在后台改的提示词
+ */
+export const listPrompts = <ThrowOnError extends boolean = false>(options?: Options<ListPromptsData, ThrowOnError>): RequestResult<ListPromptsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListPromptsResponses, unknown, ThrowOnError>({ url: '/llm/prompts', ...options });
+
+/**
+ * Put Prompt
+ *
+ * 改提示词
+ */
+export const putPrompt = <ThrowOnError extends boolean = false>(options: Options<PutPromptData, ThrowOnError>): RequestResult<PutPromptResponses, PutPromptErrors, ThrowOnError> => (options.client ?? client).put<PutPromptResponses, PutPromptErrors, ThrowOnError>({
+    url: '/llm/prompts/{section}/{field}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List Admins
+ *
+ * 管理员名单
+ */
+export const listAdmins = <ThrowOnError extends boolean = false>(options?: Options<ListAdminsData, ThrowOnError>): RequestResult<ListAdminsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListAdminsResponses, unknown, ThrowOnError>({ url: '/admins', ...options });
+
+/**
+ * Add Admin
+ *
+ * 添加管理员
+ */
+export const addAdmin = <ThrowOnError extends boolean = false>(options: Options<AddAdminData, ThrowOnError>): RequestResult<AddAdminResponses, AddAdminErrors, ThrowOnError> => (options.client ?? client).post<AddAdminResponses, AddAdminErrors, ThrowOnError>({
+    url: '/admins',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Remove Admin
+ *
+ * 移除管理员（.env 里的删不掉）
+ */
+export const removeAdmin = <ThrowOnError extends boolean = false>(options: Options<RemoveAdminData, ThrowOnError>): RequestResult<RemoveAdminResponses, RemoveAdminErrors, ThrowOnError> => (options.client ?? client).delete<RemoveAdminResponses, RemoveAdminErrors, ThrowOnError>({ url: '/admins/{login}', ...options });
+
+/**
+ * List Audit
+ *
+ * 审计记录，新的在前
+ */
+export const listAudit = <ThrowOnError extends boolean = false>(options?: Options<ListAuditData, ThrowOnError>): RequestResult<ListAuditResponses, ListAuditErrors, ThrowOnError> => (options?.client ?? client).get<ListAuditResponses, ListAuditErrors, ThrowOnError>({ url: '/audit', ...options });

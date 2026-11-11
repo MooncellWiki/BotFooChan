@@ -2,19 +2,17 @@
 
 from dataclasses import dataclass, field
 
-from nonebot import get_plugin_config, logger
+from nonebot import logger
 from pydantic import BaseModel
 from pydantic_ai.messages import UserContent
 from pydantic_ai.native_tools import WebSearchTool
 from pydantic_ai.output import PromptedOutput
 from pydantic_ai.settings import ModelSettings
 
-from src.plugins.zssm.config import Config
+from src.plugins.zssm.config import plugin_config as config
 from src.providers.chat_history import HistoryWindow
 from src.providers.llm import UsageTracker, create_agent, resolve_endpoint
 from src.providers.llm.transcript import ToolSection, build_sections
-
-config = get_plugin_config(Config)
 
 REQUEST_TIMEOUT = 120
 

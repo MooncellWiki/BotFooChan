@@ -5,6 +5,88 @@ export type ClientOptions = {
 };
 
 /**
+ * AdminIn
+ */
+export type AdminIn = {
+    /**
+     * Login
+     */
+    login: string;
+    /**
+     * Note
+     */
+    note?: string;
+};
+
+/**
+ * AdminOut
+ */
+export type AdminOut = {
+    /**
+     * Login
+     */
+    login: string;
+    /**
+     * Source
+     */
+    source: 'env' | 'database';
+    /**
+     * Note
+     */
+    note?: string;
+    /**
+     * Added By
+     */
+    added_by?: string | null;
+    /**
+     * Added At
+     */
+    added_at?: string | null;
+};
+
+/**
+ * AuditEntry
+ */
+export type AuditEntry = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * At
+     */
+    at: string;
+    /**
+     * Actor
+     */
+    actor: string;
+    /**
+     * Entity
+     */
+    entity: string;
+    /**
+     * Action
+     */
+    action: string;
+    /**
+     * Detail
+     */
+    detail: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * Body_put_prompt
+ */
+export type BodyPutPrompt = {
+    /**
+     * Value
+     */
+    value: string;
+};
+
+/**
  * BotInfo
  */
 export type BotInfo = {
@@ -41,6 +123,62 @@ export type Component = {
 };
 
 /**
+ * HTTPValidationError
+ */
+export type HttpValidationError = {
+    /**
+     * Detail
+     */
+    detail?: Array<ValidationError>;
+};
+
+/**
+ * HistoryEntry
+ */
+export type HistoryEntry = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * At
+     */
+    at: string;
+    /**
+     * Actor
+     */
+    actor: string;
+    /**
+     * Action
+     */
+    action: string;
+    /**
+     * Changes
+     */
+    changes: {
+        [key: string]: Array<unknown>;
+    };
+};
+
+/**
+ * LLMOverview
+ */
+export type LlmOverview = {
+    /**
+     * Providers
+     */
+    providers: Array<ProviderOut>;
+    /**
+     * Models
+     */
+    models: Array<ModelOut>;
+    /**
+     * Api Types
+     */
+    api_types: Array<string>;
+};
+
+/**
  * Me
  */
 export type Me = {
@@ -60,6 +198,88 @@ export type Me = {
      * Environment
      */
     environment: string;
+};
+
+/**
+ * ModelIn
+ */
+export type ModelIn = {
+    /**
+     * Provider
+     */
+    provider: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Api Type
+     */
+    api_type?: 'responses' | 'chat' | 'anthropic' | null;
+    /**
+     * Vision
+     */
+    vision?: boolean | null;
+};
+
+/**
+ * ModelOut
+ */
+export type ModelOut = {
+    /**
+     * Alias
+     */
+    alias: string;
+    /**
+     * Provider
+     */
+    provider: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Api Type
+     */
+    api_type: 'responses' | 'chat' | 'anthropic' | null;
+    /**
+     * Vision
+     */
+    vision: boolean | null;
+    /**
+     * Resolved Api Type
+     */
+    resolved_api_type: 'responses' | 'chat' | 'anthropic' | null;
+    /**
+     * Supports Vision
+     */
+    supports_vision: boolean | null;
+    /**
+     * Routes
+     */
+    routes: Array<string>;
+};
+
+/**
+ * ModelTestResult
+ */
+export type ModelTestResult = {
+    /**
+     * Ok
+     */
+    ok: boolean;
+    /**
+     * Latency Ms
+     */
+    latency_ms: number;
+    /**
+     * Output
+     */
+    output?: string;
+    /**
+     * Error
+     */
+    error?: string;
 };
 
 /**
@@ -126,6 +346,288 @@ export type Overview = {
     components: Array<Component>;
 };
 
+/**
+ * Page[AuditEntry]
+ */
+export type PageAuditEntry = {
+    /**
+     * Items
+     */
+    items: Array<AuditEntry>;
+    /**
+     * Total
+     */
+    total: number;
+};
+
+/**
+ * Prompt
+ */
+export type Prompt = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Section
+     */
+    section: string;
+    /**
+     * Section Title
+     */
+    section_title: string;
+    /**
+     * Field
+     */
+    field: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Value
+     */
+    value: string;
+    /**
+     * Updated At
+     */
+    updated_at: string | null;
+};
+
+/**
+ * ProviderIn
+ */
+export type ProviderIn = {
+    /**
+     * Base Url
+     */
+    base_url: string;
+    /**
+     * Api Key
+     */
+    api_key?: string | null;
+    /**
+     * Api Type
+     */
+    api_type?: 'responses' | 'chat' | 'anthropic' | null;
+    /**
+     * Vision
+     */
+    vision?: boolean | null;
+    /**
+     * Proxy
+     */
+    proxy?: string | null;
+};
+
+/**
+ * ProviderOut
+ */
+export type ProviderOut = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Base Url
+     */
+    base_url: string;
+    /**
+     * Api Key
+     */
+    api_key: string | null;
+    /**
+     * Api Type
+     */
+    api_type: 'responses' | 'chat' | 'anthropic' | null;
+    /**
+     * Vision
+     */
+    vision: boolean | null;
+    /**
+     * Proxy
+     */
+    proxy: string | null;
+    /**
+     * Models
+     */
+    models: Array<string>;
+};
+
+/**
+ * RemoteModels
+ */
+export type RemoteModels = {
+    /**
+     * Models
+     */
+    models?: Array<string>;
+    /**
+     * Error
+     */
+    error?: string;
+};
+
+/**
+ * Route
+ */
+export type Route = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Section
+     */
+    section: string;
+    /**
+     * Section Title
+     */
+    section_title: string;
+    /**
+     * Field
+     */
+    field: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Value
+     */
+    value: string | null;
+    /**
+     * Status
+     */
+    status: 'ok' | 'unset' | 'missing' | 'no_provider' | 'no_key';
+    /**
+     * Detail
+     */
+    detail: string;
+};
+
+/**
+ * RouteIn
+ */
+export type RouteIn = {
+    /**
+     * Model
+     */
+    model: string | null;
+};
+
+/**
+ * SectionDetail
+ */
+export type SectionDetail = {
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Source
+     */
+    source: 'env' | 'database';
+    /**
+     * Updated At
+     */
+    updated_at: string | null;
+    /**
+     * Updated By
+     */
+    updated_by: string | null;
+    /**
+     * Restart Fields
+     */
+    restart_fields: Array<string>;
+    /**
+     * Json Schema
+     */
+    json_schema: {
+        [key: string]: unknown;
+    };
+    /**
+     * Value
+     */
+    value: {
+        [key: string]: unknown;
+    };
+    /**
+     * Editable
+     */
+    editable: boolean;
+};
+
+/**
+ * SectionSummary
+ */
+export type SectionSummary = {
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Source
+     */
+    source: 'env' | 'database';
+    /**
+     * Updated At
+     */
+    updated_at: string | null;
+    /**
+     * Updated By
+     */
+    updated_by: string | null;
+    /**
+     * Restart Fields
+     */
+    restart_fields: Array<string>;
+};
+
+/**
+ * ValidationError
+ */
+export type ValidationError = {
+    /**
+     * Location
+     */
+    loc: Array<string | number>;
+    /**
+     * Message
+     */
+    msg: string;
+    /**
+     * Error Type
+     */
+    type: string;
+    /**
+     * Input
+     */
+    input?: unknown;
+    /**
+     * Context
+     */
+    ctx?: {
+        [key: string]: unknown;
+    };
+};
+
 export type LogoutData = {
     body?: never;
     path?: never;
@@ -173,3 +675,554 @@ export type GetOverviewResponses = {
 };
 
 export type GetOverviewResponse = GetOverviewResponses[keyof GetOverviewResponses];
+
+export type ListSettingsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settings';
+};
+
+export type ListSettingsResponses = {
+    /**
+     * Response List Settings
+     *
+     * Successful Response
+     */
+    200: Array<SectionSummary>;
+};
+
+export type ListSettingsResponse = ListSettingsResponses[keyof ListSettingsResponses];
+
+export type GetSettingsData = {
+    body?: never;
+    path: {
+        /**
+         * Key
+         */
+        key: string;
+    };
+    query?: never;
+    url: '/settings/{key}';
+};
+
+export type GetSettingsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetSettingsError = GetSettingsErrors[keyof GetSettingsErrors];
+
+export type GetSettingsResponses = {
+    /**
+     * Successful Response
+     */
+    200: SectionDetail;
+};
+
+export type GetSettingsResponse = GetSettingsResponses[keyof GetSettingsResponses];
+
+export type PutSettingsData = {
+    /**
+     * Body
+     */
+    body: {
+        [key: string]: unknown;
+    };
+    path: {
+        /**
+         * Key
+         */
+        key: string;
+    };
+    query?: never;
+    url: '/settings/{key}';
+};
+
+export type PutSettingsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PutSettingsError = PutSettingsErrors[keyof PutSettingsErrors];
+
+export type PutSettingsResponses = {
+    /**
+     * Successful Response
+     */
+    200: SectionDetail;
+};
+
+export type PutSettingsResponse = PutSettingsResponses[keyof PutSettingsResponses];
+
+export type GetSettingsHistoryData = {
+    body?: never;
+    path: {
+        /**
+         * Key
+         */
+        key: string;
+    };
+    query?: {
+        /**
+         * Path
+         *
+         * 只看这个字段（点分路径）
+         */
+        path?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/settings/{key}/history';
+};
+
+export type GetSettingsHistoryErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetSettingsHistoryError = GetSettingsHistoryErrors[keyof GetSettingsHistoryErrors];
+
+export type GetSettingsHistoryResponses = {
+    /**
+     * Response Get Settings History
+     *
+     * Successful Response
+     */
+    200: Array<HistoryEntry>;
+};
+
+export type GetSettingsHistoryResponse = GetSettingsHistoryResponses[keyof GetSettingsHistoryResponses];
+
+export type GetLlmData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/llm';
+};
+
+export type GetLlmResponses = {
+    /**
+     * Successful Response
+     */
+    200: LlmOverview;
+};
+
+export type GetLlmResponse = GetLlmResponses[keyof GetLlmResponses];
+
+export type DeleteProviderData = {
+    body?: never;
+    path: {
+        /**
+         * Name
+         */
+        name: string;
+    };
+    query?: never;
+    url: '/llm/providers/{name}';
+};
+
+export type DeleteProviderErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteProviderError = DeleteProviderErrors[keyof DeleteProviderErrors];
+
+export type DeleteProviderResponses = {
+    /**
+     * Successful Response
+     */
+    200: LlmOverview;
+};
+
+export type DeleteProviderResponse = DeleteProviderResponses[keyof DeleteProviderResponses];
+
+export type PutProviderData = {
+    body: ProviderIn;
+    path: {
+        /**
+         * Name
+         */
+        name: string;
+    };
+    query?: never;
+    url: '/llm/providers/{name}';
+};
+
+export type PutProviderErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PutProviderError = PutProviderErrors[keyof PutProviderErrors];
+
+export type PutProviderResponses = {
+    /**
+     * Successful Response
+     */
+    200: LlmOverview;
+};
+
+export type PutProviderResponse = PutProviderResponses[keyof PutProviderResponses];
+
+export type DeleteModelData = {
+    body?: never;
+    path: {
+        /**
+         * Alias
+         */
+        alias: string;
+    };
+    query?: never;
+    url: '/llm/models/{alias}';
+};
+
+export type DeleteModelErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteModelError = DeleteModelErrors[keyof DeleteModelErrors];
+
+export type DeleteModelResponses = {
+    /**
+     * Successful Response
+     */
+    200: LlmOverview;
+};
+
+export type DeleteModelResponse = DeleteModelResponses[keyof DeleteModelResponses];
+
+export type PutModelData = {
+    body: ModelIn;
+    path: {
+        /**
+         * Alias
+         */
+        alias: string;
+    };
+    query?: never;
+    url: '/llm/models/{alias}';
+};
+
+export type PutModelErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PutModelError = PutModelErrors[keyof PutModelErrors];
+
+export type PutModelResponses = {
+    /**
+     * Successful Response
+     */
+    200: LlmOverview;
+};
+
+export type PutModelResponse = PutModelResponses[keyof PutModelResponses];
+
+export type TestModelData = {
+    body?: never;
+    path: {
+        /**
+         * Alias
+         */
+        alias: string;
+    };
+    query?: never;
+    url: '/llm/models/{alias}/test';
+};
+
+export type TestModelErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type TestModelError = TestModelErrors[keyof TestModelErrors];
+
+export type TestModelResponses = {
+    /**
+     * Successful Response
+     */
+    200: ModelTestResult;
+};
+
+export type TestModelResponse = TestModelResponses[keyof TestModelResponses];
+
+export type ListRemoteModelsData = {
+    body?: never;
+    path: {
+        /**
+         * Name
+         */
+        name: string;
+    };
+    query?: never;
+    url: '/llm/providers/{name}/remote-models';
+};
+
+export type ListRemoteModelsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListRemoteModelsError = ListRemoteModelsErrors[keyof ListRemoteModelsErrors];
+
+export type ListRemoteModelsResponses = {
+    /**
+     * Successful Response
+     */
+    200: RemoteModels;
+};
+
+export type ListRemoteModelsResponse = ListRemoteModelsResponses[keyof ListRemoteModelsResponses];
+
+export type ListRoutesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/llm/routes';
+};
+
+export type ListRoutesResponses = {
+    /**
+     * Response List Routes
+     *
+     * Successful Response
+     */
+    200: Array<Route>;
+};
+
+export type ListRoutesResponse = ListRoutesResponses[keyof ListRoutesResponses];
+
+export type PutRouteData = {
+    body: RouteIn;
+    path: {
+        /**
+         * Section
+         */
+        section: string;
+        /**
+         * Field
+         */
+        field: string;
+    };
+    query?: never;
+    url: '/llm/routes/{section}/{field}';
+};
+
+export type PutRouteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PutRouteError = PutRouteErrors[keyof PutRouteErrors];
+
+export type PutRouteResponses = {
+    /**
+     * Response Put Route
+     *
+     * Successful Response
+     */
+    200: Array<Route>;
+};
+
+export type PutRouteResponse = PutRouteResponses[keyof PutRouteResponses];
+
+export type ListPromptsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/llm/prompts';
+};
+
+export type ListPromptsResponses = {
+    /**
+     * Response List Prompts
+     *
+     * Successful Response
+     */
+    200: Array<Prompt>;
+};
+
+export type ListPromptsResponse = ListPromptsResponses[keyof ListPromptsResponses];
+
+export type PutPromptData = {
+    body: BodyPutPrompt;
+    path: {
+        /**
+         * Section
+         */
+        section: string;
+        /**
+         * Field
+         */
+        field: string;
+    };
+    query?: never;
+    url: '/llm/prompts/{section}/{field}';
+};
+
+export type PutPromptErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PutPromptError = PutPromptErrors[keyof PutPromptErrors];
+
+export type PutPromptResponses = {
+    /**
+     * Response Put Prompt
+     *
+     * Successful Response
+     */
+    200: Array<Prompt>;
+};
+
+export type PutPromptResponse = PutPromptResponses[keyof PutPromptResponses];
+
+export type ListAdminsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/admins';
+};
+
+export type ListAdminsResponses = {
+    /**
+     * Response List Admins
+     *
+     * Successful Response
+     */
+    200: Array<AdminOut>;
+};
+
+export type ListAdminsResponse = ListAdminsResponses[keyof ListAdminsResponses];
+
+export type AddAdminData = {
+    body: AdminIn;
+    path?: never;
+    query?: never;
+    url: '/admins';
+};
+
+export type AddAdminErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AddAdminError = AddAdminErrors[keyof AddAdminErrors];
+
+export type AddAdminResponses = {
+    /**
+     * Response Add Admin
+     *
+     * Successful Response
+     */
+    200: Array<AdminOut>;
+};
+
+export type AddAdminResponse = AddAdminResponses[keyof AddAdminResponses];
+
+export type RemoveAdminData = {
+    body?: never;
+    path: {
+        /**
+         * Login
+         */
+        login: string;
+    };
+    query?: never;
+    url: '/admins/{login}';
+};
+
+export type RemoveAdminErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RemoveAdminError = RemoveAdminErrors[keyof RemoveAdminErrors];
+
+export type RemoveAdminResponses = {
+    /**
+     * Response Remove Admin
+     *
+     * Successful Response
+     */
+    200: Array<AdminOut>;
+};
+
+export type RemoveAdminResponse = RemoveAdminResponses[keyof RemoveAdminResponses];
+
+export type ListAuditData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Entity
+         *
+         * 前缀，如 settings: 或 admin
+         */
+        entity?: string | null;
+        /**
+         * Actor
+         */
+        actor?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Offset
+         */
+        offset?: number;
+    };
+    url: '/audit';
+};
+
+export type ListAuditErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListAuditError = ListAuditErrors[keyof ListAuditErrors];
+
+export type ListAuditResponses = {
+    /**
+     * Successful Response
+     */
+    200: PageAuditEntry;
+};
+
+export type ListAuditResponse = ListAuditResponses[keyof ListAuditResponses];

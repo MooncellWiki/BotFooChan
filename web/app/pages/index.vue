@@ -49,13 +49,8 @@ const botColumns: TableColumn<BotInfo>[] = [
 </script>
 
 <template>
-  <UDashboardPanel id="overview">
-    <template #header>
-      <UDashboardNavbar title="概览">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-        <template #right>
+  <AppPage title="概览">
+    <template #actions>
           <span v-if="updatedAt" class="text-xs text-muted">
             更新于 {{ formatTime(updatedAt) }}
           </span>
@@ -67,12 +62,9 @@ const botColumns: TableColumn<BotInfo>[] = [
             :loading="asyncStatus === 'loading'"
             @click="refetch()"
           />
-        </template>
-      </UDashboardNavbar>
     </template>
 
-    <template #body>
-      <UAlert
+    <UAlert
         v-if="error"
         color="error"
         variant="subtle"
@@ -206,6 +198,5 @@ const botColumns: TableColumn<BotInfo>[] = [
           </UCard>
         </div>
       </template>
-    </template>
-  </UDashboardPanel>
+  </AppPage>
 </template>

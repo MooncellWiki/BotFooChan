@@ -1,9 +1,17 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 
+from src.providers.settings import register
+
 from .config import Config
 
-config = get_plugin_config(Config)
+config = register(
+    "nbnhhsh",
+    Config,
+    title="能不能好好说话",
+    description="拼音首字母缩写查询",
+    env=lambda: get_plugin_config(Config),
+)
 
 __plugin_meta__ = PluginMetadata(
     name="能不能好好说话",

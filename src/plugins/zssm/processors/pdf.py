@@ -2,12 +2,10 @@ from io import BytesIO
 import tempfile
 
 import httpx
-from nonebot import get_plugin_config, logger
+from nonebot import logger
 import pymupdf
 
-from src.plugins.zssm.config import Config
-
-config = get_plugin_config(Config)
+from src.plugins.zssm.config import plugin_config as config
 
 
 async def download_pdf(url: str) -> BytesIO | None:

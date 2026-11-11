@@ -1,7 +1,10 @@
 """LLM 中央配置：服务商与模型注册表。
 
-- ``LLM__PROVIDERS``：服务商注册表，``名称 -> {base_url, api_key, ...}``，Key 只配置一次
-- ``LLM__MODELS``：模型注册表，``别名 -> "服务商:模型名"``（或对象形式以覆写协议等字段）
+- 服务商注册表：``名称 -> {base_url, api_key, ...}``，Key 只配置一次
+- 模型注册表：``别名 -> "服务商:模型名"``（或对象形式以覆写协议等字段）
+
+两张表存在数据库里（配置段 ``llm``，见 :mod:`src.providers.settings`），在管理后台的
+「模型」页维护；库里还没有时用 .env 的 ``LLM__PROVIDERS`` / ``LLM__MODELS`` 初始化。
 
 插件配置中的模型引用既可以是注册表别名，也可以直接写 ``服务商:模型名``。
 """
@@ -10,7 +13,9 @@ from typing import Literal
 
 import httpx
 from nonebot import get_plugin_config, logger
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from src.providers.settings import register
 
 DEEPSEEK_OFFICIAL_HOST = "api.deepseek.com"
 DEEPSEEK_ANTHROPIC_PATH = "/anthropic"
@@ -60,6 +65,10 @@ class ModelEndpoint(BaseModel):
     """是否接受图片输入；缺省时按 DeepSeek 官方的模型能力推断"""
     proxy: str | None = None
     """代理地址"""
+    alias: str | None = None
+    """模型注册表里的别名；直接写 ``服务商:模型名`` 引用的为 None"""
+    provider: str | None = None
+    """服务商注册表里的名称"""
 
     @property
     def is_deepseek_official(self) -> bool:
@@ -96,11 +105,13 @@ class ModelEndpoint(BaseModel):
 
 
 class LLMProvider(BaseModel):
-    """一个 OpenAI 兼容服务商（地址 + 鉴权），在 LLM__PROVIDERS 中注册"""
+    """一个 OpenAI 兼容服务商（地址 + 鉴权），在服务商注册表中登记"""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
 
     base_url: str
     """OpenAI 兼容 API 地址"""
-    api_key: str | None = None
+    api_key: str | None = Field(default=None, json_schema_extra={"secret": True})
     """API Key"""
     api_type: ApiType | None = None
     """调用协议；缺省时 DeepSeek 官方支持的模型走 Responses，其余走 chat completions"""
@@ -111,10 +122,12 @@ class LLMProvider(BaseModel):
 
 
 class LLMModel(BaseModel):
-    """注册表中的一个模型（服务商引用 + 模型名），在 LLM__MODELS 中注册"""
+    """注册表中的一个模型（服务商引用 + 模型名），在模型注册表中登记"""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
 
     provider: str
-    """服务商名称（LLM__PROVIDERS 中的键）"""
+    """服务商名称（服务商注册表中的键）"""
     name: str
     """模型名称"""
     api_type: ApiType | None = None
@@ -131,6 +144,8 @@ def _parse_model_ref(ref: str) -> LLMModel:
 
 
 class ScopedConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
     providers: dict[str, LLMProvider] = Field(default_factory=dict)
     """服务商注册表"""
     models: dict[str, LLMModel] = Field(default_factory=dict)
@@ -152,7 +167,13 @@ class Config(BaseModel):
     """LLM Provider Config"""
 
 
-llm_config = get_plugin_config(Config).llm
+llm_config = register(
+    "llm",
+    ScopedConfig,
+    title="LLM 服务商与模型",
+    description="服务商（地址和 API Key）与模型别名；各功能用哪个模型见「模型路由」",
+    env=lambda: get_plugin_config(Config).llm,
+)
 
 
 def list_models() -> list[str]:
@@ -167,16 +188,17 @@ def resolve_endpoint(ref: str) -> ModelEndpoint | None:
     引用无效或服务商未配置 API Key 时返回 None 并记录警告。
     """
     model = llm_config.models.get(ref)
+    alias = ref if model is not None else None
     if model is None:
         if ":" not in ref:
-            logger.warning(f"模型引用 {ref} 不在 LLM__MODELS 注册表中")
+            logger.warning(f"模型引用 {ref} 不在模型注册表中")
             return None
         model = _parse_model_ref(ref)
 
     provider = llm_config.providers.get(model.provider)
     if provider is None:
         logger.warning(
-            f"模型 {ref} 引用的服务商 {model.provider} 未在 LLM__PROVIDERS 中注册"
+            f"模型 {ref} 引用的服务商 {model.provider} 未在服务商注册表中登记"
         )
         return None
     if not provider.api_key:
@@ -190,6 +212,8 @@ def resolve_endpoint(ref: str) -> ModelEndpoint | None:
         api_type=model.api_type or provider.api_type,
         vision=model.vision if model.vision is not None else provider.vision,
         proxy=provider.proxy,
+        alias=alias,
+        provider=model.provider,
     )
 
 
@@ -197,5 +221,7 @@ def require_endpoint(ref: str) -> ModelEndpoint:
     """同 resolve_endpoint，但解析失败时抛出 ValueError"""
     endpoint = resolve_endpoint(ref)
     if endpoint is None:
-        raise ValueError(f"模型 {ref} 未正确配置，请检查 LLM__PROVIDERS / LLM__MODELS")
+        raise ValueError(
+            f"模型 {ref} 未正确配置，请检查管理后台「模型」页的服务商和模型"
+        )
     return endpoint

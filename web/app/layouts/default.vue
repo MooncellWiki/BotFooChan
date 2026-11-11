@@ -5,8 +5,22 @@ import { logout } from '~/client'
 const me = useMe()
 const toast = useToast()
 
-const nav: NavigationMenuItem[] = [
-  { label: '概览', icon: 'i-lucide-gauge', to: '/' },
+const nav: NavigationMenuItem[][] = [
+  [
+    { label: '概览', icon: 'i-lucide-gauge', to: '/' },
+  ],
+  [
+    { label: 'LLM', type: 'label' },
+    { label: '模型', icon: 'i-lucide-brain-circuit', to: '/llm/models' },
+    { label: '模型路由', icon: 'i-lucide-route', to: '/llm/routes' },
+    { label: '提示词', icon: 'i-lucide-message-square-text', to: '/llm/prompts' },
+  ],
+  [
+    { label: '配置', type: 'label' },
+    { label: '插件设置', icon: 'i-lucide-settings-2', to: '/settings' },
+    { label: '管理员', icon: 'i-lucide-shield-user', to: '/admins' },
+    { label: '审计日志', icon: 'i-lucide-scroll-text', to: '/audit' },
+  ],
 ]
 
 async function signOut() {

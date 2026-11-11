@@ -4,8 +4,8 @@ import { type _JSONValue, defineQueryOptions, type UseMutationOptions } from '@p
 
 import { serializeQueryKeyValue } from '../client';
 import { client } from '../client.gen';
-import { getMe, getOverview, logout, type Options } from '../sdk.gen';
-import type { GetMeData, GetMeResponse, GetOverviewData, GetOverviewResponse, LogoutData, LogoutResponse } from '../types.gen';
+import { addAdmin, deleteModel, deleteProvider, getLlm, getMe, getOverview, getSettings, getSettingsHistory, listAdmins, listAudit, listPrompts, listRemoteModels, listRoutes, listSettings, logout, type Options, putModel, putPrompt, putProvider, putRoute, putSettings, removeAdmin, testModel } from '../sdk.gen';
+import type { AddAdminData, AddAdminError, AddAdminResponse, DeleteModelData, DeleteModelError, DeleteModelResponse, DeleteProviderData, DeleteProviderError, DeleteProviderResponse, GetLlmData, GetLlmResponse, GetMeData, GetMeResponse, GetOverviewData, GetOverviewResponse, GetSettingsData, GetSettingsError, GetSettingsHistoryData, GetSettingsHistoryError, GetSettingsHistoryResponse, GetSettingsResponse, ListAdminsData, ListAdminsResponse, ListAuditData, ListAuditError, ListAuditResponse, ListPromptsData, ListPromptsResponse, ListRemoteModelsData, ListRemoteModelsError, ListRemoteModelsResponse, ListRoutesData, ListRoutesResponse, ListSettingsData, ListSettingsResponse, LogoutData, LogoutResponse, PutModelData, PutModelError, PutModelResponse, PutPromptData, PutPromptError, PutPromptResponse, PutProviderData, PutProviderError, PutProviderResponse, PutRouteData, PutRouteError, PutRouteResponse, PutSettingsData, PutSettingsError, PutSettingsResponse, RemoveAdminData, RemoveAdminError, RemoveAdminResponse, TestModelData, TestModelError, TestModelResponse } from '../types.gen';
 
 /**
  * Logout
@@ -88,6 +88,334 @@ export const getOverviewQuery = defineQueryOptions<Options<GetOverviewData>, Get
     key: getOverviewQueryKey(options),
     query: async (context) => {
         const { data } = await getOverview({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+export const listSettingsQueryKey = (options?: Options<ListSettingsData>) => createQueryKey('listSettings', options);
+
+/**
+ * List Settings
+ *
+ * 所有配置段
+ */
+export const listSettingsQuery = defineQueryOptions<Options<ListSettingsData>, ListSettingsResponse, Error>((options?: Options<ListSettingsData>) => ({
+    key: listSettingsQueryKey(options),
+    query: async (context) => {
+        const { data } = await listSettings({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+export const getSettingsQueryKey = (options: Options<GetSettingsData>) => createQueryKey('getSettings', options);
+
+/**
+ * Get Settings
+ *
+ * 一个配置段的 schema 和当前值
+ */
+export const getSettingsQuery = defineQueryOptions<Options<GetSettingsData>, GetSettingsResponse, GetSettingsError>((options: Options<GetSettingsData>) => ({
+    key: getSettingsQueryKey(options),
+    query: async (context) => {
+        const { data } = await getSettings({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Put Settings
+ *
+ * 整段保存
+ */
+export const putSettingsMutation = (options?: Partial<Options<PutSettingsData>>): UseMutationOptions<PutSettingsResponse, Options<PutSettingsData>, PutSettingsError> => ({
+    mutation: async (vars) => {
+        const { data } = await putSettings({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const getSettingsHistoryQueryKey = (options: Options<GetSettingsHistoryData>) => createQueryKey('getSettingsHistory', options);
+
+/**
+ * Get Settings History
+ *
+ * 配置段的修改历史，新的在前
+ */
+export const getSettingsHistoryQuery = defineQueryOptions<Options<GetSettingsHistoryData>, GetSettingsHistoryResponse, GetSettingsHistoryError>((options: Options<GetSettingsHistoryData>) => ({
+    key: getSettingsHistoryQueryKey(options),
+    query: async (context) => {
+        const { data } = await getSettingsHistory({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+export const getLlmQueryKey = (options?: Options<GetLlmData>) => createQueryKey('getLlm', options);
+
+/**
+ * Get Llm
+ *
+ * 服务商和模型
+ */
+export const getLlmQuery = defineQueryOptions<Options<GetLlmData>, GetLlmResponse, Error>((options?: Options<GetLlmData>) => ({
+    key: getLlmQueryKey(options),
+    query: async (context) => {
+        const { data } = await getLlm({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Delete Provider
+ *
+ * 删除服务商（还有模型引用它时不让删）
+ */
+export const deleteProviderMutation = (options?: Partial<Options<DeleteProviderData>>): UseMutationOptions<DeleteProviderResponse, Options<DeleteProviderData>, DeleteProviderError> => ({
+    mutation: async (vars) => {
+        const { data } = await deleteProvider({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Put Provider
+ *
+ * 新增或修改服务商
+ */
+export const putProviderMutation = (options?: Partial<Options<PutProviderData>>): UseMutationOptions<PutProviderResponse, Options<PutProviderData>, PutProviderError> => ({
+    mutation: async (vars) => {
+        const { data } = await putProvider({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Delete Model
+ *
+ * 删除模型别名（还有路由引用它时不让删）
+ */
+export const deleteModelMutation = (options?: Partial<Options<DeleteModelData>>): UseMutationOptions<DeleteModelResponse, Options<DeleteModelData>, DeleteModelError> => ({
+    mutation: async (vars) => {
+        const { data } = await deleteModel({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Put Model
+ *
+ * 新增或修改模型别名
+ */
+export const putModelMutation = (options?: Partial<Options<PutModelData>>): UseMutationOptions<PutModelResponse, Options<PutModelData>, PutModelError> => ({
+    mutation: async (vars) => {
+        const { data } = await putModel({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Test Model
+ *
+ * 用这个模型发一句话，看通不通
+ */
+export const testModelMutation = (options?: Partial<Options<TestModelData>>): UseMutationOptions<TestModelResponse, Options<TestModelData>, TestModelError> => ({
+    mutation: async (vars) => {
+        const { data } = await testModel({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * List Remote Models
+ *
+ * 向服务商查它有哪些模型（OpenAI 的 /models 或 Anthropic 的 /v1/models）
+ */
+export const listRemoteModelsMutation = (options?: Partial<Options<ListRemoteModelsData>>): UseMutationOptions<ListRemoteModelsResponse, Options<ListRemoteModelsData>, ListRemoteModelsError> => ({
+    mutation: async (vars) => {
+        const { data } = await listRemoteModels({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const listRoutesQueryKey = (options?: Options<ListRoutesData>) => createQueryKey('listRoutes', options);
+
+/**
+ * List Routes
+ *
+ * 各功能用的模型
+ */
+export const listRoutesQuery = defineQueryOptions<Options<ListRoutesData>, ListRoutesResponse, Error>((options?: Options<ListRoutesData>) => ({
+    key: listRoutesQueryKey(options),
+    query: async (context) => {
+        const { data } = await listRoutes({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Put Route
+ *
+ * 改某个功能用的模型
+ */
+export const putRouteMutation = (options?: Partial<Options<PutRouteData>>): UseMutationOptions<PutRouteResponse, Options<PutRouteData>, PutRouteError> => ({
+    mutation: async (vars) => {
+        const { data } = await putRoute({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const listPromptsQueryKey = (options?: Options<ListPromptsData>) => createQueryKey('listPrompts', options);
+
+/**
+ * List Prompts
+ *
+ * 可以在后台改的提示词
+ */
+export const listPromptsQuery = defineQueryOptions<Options<ListPromptsData>, ListPromptsResponse, Error>((options?: Options<ListPromptsData>) => ({
+    key: listPromptsQueryKey(options),
+    query: async (context) => {
+        const { data } = await listPrompts({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Put Prompt
+ *
+ * 改提示词
+ */
+export const putPromptMutation = (options?: Partial<Options<PutPromptData>>): UseMutationOptions<PutPromptResponse, Options<PutPromptData>, PutPromptError> => ({
+    mutation: async (vars) => {
+        const { data } = await putPrompt({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const listAdminsQueryKey = (options?: Options<ListAdminsData>) => createQueryKey('listAdmins', options);
+
+/**
+ * List Admins
+ *
+ * 管理员名单
+ */
+export const listAdminsQuery = defineQueryOptions<Options<ListAdminsData>, ListAdminsResponse, Error>((options?: Options<ListAdminsData>) => ({
+    key: listAdminsQueryKey(options),
+    query: async (context) => {
+        const { data } = await listAdmins({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Add Admin
+ *
+ * 添加管理员
+ */
+export const addAdminMutation = (options?: Partial<Options<AddAdminData>>): UseMutationOptions<AddAdminResponse, Options<AddAdminData>, AddAdminError> => ({
+    mutation: async (vars) => {
+        const { data } = await addAdmin({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Remove Admin
+ *
+ * 移除管理员（.env 里的删不掉）
+ */
+export const removeAdminMutation = (options?: Partial<Options<RemoveAdminData>>): UseMutationOptions<RemoveAdminResponse, Options<RemoveAdminData>, RemoveAdminError> => ({
+    mutation: async (vars) => {
+        const { data } = await removeAdmin({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const listAuditQueryKey = (options?: Options<ListAuditData>) => createQueryKey('listAudit', options);
+
+/**
+ * List Audit
+ *
+ * 审计记录，新的在前
+ */
+export const listAuditQuery = defineQueryOptions<Options<ListAuditData>, ListAuditResponse, ListAuditError>((options?: Options<ListAuditData>) => ({
+    key: listAuditQueryKey(options),
+    query: async (context) => {
+        const { data } = await listAudit({
             ...options,
             ...context,
             throwOnError: true

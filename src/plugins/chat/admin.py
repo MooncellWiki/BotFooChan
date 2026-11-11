@@ -2,8 +2,11 @@
 
 原先挂在 /ds 下面；/ds 并入通用对话后单独拎了出来。官方机器人的群号绑定原先也在
 这里（/llm bind），推送也要用它，挪到了 /官q 绑定。
+
+切换模型改的是配置段 chat 的 model，和管理后台「模型路由」页改的是同一个值。
 """
 
+from nonebot.adapters import Bot, Event
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_alconna import (
     Alconna,
@@ -15,8 +18,9 @@ from nonebot_plugin_alconna import (
 )
 
 from src.providers.llm import list_models
+from src.providers.settings import NotPersistentError, patch
 
-from .config import current_model, runtime
+from .config import current_model
 
 llm = on_alconna(
     Alconna(
@@ -24,7 +28,7 @@ llm = on_alconna(
         Subcommand(
             "model",
             Args["name?#模型别名", str],
-            help_text="查看可用模型，或切换对话模型（LLM__MODELS 中的别名）",
+            help_text="查看可用模型，或切换对话模型（模型注册表里的别名）",
         ),
         meta=CommandMeta(
             description="对话模型的管理",
@@ -39,7 +43,7 @@ llm = on_alconna(
 
 
 @llm.assign("model")
-async def _(name: Query[str] = Query("model.name")):
+async def _(bot: Bot, event: Event, name: Query[str] = Query("model.name")):
     models = list_models()
     current = current_model()
     if not name.available:
@@ -50,13 +54,19 @@ async def _(name: Query[str] = Query("model.name")):
         await llm.finish(
             f"可用的模型：\n{listing}\n用 /llm model <别名> 切换"
             if models
-            else f"LLM__MODELS 里没有注册模型，当前使用 {current}"
+            else f"模型注册表里没有模型，当前使用 {current}"
         )
     if name.result not in models:
         await llm.finish(f"没有叫 {name.result} 的模型，可选：{'、'.join(models)}")
 
-    runtime.model = name.result
-    runtime.save()
+    try:
+        await patch(
+            "chat",
+            {"model": name.result},
+            actor=f"{bot.adapter.get_name()}:{event.get_user_id()}",
+        )
+    except NotPersistentError as e:
+        await llm.finish(f"切换失败：{e}")
     await llm.finish(f"对话模型已切换为 {name.result}")
 
 

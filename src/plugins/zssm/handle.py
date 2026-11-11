@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 
 from arclet.alconna import AllParam
 import httpx
-from nonebot import get_plugin_config, logger
+from nonebot import logger
 from nonebot.internal.adapter import Bot, Event
 from nonebot_plugin_alconna import Alconna, Args, Match, on_alconna
 from nonebot_plugin_alconna.builtins.extensions.reply import ReplyRecordExtension
@@ -24,7 +24,7 @@ from src.providers.chat_history import HistoryWindow, format_records, scope_id
 from src.providers.llm import UsageTracker, resolve_endpoint
 from src.providers.llm.media import as_model_inputs
 
-from .config import Config
+from .config import plugin_config as config
 from .processors.ai import generate_ai_response
 from .processors.pdf import process_pdf
 from .processors.web import process_web_page
@@ -42,7 +42,6 @@ SEARCH_PROMPT = """
 - 今天是 {today:%Y-%m-%d}"""
 """开启联网搜索时追加在系统提示词之后；不给日期的话模型连「近期」指什么都不知道"""
 TZ = ZoneInfo("Asia/Shanghai")
-config = get_plugin_config(Config)
 
 zssm = on_alconna(
     Alconna("zssm", Args["content?", AllParam]), extensions=[ReplyRecordExtension()]

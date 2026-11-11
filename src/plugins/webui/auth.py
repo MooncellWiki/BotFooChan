@@ -2,7 +2,8 @@
 
 GitHub OAuth 换出用户名、比对白名单之后（见 :mod:`.api.auth`），发一个 HMAC 签名的
 cookie，里面只有用户名、昵称、头像和过期时间，服务端不存会话。每个请求都重新比对
-白名单，所以把人从 WEBUI__ADMINS 里删掉立刻失效。
+管理员名单（.env 的 WEBUI__ADMINS 加上后台里添加的，见 :mod:`.admins`），所以把人
+从名单里删掉立刻失效。
 
 写接口另外要求带 ``X-WebUI`` 头：没放行 CORS，跨站页面带不上自定义头，以此挡 CSRF。
 """
@@ -19,6 +20,7 @@ from fastapi import Depends, HTTPException, Request, Response, status
 from nonebot import logger
 from pydantic import BaseModel, ValidationError
 
+from .admins import db_admins
 from .config import BASE_PATH, dev_admin, is_dev, webui_config
 
 SESSION_COOKIE = "webui_session"
@@ -93,7 +95,7 @@ def unsign(purpose: str, token: str | None) -> dict[str, Any] | None:
 
 def is_admin(login: str) -> bool:
     login = login.lower()
-    return login in webui_config.admins or login == dev_admin()
+    return login in webui_config.admins or login in db_admins() or login == dev_admin()
 
 
 def public_base(request: Request) -> str:

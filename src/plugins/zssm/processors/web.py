@@ -1,9 +1,7 @@
-from nonebot import get_plugin_config, logger
+from nonebot import logger
 
-from src.plugins.zssm.config import Config
+from src.plugins.zssm.config import plugin_config as config
 from src.providers.playwright import get_browser, get_proxy_settings
-
-config = get_plugin_config(Config)
 
 
 async def process_web_page(url: str) -> str | None:
