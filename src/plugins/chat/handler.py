@@ -132,8 +132,11 @@ def _receipt_id(receipt: Receipt) -> str:
             for key in ("message_id", "id", "msg_id"):
                 if (value := raw.get(key)) is not None:
                     return str(value)
+        # 官方 QQ 的回执是个模型，被引用时事件里给的是 ref_idx 而不是消息 id
+        elif ref_idx := getattr(getattr(raw, "ext_info", None), "ref_idx", None):
+            return str(ref_idx)
         elif raw is not None:
-            return str(raw)
+            return str(getattr(raw, "id", None) or raw)
     return ""
 
 
