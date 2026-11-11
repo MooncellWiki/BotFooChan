@@ -49,6 +49,12 @@ dependencies = [
 # 辅助函数，4.x 仍然保留着；不放开的话会和上面的 markdown-it-py >=4.2 冲突
 override-dependencies = ["markdown-it-py >=4.2.0, <5.0.0"]
 
+[tool.uv.sources]
+# QQ 群里引用机器人发的消息，事件里只给被引用那条的 ref_idx；1.7.3 的发送回执把
+# ext_info.ref_idx 丢了，对不上号。nonebot/adapter-qq#246 补上了但还没发版，
+# 等 1.7.4 上了 PyPI 就删掉这段
+nonebot-adapter-qq = { git = "https://github.com/nonebot/adapter-qq", rev = "c772c8888eb1172493ead7e36a6d1e7577b52516" }
+
 [dependency-groups]
 dev = [
   "ruff >=0.9.0, <1.0.0",

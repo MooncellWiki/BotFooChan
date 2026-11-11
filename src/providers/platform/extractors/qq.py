@@ -36,6 +36,22 @@ from src.providers.platform.targets import (
 
 from ._base import Extractor
 
+_REF_MSG_IDX = "ref_msg_idx="
+
+
+def _ref_msg_idx(event: QQMessageEvent) -> str | None:
+    """被引用那条的 ref_idx，事件把它放在 ``message_scene.ext`` 里"""
+    if event.message_scene is None:
+        return None
+    return next(
+        (
+            value.removeprefix(_REF_MSG_IDX)
+            for value in event.message_scene.ext
+            if value.startswith(_REF_MSG_IDX)
+        ),
+        None,
+    )
+
 
 class QQExtractor(
     Extractor[
@@ -134,8 +150,18 @@ class QQExtractor(
                     id=event.message_reference.message_id,
                 )
         elif isinstance(event, QQMessageEvent):
-            # NOTE: API not support currently
-            pass
+            # 官方 QQ 引用时只给被引用那条的 ref_idx，不是消息 id；发出去的消息也按
+            # 回执里的 ref_idx 记（见 extract_sent_message），两边才对得上
+            if not (ref_idx := _ref_msg_idx(event)):
+                return None
+            if isinstance(event, GroupMessageCreateEvent):
+                return QQOfficialGroupMessageInfo(
+                    type=TargetType.QQ_OFFICIAL_GROUP, id=ref_idx
+                )
+            if isinstance(event, C2CMessageCreateEvent):
+                return QQOfficialUserMessageInfo(
+                    type=TargetType.QQ_OFFICIAL_USER, id=ref_idx
+                )
 
     @classmethod
     @override
@@ -174,11 +200,16 @@ class QQExtractor(
         elif isinstance(target, QQGuildUserInfo):
             result = cast("GuildMessage", result)
             return QQGuildUserMessageInfo(type=target.type, id=result.id)
+        # 官方 QQ 按 ref_idx 记，别人引用这条时事件里给的就是它
         elif isinstance(target, QQOfficialGroupInfo):
             result = cast("PostGroupMessagesReturn", result)
-            if result.id:
-                return QQOfficialGroupMessageInfo(type=target.type, id=result.id)
+            if result.ext_info and result.ext_info.ref_idx:
+                return QQOfficialGroupMessageInfo(
+                    type=target.type, id=result.ext_info.ref_idx
+                )
         elif isinstance(target, QQOfficialUserInfo):
             result = cast("PostC2CMessagesReturn", result)
-            if result.id:
-                return QQOfficialUserMessageInfo(type=target.type, id=result.id)
+            if result.ext_info and result.ext_info.ref_idx:
+                return QQOfficialUserMessageInfo(
+                    type=target.type, id=result.ext_info.ref_idx
+                )
