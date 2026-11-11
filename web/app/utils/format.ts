@@ -30,3 +30,8 @@ export function formatDateTime(value: string | number | Date): string {
 export function formatTime(value: string | number | Date): string {
   return timeFormat.format(new Date(value))
 }
+
+/** 外部来的链接（模型抓的网页之类）只放行 http(s)，免得 javascript: 链接被点开 */
+export function safeUrl(url: string): string | undefined {
+  return /^https?:\/\//i.test(url) ? url : undefined
+}

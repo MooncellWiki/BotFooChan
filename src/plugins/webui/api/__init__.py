@@ -4,13 +4,25 @@ from fastapi.routing import APIRoute
 from src.plugins.webui.auth import check_csrf, require_admin
 from src.plugins.webui.config import API_PATH, is_dev
 
-from . import admin_api, auth, llm_api, overview, settings_api
+from . import (
+    admin_api,
+    auth,
+    data_api,
+    invocations_api,
+    llm_api,
+    ops_api,
+    overview,
+    settings_api,
+)
 
 PROTECTED_ROUTERS = (
     overview.router,
     settings_api.router,
     llm_api.router,
     admin_api.router,
+    invocations_api.router,
+    ops_api.router,
+    data_api.router,
 )
 """要登录才能用的接口"""
 

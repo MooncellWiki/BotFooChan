@@ -4,8 +4,8 @@ import { type _JSONValue, defineQueryOptions, type UseMutationOptions } from '@p
 
 import { serializeQueryKeyValue } from '../client';
 import { client } from '../client.gen';
-import { addAdmin, deleteModel, deleteProvider, getLlm, getMe, getOverview, getSettings, getSettingsHistory, listAdmins, listAudit, listPrompts, listRemoteModels, listRoutes, listSettings, logout, type Options, putModel, putPrompt, putProvider, putRoute, putSettings, removeAdmin, testModel } from '../sdk.gen';
-import type { AddAdminData, AddAdminError, AddAdminResponse, DeleteModelData, DeleteModelError, DeleteModelResponse, DeleteProviderData, DeleteProviderError, DeleteProviderResponse, GetLlmData, GetLlmResponse, GetMeData, GetMeResponse, GetOverviewData, GetOverviewResponse, GetSettingsData, GetSettingsError, GetSettingsHistoryData, GetSettingsHistoryError, GetSettingsHistoryResponse, GetSettingsResponse, ListAdminsData, ListAdminsResponse, ListAuditData, ListAuditError, ListAuditResponse, ListPromptsData, ListPromptsResponse, ListRemoteModelsData, ListRemoteModelsError, ListRemoteModelsResponse, ListRoutesData, ListRoutesResponse, ListSettingsData, ListSettingsResponse, LogoutData, LogoutResponse, PutModelData, PutModelError, PutModelResponse, PutPromptData, PutPromptError, PutPromptResponse, PutProviderData, PutProviderError, PutProviderResponse, PutRouteData, PutRouteError, PutRouteResponse, PutSettingsData, PutSettingsError, PutSettingsResponse, RemoveAdminData, RemoveAdminError, RemoveAdminResponse, TestModelData, TestModelError, TestModelResponse } from '../types.gen';
+import { addAdmin, addBisonSubscription, addFgoGroup, controlJob, deleteBinding, deleteBisonCookie, deleteBisonSubscription, deleteGithubSubscription, deleteMemory, deleteModel, deleteProvider, getBison, getGithub, getInvocation, getInvocationFilters, getInvocationStats, getLlm, getLogs, getMe, getMemoryDetail, getOverview, getSettings, getSettingsHistory, listAdmins, listAudit, listBindings, listFgoGroups, listInvocations, listJobs, listMemories, listPlugins, listPrompts, listRemoteModels, listRoutes, listSettings, listTorappuVersions, logout, type Options, putMemory, putModel, putPrompt, putProvider, putRoute, putSettings, relaunchTorappu, removeAdmin, removeFgoGroup, testModel, unauthGithubUser, unbindGithubGroup, updateBisonSubscription } from '../sdk.gen';
+import type { AddAdminData, AddAdminError, AddAdminResponse, AddBisonSubscriptionData, AddBisonSubscriptionError, AddBisonSubscriptionResponse, AddFgoGroupData, AddFgoGroupError, AddFgoGroupResponse, ControlJobData, ControlJobError, ControlJobResponse, DeleteBindingData, DeleteBindingError, DeleteBindingResponse, DeleteBisonCookieData, DeleteBisonCookieError, DeleteBisonCookieResponse, DeleteBisonSubscriptionData, DeleteBisonSubscriptionError, DeleteBisonSubscriptionResponse, DeleteGithubSubscriptionData, DeleteGithubSubscriptionError, DeleteGithubSubscriptionResponse, DeleteMemoryData, DeleteMemoryError, DeleteMemoryResponse, DeleteModelData, DeleteModelError, DeleteModelResponse, DeleteProviderData, DeleteProviderError, DeleteProviderResponse, GetBisonData, GetBisonResponse, GetGithubData, GetGithubResponse, GetInvocationData, GetInvocationError, GetInvocationFiltersData, GetInvocationFiltersResponse, GetInvocationResponse, GetInvocationStatsData, GetInvocationStatsError, GetInvocationStatsResponse, GetLlmData, GetLlmResponse, GetLogsData, GetLogsError, GetLogsResponse, GetMeData, GetMemoryDetailData, GetMemoryDetailError, GetMemoryDetailResponse, GetMeResponse, GetOverviewData, GetOverviewResponse, GetSettingsData, GetSettingsError, GetSettingsHistoryData, GetSettingsHistoryError, GetSettingsHistoryResponse, GetSettingsResponse, ListAdminsData, ListAdminsResponse, ListAuditData, ListAuditError, ListAuditResponse, ListBindingsData, ListBindingsResponse, ListFgoGroupsData, ListFgoGroupsResponse, ListInvocationsData, ListInvocationsError, ListInvocationsResponse, ListJobsData, ListJobsResponse, ListMemoriesData, ListMemoriesError, ListMemoriesResponse, ListPluginsData, ListPluginsResponse, ListPromptsData, ListPromptsResponse, ListRemoteModelsData, ListRemoteModelsError, ListRemoteModelsResponse, ListRoutesData, ListRoutesResponse, ListSettingsData, ListSettingsResponse, ListTorappuVersionsData, ListTorappuVersionsError, ListTorappuVersionsResponse, LogoutData, LogoutResponse, PutMemoryData, PutMemoryError, PutMemoryResponse, PutModelData, PutModelError, PutModelResponse, PutPromptData, PutPromptError, PutPromptResponse, PutProviderData, PutProviderError, PutProviderResponse, PutRouteData, PutRouteError, PutRouteResponse, PutSettingsData, PutSettingsError, PutSettingsResponse, RelaunchTorappuData, RelaunchTorappuError, RelaunchTorappuResponse, RemoveAdminData, RemoveAdminError, RemoveAdminResponse, RemoveFgoGroupData, RemoveFgoGroupError, RemoveFgoGroupResponse, TestModelData, TestModelError, TestModelResponse, UnauthGithubUserData, UnauthGithubUserError, UnauthGithubUserResponse, UnbindGithubGroupData, UnbindGithubGroupError, UnbindGithubGroupResponse, UpdateBisonSubscriptionData, UpdateBisonSubscriptionError, UpdateBisonSubscriptionResponse } from '../types.gen';
 
 /**
  * Logout
@@ -423,3 +423,495 @@ export const listAuditQuery = defineQueryOptions<Options<ListAuditData>, ListAud
         return data;
     }
 }));
+
+export const listInvocationsQueryKey = (options?: Options<ListInvocationsData>) => createQueryKey('listInvocations', options);
+
+/**
+ * List Invocations
+ *
+ * 调用记录，新的在前
+ */
+export const listInvocationsQuery = defineQueryOptions<Options<ListInvocationsData>, ListInvocationsResponse, ListInvocationsError>((options?: Options<ListInvocationsData>) => ({
+    key: listInvocationsQueryKey(options),
+    query: async (context) => {
+        const { data } = await listInvocations({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+export const getInvocationFiltersQueryKey = (options?: Options<GetInvocationFiltersData>) => createQueryKey('getInvocationFilters', options);
+
+/**
+ * Get Invocation Filters
+ *
+ * 筛选下拉框的候选值
+ */
+export const getInvocationFiltersQuery = defineQueryOptions<Options<GetInvocationFiltersData>, GetInvocationFiltersResponse, Error>((options?: Options<GetInvocationFiltersData>) => ({
+    key: getInvocationFiltersQueryKey(options),
+    query: async (context) => {
+        const { data } = await getInvocationFilters({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+export const getInvocationStatsQueryKey = (options?: Options<GetInvocationStatsData>) => createQueryKey('getInvocationStats', options);
+
+/**
+ * Get Invocation Stats
+ *
+ * 最近几天的调用量、token 和错误
+ */
+export const getInvocationStatsQuery = defineQueryOptions<Options<GetInvocationStatsData>, GetInvocationStatsResponse, GetInvocationStatsError>((options?: Options<GetInvocationStatsData>) => ({
+    key: getInvocationStatsQueryKey(options),
+    query: async (context) => {
+        const { data } = await getInvocationStats({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+export const getInvocationQueryKey = (options: Options<GetInvocationData>) => createQueryKey('getInvocation', options);
+
+/**
+ * Get Invocation
+ *
+ * 一次调用的详情和对话回放
+ */
+export const getInvocationQuery = defineQueryOptions<Options<GetInvocationData>, GetInvocationResponse, GetInvocationError>((options: Options<GetInvocationData>) => ({
+    key: getInvocationQueryKey(options),
+    query: async (context) => {
+        const { data } = await getInvocation({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+export const getLogsQueryKey = (options?: Options<GetLogsData>) => createQueryKey('getLogs', options);
+
+/**
+ * Get Logs
+ *
+ * 最近的日志（内存里最多留 2000 条，重启清空），按 id 增量拉
+ */
+export const getLogsQuery = defineQueryOptions<Options<GetLogsData>, GetLogsResponse, GetLogsError>((options?: Options<GetLogsData>) => ({
+    key: getLogsQueryKey(options),
+    query: async (context) => {
+        const { data } = await getLogs({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+export const listPluginsQueryKey = (options?: Options<ListPluginsData>) => createQueryKey('listPlugins', options);
+
+/**
+ * List Plugins
+ *
+ * 已加载的插件和它们的事件响应器
+ */
+export const listPluginsQuery = defineQueryOptions<Options<ListPluginsData>, ListPluginsResponse, Error>((options?: Options<ListPluginsData>) => ({
+    key: listPluginsQueryKey(options),
+    query: async (context) => {
+        const { data } = await listPlugins({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+export const listJobsQueryKey = (options?: Options<ListJobsData>) => createQueryKey('listJobs', options);
+
+/**
+ * List Jobs
+ *
+ * 定时任务
+ */
+export const listJobsQuery = defineQueryOptions<Options<ListJobsData>, ListJobsResponse, Error>((options?: Options<ListJobsData>) => ({
+    key: listJobsQueryKey(options),
+    query: async (context) => {
+        const { data } = await listJobs({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Control Job
+ *
+ * 立即执行、暂停或恢复一个定时任务
+ */
+export const controlJobMutation = (options?: Partial<Options<ControlJobData>>): UseMutationOptions<ControlJobResponse, Options<ControlJobData>, ControlJobError> => ({
+    mutation: async (vars) => {
+        const { data } = await controlJob({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const listTorappuVersionsQueryKey = (options?: Options<ListTorappuVersionsData>) => createQueryKey('listTorappuVersions', options);
+
+/**
+ * List Torappu Versions
+ *
+ * 最近的版本，新的在前
+ */
+export const listTorappuVersionsQuery = defineQueryOptions<Options<ListTorappuVersionsData>, ListTorappuVersionsResponse, ListTorappuVersionsError>((options?: Options<ListTorappuVersionsData>) => ({
+    key: listTorappuVersionsQueryKey(options),
+    query: async (context) => {
+        const { data } = await listTorappuVersions({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Relaunch Torappu
+ *
+ * 发起 torappu 重跑（等同 /重跑）
+ */
+export const relaunchTorappuMutation = (options?: Partial<Options<RelaunchTorappuData>>): UseMutationOptions<RelaunchTorappuResponse, Options<RelaunchTorappuData>, RelaunchTorappuError> => ({
+    mutation: async (vars) => {
+        const { data } = await relaunchTorappu({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const getBisonQueryKey = (options?: Options<GetBisonData>) => createQueryKey('getBison', options);
+
+/**
+ * Get Bison
+ *
+ * 订阅、平台和 Cookie（不含 Cookie 内容）
+ */
+export const getBisonQuery = defineQueryOptions<Options<GetBisonData>, GetBisonResponse, Error>((options?: Options<GetBisonData>) => ({
+    key: getBisonQueryKey(options),
+    query: async (context) => {
+        const { data } = await getBison({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Add Bison Subscription
+ *
+ * 给一个已有的会话添加订阅
+ */
+export const addBisonSubscriptionMutation = (options?: Partial<Options<AddBisonSubscriptionData>>): UseMutationOptions<AddBisonSubscriptionResponse, Options<AddBisonSubscriptionData>, AddBisonSubscriptionError> => ({
+    mutation: async (vars) => {
+        const { data } = await addBisonSubscription({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Delete Bison Subscription
+ *
+ * 取消订阅
+ */
+export const deleteBisonSubscriptionMutation = (options?: Partial<Options<DeleteBisonSubscriptionData>>): UseMutationOptions<DeleteBisonSubscriptionResponse, Options<DeleteBisonSubscriptionData>, DeleteBisonSubscriptionError> => ({
+    mutation: async (vars) => {
+        const { data } = await deleteBisonSubscription({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Update Bison Subscription
+ *
+ * 改订阅的分类和标签
+ */
+export const updateBisonSubscriptionMutation = (options?: Partial<Options<UpdateBisonSubscriptionData>>): UseMutationOptions<UpdateBisonSubscriptionResponse, Options<UpdateBisonSubscriptionData>, UpdateBisonSubscriptionError> => ({
+    mutation: async (vars) => {
+        const { data } = await updateBisonSubscription({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Delete Bison Cookie
+ *
+ * 删除 Cookie（还关联着订阅对象时不让删）
+ */
+export const deleteBisonCookieMutation = (options?: Partial<Options<DeleteBisonCookieData>>): UseMutationOptions<DeleteBisonCookieResponse, Options<DeleteBisonCookieData>, DeleteBisonCookieError> => ({
+    mutation: async (vars) => {
+        const { data } = await deleteBisonCookie({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const getGithubQueryKey = (options?: Options<GetGithubData>) => createQueryKey('getGithub', options);
+
+/**
+ * Get Github
+ *
+ * 群绑定的仓库、仓库订阅、已授权的用户（不含 token）
+ */
+export const getGithubQuery = defineQueryOptions<Options<GetGithubData>, GetGithubResponse, Error>((options?: Options<GetGithubData>) => ({
+    key: getGithubQueryKey(options),
+    query: async (context) => {
+        const { data } = await getGithub({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Unbind Github Group
+ *
+ * 解除群绑定的仓库
+ */
+export const unbindGithubGroupMutation = (options?: Partial<Options<UnbindGithubGroupData>>): UseMutationOptions<UnbindGithubGroupResponse, Options<UnbindGithubGroupData>, UnbindGithubGroupError> => ({
+    mutation: async (vars) => {
+        const { data } = await unbindGithubGroup({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Delete Github Subscription
+ *
+ * 删除仓库订阅
+ */
+export const deleteGithubSubscriptionMutation = (options?: Partial<Options<DeleteGithubSubscriptionData>>): UseMutationOptions<DeleteGithubSubscriptionResponse, Options<DeleteGithubSubscriptionData>, DeleteGithubSubscriptionError> => ({
+    mutation: async (vars) => {
+        const { data } = await deleteGithubSubscription({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Unauth Github User
+ *
+ * 撤销用户的 GitHub 授权（删掉存着的 token）
+ */
+export const unauthGithubUserMutation = (options?: Partial<Options<UnauthGithubUserData>>): UseMutationOptions<UnauthGithubUserResponse, Options<UnauthGithubUserData>, UnauthGithubUserError> => ({
+    mutation: async (vars) => {
+        const { data } = await unauthGithubUser({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const listBindingsQueryKey = (options?: Options<ListBindingsData>) => createQueryKey('listBindings', options);
+
+/**
+ * List Bindings
+ *
+ * 群号和 QQ 官方机器人 group_openid 的绑定。
+ *
+ * 新增要在群里 @ 官方机器人发 /官q 绑定
+ */
+export const listBindingsQuery = defineQueryOptions<Options<ListBindingsData>, ListBindingsResponse, Error>((options?: Options<ListBindingsData>) => ({
+    key: listBindingsQueryKey(options),
+    query: async (context) => {
+        const { data } = await listBindings({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Delete Binding
+ *
+ * 删除群号绑定
+ */
+export const deleteBindingMutation = (options?: Partial<Options<DeleteBindingData>>): UseMutationOptions<DeleteBindingResponse, Options<DeleteBindingData>, DeleteBindingError> => ({
+    mutation: async (vars) => {
+        const { data } = await deleteBinding({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const listFgoGroupsQueryKey = (options?: Options<ListFgoGroupsData>) => createQueryKey('listFgoGroups', options);
+
+/**
+ * List Fgo Groups
+ *
+ * 接收 FGO 维护推送的群
+ */
+export const listFgoGroupsQuery = defineQueryOptions<Options<ListFgoGroupsData>, ListFgoGroupsResponse, Error>((options?: Options<ListFgoGroupsData>) => ({
+    key: listFgoGroupsQueryKey(options),
+    query: async (context) => {
+        const { data } = await listFgoGroups({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Add Fgo Group
+ *
+ * 开启某个群的维护推送
+ */
+export const addFgoGroupMutation = (options?: Partial<Options<AddFgoGroupData>>): UseMutationOptions<AddFgoGroupResponse, Options<AddFgoGroupData>, AddFgoGroupError> => ({
+    mutation: async (vars) => {
+        const { data } = await addFgoGroup({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+/**
+ * Remove Fgo Group
+ *
+ * 关闭某个群的维护推送
+ */
+export const removeFgoGroupMutation = (options?: Partial<Options<RemoveFgoGroupData>>): UseMutationOptions<RemoveFgoGroupResponse, Options<RemoveFgoGroupData>, RemoveFgoGroupError> => ({
+    mutation: async (vars) => {
+        const { data } = await removeFgoGroup({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const listMemoriesQueryKey = (options?: Options<ListMemoriesData>) => createQueryKey('listMemories', options);
+
+/**
+ * List Memories
+ *
+ * 有档案的群友，最近更新的在前
+ */
+export const listMemoriesQuery = defineQueryOptions<Options<ListMemoriesData>, ListMemoriesResponse, ListMemoriesError>((options?: Options<ListMemoriesData>) => ({
+    key: listMemoriesQueryKey(options),
+    query: async (context) => {
+        const { data } = await listMemories({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Delete Memory
+ *
+ * 清空档案
+ */
+export const deleteMemoryMutation = (options?: Partial<Options<DeleteMemoryData>>): UseMutationOptions<DeleteMemoryResponse, Options<DeleteMemoryData>, DeleteMemoryError> => ({
+    mutation: async (vars) => {
+        const { data } = await deleteMemory({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});
+
+export const getMemoryDetailQueryKey = (options: Options<GetMemoryDetailData>) => createQueryKey('getMemoryDetail', options);
+
+/**
+ * Get Memory Detail
+ *
+ * 一位群友的档案全文
+ */
+export const getMemoryDetailQuery = defineQueryOptions<Options<GetMemoryDetailData>, GetMemoryDetailResponse, GetMemoryDetailError>((options: Options<GetMemoryDetailData>) => ({
+    key: getMemoryDetailQueryKey(options),
+    query: async (context) => {
+        const { data } = await getMemoryDetail({
+            ...options,
+            ...context,
+            throwOnError: true
+        });
+        return data;
+    }
+}));
+
+/**
+ * Put Memory
+ *
+ * 整份改写档案（超长时照常会被压缩）
+ */
+export const putMemoryMutation = (options?: Partial<Options<PutMemoryData>>): UseMutationOptions<PutMemoryResponse, Options<PutMemoryData>, PutMemoryError> => ({
+    mutation: async (vars) => {
+        const { data } = await putMemory({
+            ...options,
+            ...vars,
+            throwOnError: true
+        });
+        return data;
+    }
+});

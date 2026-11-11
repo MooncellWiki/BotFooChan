@@ -77,6 +77,192 @@ export type AuditEntry = {
 };
 
 /**
+ * BisonCookie
+ */
+export type BisonCookie = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Site Name
+     */
+    site_name: string;
+    /**
+     * Cookie Name
+     */
+    cookie_name: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Last Usage
+     */
+    last_usage: string | null;
+    /**
+     * Is Universal
+     */
+    is_universal: boolean;
+    /**
+     * Is Anonymous
+     */
+    is_anonymous: boolean;
+    /**
+     * Targets
+     */
+    targets: Array<string>;
+};
+
+/**
+ * BisonOverview
+ */
+export type BisonOverview = {
+    /**
+     * Platforms
+     */
+    platforms: Array<BisonPlatform>;
+    /**
+     * Subscriptions
+     */
+    subscriptions: Array<BisonSubscription>;
+    /**
+     * Cookies
+     */
+    cookies: Array<BisonCookie>;
+};
+
+/**
+ * BisonPlatform
+ */
+export type BisonPlatform = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Display Name
+     */
+    display_name: string;
+    /**
+     * Has Target
+     */
+    has_target: boolean;
+    /**
+     * Enable Tag
+     */
+    enable_tag: boolean;
+    /**
+     * Categories
+     */
+    categories: {
+        [key: string]: string;
+    };
+};
+
+/**
+ * BisonSubscription
+ */
+export type BisonSubscription = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * User Target
+     */
+    user_target: {
+        [key: string]: unknown;
+    };
+    /**
+     * User Label
+     */
+    user_label: string;
+    /**
+     * Platform
+     */
+    platform: string;
+    /**
+     * Target
+     */
+    target: string;
+    /**
+     * Target Name
+     */
+    target_name: string;
+    /**
+     * Categories
+     */
+    categories: Array<number>;
+    /**
+     * Tags
+     */
+    tags: Array<string>;
+};
+
+/**
+ * BisonSubscriptionIn
+ */
+export type BisonSubscriptionIn = {
+    /**
+     * User Target
+     */
+    user_target: {
+        [key: string]: unknown;
+    };
+    /**
+     * Platform
+     */
+    platform: string;
+    /**
+     * Target
+     */
+    target?: string;
+    /**
+     * Categories
+     */
+    categories?: Array<number>;
+    /**
+     * Tags
+     */
+    tags?: Array<string>;
+};
+
+/**
+ * BisonSubscriptionPatch
+ */
+export type BisonSubscriptionPatch = {
+    /**
+     * Categories
+     */
+    categories: Array<number>;
+    /**
+     * Tags
+     */
+    tags: Array<string>;
+};
+
+/**
+ * Body_add_fgo_group
+ */
+export type BodyAddFgoGroup = {
+    /**
+     * Group Id
+     */
+    group_id: number;
+};
+
+/**
+ * Body_put_memory
+ */
+export type BodyPutMemory = {
+    /**
+     * Content
+     */
+    content: string;
+};
+
+/**
  * Body_put_prompt
  */
 export type BodyPutPrompt = {
@@ -123,6 +309,196 @@ export type Component = {
 };
 
 /**
+ * DailyStat
+ */
+export type DailyStat = {
+    /**
+     * Date
+     */
+    date: string;
+    /**
+     * Ok
+     */
+    ok: number;
+    /**
+     * Error
+     */
+    error: number;
+    /**
+     * Input Tokens
+     */
+    input_tokens: number;
+    /**
+     * Output Tokens
+     */
+    output_tokens: number;
+};
+
+/**
+ * FgoPushGroup
+ */
+export type FgoPushGroup = {
+    /**
+     * Group Id
+     */
+    group_id: number;
+    /**
+     * Bound
+     */
+    bound: boolean;
+};
+
+/**
+ * GitHubGroup
+ */
+export type GitHubGroup = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Group
+     */
+    group: {
+        [key: string]: unknown;
+    };
+    /**
+     * Bind Repo
+     */
+    bind_repo: string | null;
+};
+
+/**
+ * GitHubOverview
+ */
+export type GitHubOverview = {
+    /**
+     * Groups
+     */
+    groups: Array<GitHubGroup>;
+    /**
+     * Subscriptions
+     */
+    subscriptions: Array<GitHubSubscription>;
+    /**
+     * Users
+     */
+    users: Array<GitHubUser>;
+};
+
+/**
+ * GitHubSubscription
+ */
+export type GitHubSubscription = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Subscriber
+     */
+    subscriber: {
+        [key: string]: unknown;
+    };
+    /**
+     * Repo
+     */
+    repo: string;
+    /**
+     * Event
+     */
+    event: string;
+    /**
+     * Action
+     */
+    action: Array<string> | null;
+};
+
+/**
+ * GitHubUser
+ */
+export type GitHubUser = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * User
+     */
+    user: {
+        [key: string]: unknown;
+    };
+    /**
+     * Authorized
+     */
+    authorized: boolean;
+};
+
+/**
+ * GroupBindingOut
+ */
+export type GroupBindingOut = {
+    /**
+     * Group Id
+     */
+    group_id: string;
+    /**
+     * Group Openid
+     */
+    group_openid: string;
+    /**
+     * Bot Id
+     */
+    bot_id: string | null;
+    /**
+     * Online
+     */
+    online: boolean;
+    /**
+     * Fgo Push
+     */
+    fgo_push: boolean;
+};
+
+/**
+ * GroupStat
+ */
+export type GroupStat = {
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Count
+     */
+    count: number;
+    /**
+     * Errors
+     */
+    errors: number;
+    /**
+     * Tokens
+     */
+    tokens: number;
+    /**
+     * Avg Latency Ms
+     */
+    avg_latency_ms: number;
+};
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -161,6 +537,261 @@ export type HistoryEntry = {
 };
 
 /**
+ * InvocationDetail
+ */
+export type InvocationDetail = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Task
+     */
+    task: string;
+    /**
+     * Adapter
+     */
+    adapter: string | null;
+    /**
+     * Session Id
+     */
+    session_id: string | null;
+    /**
+     * User Id
+     */
+    user_id: string | null;
+    /**
+     * Model Alias
+     */
+    model_alias: string | null;
+    /**
+     * Provider
+     */
+    provider: string | null;
+    /**
+     * Model Name
+     */
+    model_name: string;
+    /**
+     * Api Type
+     */
+    api_type: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Error
+     */
+    error: string | null;
+    /**
+     * Latency Ms
+     */
+    latency_ms: number;
+    /**
+     * Input Tokens
+     */
+    input_tokens: number;
+    /**
+     * Output Tokens
+     */
+    output_tokens: number;
+    /**
+     * Cache Read Tokens
+     */
+    cache_read_tokens: number;
+    /**
+     * Requests
+     */
+    requests: number;
+    /**
+     * Tool Calls
+     */
+    tool_calls: number;
+    /**
+     * Web Search
+     */
+    web_search: boolean;
+    /**
+     * Output Preview
+     */
+    output_preview: string;
+    /**
+     * Has Messages
+     */
+    has_messages: boolean;
+    /**
+     * Bot Id
+     */
+    bot_id: string | null;
+    /**
+     * Sections
+     */
+    sections: Array<Section>;
+    /**
+     * Sections Error
+     */
+    sections_error?: string;
+};
+
+/**
+ * InvocationFilters
+ */
+export type InvocationFilters = {
+    /**
+     * Tasks
+     */
+    tasks: Array<string>;
+    /**
+     * Models
+     */
+    models: Array<string>;
+};
+
+/**
+ * InvocationStats
+ */
+export type InvocationStats = {
+    /**
+     * Days
+     */
+    days: Array<DailyStat>;
+    /**
+     * By Task
+     */
+    by_task: Array<GroupStat>;
+    /**
+     * By Model
+     */
+    by_model: Array<GroupStat>;
+    last_24h: GroupStat;
+};
+
+/**
+ * InvocationSummary
+ */
+export type InvocationSummary = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Task
+     */
+    task: string;
+    /**
+     * Adapter
+     */
+    adapter: string | null;
+    /**
+     * Session Id
+     */
+    session_id: string | null;
+    /**
+     * User Id
+     */
+    user_id: string | null;
+    /**
+     * Model Alias
+     */
+    model_alias: string | null;
+    /**
+     * Provider
+     */
+    provider: string | null;
+    /**
+     * Model Name
+     */
+    model_name: string;
+    /**
+     * Api Type
+     */
+    api_type: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Error
+     */
+    error: string | null;
+    /**
+     * Latency Ms
+     */
+    latency_ms: number;
+    /**
+     * Input Tokens
+     */
+    input_tokens: number;
+    /**
+     * Output Tokens
+     */
+    output_tokens: number;
+    /**
+     * Cache Read Tokens
+     */
+    cache_read_tokens: number;
+    /**
+     * Requests
+     */
+    requests: number;
+    /**
+     * Tool Calls
+     */
+    tool_calls: number;
+    /**
+     * Web Search
+     */
+    web_search: boolean;
+    /**
+     * Output Preview
+     */
+    output_preview: string;
+    /**
+     * Has Messages
+     */
+    has_messages: boolean;
+};
+
+/**
+ * JobInfo
+ */
+export type JobInfo = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Func
+     */
+    func: string;
+    /**
+     * Trigger
+     */
+    trigger: string;
+    /**
+     * Next Run Time
+     */
+    next_run_time: string | null;
+    /**
+     * Pending
+     */
+    pending: boolean;
+};
+
+/**
  * LLMOverview
  */
 export type LlmOverview = {
@@ -176,6 +807,68 @@ export type LlmOverview = {
      * Api Types
      */
     api_types: Array<string>;
+};
+
+/**
+ * LogBatch
+ */
+export type LogBatch = {
+    /**
+     * Items
+     */
+    items: Array<LogLine>;
+    /**
+     * Last Id
+     */
+    last_id: number;
+};
+
+/**
+ * LogLine
+ */
+export type LogLine = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Time
+     */
+    time: string;
+    /**
+     * Level
+     */
+    level: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Message
+     */
+    message: string;
+};
+
+/**
+ * MatcherInfo
+ */
+export type MatcherInfo = {
+    /**
+     * Type
+     */
+    type: string;
+    /**
+     * Priority
+     */
+    priority: number;
+    /**
+     * Block
+     */
+    block: boolean;
+    /**
+     * Rules
+     */
+    rules: Array<string>;
 };
 
 /**
@@ -198,6 +891,46 @@ export type Me = {
      * Environment
      */
     environment: string;
+};
+
+/**
+ * MemoryDetail
+ */
+export type MemoryDetail = {
+    /**
+     * User Id
+     */
+    user_id: string;
+    /**
+     * Updated At
+     */
+    updated_at: string | null;
+    /**
+     * Content
+     */
+    content: string;
+};
+
+/**
+ * MemorySummary
+ */
+export type MemorySummary = {
+    /**
+     * User Id
+     */
+    user_id: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    /**
+     * Length
+     */
+    length: number;
+    /**
+     * Preview
+     */
+    preview: string;
 };
 
 /**
@@ -361,6 +1094,76 @@ export type PageAuditEntry = {
 };
 
 /**
+ * Page[InvocationSummary]
+ */
+export type PageInvocationSummary = {
+    /**
+     * Items
+     */
+    items: Array<InvocationSummary>;
+    /**
+     * Total
+     */
+    total: number;
+};
+
+/**
+ * Page[MemorySummary]
+ */
+export type PageMemorySummary = {
+    /**
+     * Items
+     */
+    items: Array<MemorySummary>;
+    /**
+     * Total
+     */
+    total: number;
+};
+
+/**
+ * PluginInfo
+ */
+export type PluginInfo = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description: string;
+    /**
+     * Usage
+     */
+    usage: string;
+    /**
+     * Type
+     */
+    type: string | null;
+    /**
+     * Homepage
+     */
+    homepage: string | null;
+    /**
+     * Module
+     */
+    module: string;
+    /**
+     * Parent
+     */
+    parent: string | null;
+    /**
+     * Matchers
+     */
+    matchers: Array<MatcherInfo>;
+};
+
+/**
  * Prompt
  */
 export type Prompt = {
@@ -455,6 +1258,48 @@ export type ProviderOut = {
 };
 
 /**
+ * RelaunchIn
+ */
+export type RelaunchIn = {
+    /**
+     * Version Id
+     */
+    version_id: number;
+    /**
+     * Prev Version Id
+     */
+    prev_version_id: number;
+    /**
+     * Include
+     */
+    include?: string | null;
+    /**
+     * Exclude
+     */
+    exclude?: string | null;
+};
+
+/**
+ * RelaunchResult
+ */
+export type RelaunchResult = {
+    /**
+     * Container Name
+     */
+    container_name: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Raw
+     */
+    raw: {
+        [key: string]: unknown;
+    };
+};
+
+/**
  * RemoteModels
  */
 export type RemoteModels = {
@@ -514,6 +1359,22 @@ export type RouteIn = {
      * Model
      */
     model: string | null;
+};
+
+/**
+ * Section
+ */
+export type Section = {
+    /**
+     * Kind
+     */
+    kind: string;
+    /**
+     * Data
+     */
+    data: {
+        [key: string]: unknown;
+    };
 };
 
 /**
@@ -598,6 +1459,30 @@ export type SectionSummary = {
      * Restart Fields
      */
     restart_fields: Array<string>;
+};
+
+/**
+ * TorappuVersion
+ */
+export type TorappuVersion = {
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Client Version
+     */
+    client_version: string;
+    /**
+     * Res Version
+     */
+    res_version: string;
+    /**
+     * Raw
+     */
+    raw: {
+        [key: string]: unknown;
+    };
 };
 
 /**
@@ -1226,3 +2111,800 @@ export type ListAuditResponses = {
 };
 
 export type ListAuditResponse = ListAuditResponses[keyof ListAuditResponses];
+
+export type ListInvocationsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Task
+         */
+        task?: string | null;
+        /**
+         * Status
+         */
+        status?: string | null;
+        /**
+         * Model
+         *
+         * 模型别名或模型名
+         */
+        model?: string | null;
+        /**
+         * Session
+         *
+         * 会话 id 里包含的字符串
+         */
+        session?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Offset
+         */
+        offset?: number;
+    };
+    url: '/invocations';
+};
+
+export type ListInvocationsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListInvocationsError = ListInvocationsErrors[keyof ListInvocationsErrors];
+
+export type ListInvocationsResponses = {
+    /**
+     * Successful Response
+     */
+    200: PageInvocationSummary;
+};
+
+export type ListInvocationsResponse = ListInvocationsResponses[keyof ListInvocationsResponses];
+
+export type GetInvocationFiltersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/invocations/filters';
+};
+
+export type GetInvocationFiltersResponses = {
+    /**
+     * Successful Response
+     */
+    200: InvocationFilters;
+};
+
+export type GetInvocationFiltersResponse = GetInvocationFiltersResponses[keyof GetInvocationFiltersResponses];
+
+export type GetInvocationStatsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Days
+         */
+        days?: number;
+    };
+    url: '/invocations/stats';
+};
+
+export type GetInvocationStatsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetInvocationStatsError = GetInvocationStatsErrors[keyof GetInvocationStatsErrors];
+
+export type GetInvocationStatsResponses = {
+    /**
+     * Successful Response
+     */
+    200: InvocationStats;
+};
+
+export type GetInvocationStatsResponse = GetInvocationStatsResponses[keyof GetInvocationStatsResponses];
+
+export type GetInvocationData = {
+    body?: never;
+    path: {
+        /**
+         * Invocation Id
+         */
+        invocation_id: number;
+    };
+    query?: never;
+    url: '/invocations/{invocation_id}';
+};
+
+export type GetInvocationErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetInvocationError = GetInvocationErrors[keyof GetInvocationErrors];
+
+export type GetInvocationResponses = {
+    /**
+     * Successful Response
+     */
+    200: InvocationDetail;
+};
+
+export type GetInvocationResponse = GetInvocationResponses[keyof GetInvocationResponses];
+
+export type GetLogsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * After
+         */
+        after?: number;
+        /**
+         * Level
+         */
+        level?: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR' | 'CRITICAL';
+        /**
+         * Q
+         *
+         * 只看包含这段文字的
+         */
+        q?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/logs';
+};
+
+export type GetLogsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetLogsError = GetLogsErrors[keyof GetLogsErrors];
+
+export type GetLogsResponses = {
+    /**
+     * Successful Response
+     */
+    200: LogBatch;
+};
+
+export type GetLogsResponse = GetLogsResponses[keyof GetLogsResponses];
+
+export type ListPluginsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/plugins';
+};
+
+export type ListPluginsResponses = {
+    /**
+     * Response List Plugins
+     *
+     * Successful Response
+     */
+    200: Array<PluginInfo>;
+};
+
+export type ListPluginsResponse = ListPluginsResponses[keyof ListPluginsResponses];
+
+export type ListJobsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/scheduler/jobs';
+};
+
+export type ListJobsResponses = {
+    /**
+     * Response List Jobs
+     *
+     * Successful Response
+     */
+    200: Array<JobInfo>;
+};
+
+export type ListJobsResponse = ListJobsResponses[keyof ListJobsResponses];
+
+export type ControlJobData = {
+    body?: never;
+    path: {
+        /**
+         * Job Id
+         */
+        job_id: string;
+        /**
+         * Action
+         */
+        action: 'run' | 'pause' | 'resume';
+    };
+    query?: never;
+    url: '/scheduler/jobs/{job_id}/{action}';
+};
+
+export type ControlJobErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ControlJobError = ControlJobErrors[keyof ControlJobErrors];
+
+export type ControlJobResponses = {
+    /**
+     * Response Control Job
+     *
+     * Successful Response
+     */
+    200: Array<JobInfo>;
+};
+
+export type ControlJobResponse = ControlJobResponses[keyof ControlJobResponses];
+
+export type ListTorappuVersionsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/torappu/versions';
+};
+
+export type ListTorappuVersionsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListTorappuVersionsError = ListTorappuVersionsErrors[keyof ListTorappuVersionsErrors];
+
+export type ListTorappuVersionsResponses = {
+    /**
+     * Response List Torappu Versions
+     *
+     * Successful Response
+     */
+    200: Array<TorappuVersion>;
+};
+
+export type ListTorappuVersionsResponse = ListTorappuVersionsResponses[keyof ListTorappuVersionsResponses];
+
+export type RelaunchTorappuData = {
+    body: RelaunchIn;
+    path?: never;
+    query?: never;
+    url: '/torappu/relaunch';
+};
+
+export type RelaunchTorappuErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RelaunchTorappuError = RelaunchTorappuErrors[keyof RelaunchTorappuErrors];
+
+export type RelaunchTorappuResponses = {
+    /**
+     * Successful Response
+     */
+    200: RelaunchResult;
+};
+
+export type RelaunchTorappuResponse = RelaunchTorappuResponses[keyof RelaunchTorappuResponses];
+
+export type GetBisonData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/bison';
+};
+
+export type GetBisonResponses = {
+    /**
+     * Successful Response
+     */
+    200: BisonOverview;
+};
+
+export type GetBisonResponse = GetBisonResponses[keyof GetBisonResponses];
+
+export type AddBisonSubscriptionData = {
+    body: BisonSubscriptionIn;
+    path?: never;
+    query?: never;
+    url: '/bison/subscriptions';
+};
+
+export type AddBisonSubscriptionErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AddBisonSubscriptionError = AddBisonSubscriptionErrors[keyof AddBisonSubscriptionErrors];
+
+export type AddBisonSubscriptionResponses = {
+    /**
+     * Successful Response
+     */
+    200: BisonOverview;
+};
+
+export type AddBisonSubscriptionResponse = AddBisonSubscriptionResponses[keyof AddBisonSubscriptionResponses];
+
+export type DeleteBisonSubscriptionData = {
+    body?: never;
+    path: {
+        /**
+         * Subscription Id
+         */
+        subscription_id: number;
+    };
+    query?: never;
+    url: '/bison/subscriptions/{subscription_id}';
+};
+
+export type DeleteBisonSubscriptionErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteBisonSubscriptionError = DeleteBisonSubscriptionErrors[keyof DeleteBisonSubscriptionErrors];
+
+export type DeleteBisonSubscriptionResponses = {
+    /**
+     * Successful Response
+     */
+    200: BisonOverview;
+};
+
+export type DeleteBisonSubscriptionResponse = DeleteBisonSubscriptionResponses[keyof DeleteBisonSubscriptionResponses];
+
+export type UpdateBisonSubscriptionData = {
+    body: BisonSubscriptionPatch;
+    path: {
+        /**
+         * Subscription Id
+         */
+        subscription_id: number;
+    };
+    query?: never;
+    url: '/bison/subscriptions/{subscription_id}';
+};
+
+export type UpdateBisonSubscriptionErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateBisonSubscriptionError = UpdateBisonSubscriptionErrors[keyof UpdateBisonSubscriptionErrors];
+
+export type UpdateBisonSubscriptionResponses = {
+    /**
+     * Successful Response
+     */
+    200: BisonOverview;
+};
+
+export type UpdateBisonSubscriptionResponse = UpdateBisonSubscriptionResponses[keyof UpdateBisonSubscriptionResponses];
+
+export type DeleteBisonCookieData = {
+    body?: never;
+    path: {
+        /**
+         * Cookie Id
+         */
+        cookie_id: number;
+    };
+    query?: never;
+    url: '/bison/cookies/{cookie_id}';
+};
+
+export type DeleteBisonCookieErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteBisonCookieError = DeleteBisonCookieErrors[keyof DeleteBisonCookieErrors];
+
+export type DeleteBisonCookieResponses = {
+    /**
+     * Successful Response
+     */
+    200: BisonOverview;
+};
+
+export type DeleteBisonCookieResponse = DeleteBisonCookieResponses[keyof DeleteBisonCookieResponses];
+
+export type GetGithubData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/github';
+};
+
+export type GetGithubResponses = {
+    /**
+     * Successful Response
+     */
+    200: GitHubOverview;
+};
+
+export type GetGithubResponse = GetGithubResponses[keyof GetGithubResponses];
+
+export type UnbindGithubGroupData = {
+    body?: never;
+    path: {
+        /**
+         * Group Id
+         */
+        group_id: number;
+    };
+    query?: never;
+    url: '/github/groups/{group_id}';
+};
+
+export type UnbindGithubGroupErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UnbindGithubGroupError = UnbindGithubGroupErrors[keyof UnbindGithubGroupErrors];
+
+export type UnbindGithubGroupResponses = {
+    /**
+     * Successful Response
+     */
+    200: GitHubOverview;
+};
+
+export type UnbindGithubGroupResponse = UnbindGithubGroupResponses[keyof UnbindGithubGroupResponses];
+
+export type DeleteGithubSubscriptionData = {
+    body?: never;
+    path: {
+        /**
+         * Subscription Id
+         */
+        subscription_id: number;
+    };
+    query?: never;
+    url: '/github/subscriptions/{subscription_id}';
+};
+
+export type DeleteGithubSubscriptionErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteGithubSubscriptionError = DeleteGithubSubscriptionErrors[keyof DeleteGithubSubscriptionErrors];
+
+export type DeleteGithubSubscriptionResponses = {
+    /**
+     * Successful Response
+     */
+    200: GitHubOverview;
+};
+
+export type DeleteGithubSubscriptionResponse = DeleteGithubSubscriptionResponses[keyof DeleteGithubSubscriptionResponses];
+
+export type UnauthGithubUserData = {
+    body?: never;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: number;
+    };
+    query?: never;
+    url: '/github/users/{user_id}';
+};
+
+export type UnauthGithubUserErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UnauthGithubUserError = UnauthGithubUserErrors[keyof UnauthGithubUserErrors];
+
+export type UnauthGithubUserResponses = {
+    /**
+     * Successful Response
+     */
+    200: GitHubOverview;
+};
+
+export type UnauthGithubUserResponse = UnauthGithubUserResponses[keyof UnauthGithubUserResponses];
+
+export type ListBindingsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/bindings';
+};
+
+export type ListBindingsResponses = {
+    /**
+     * Response List Bindings
+     *
+     * Successful Response
+     */
+    200: Array<GroupBindingOut>;
+};
+
+export type ListBindingsResponse = ListBindingsResponses[keyof ListBindingsResponses];
+
+export type DeleteBindingData = {
+    body?: never;
+    path: {
+        /**
+         * Group Id
+         */
+        group_id: string;
+    };
+    query?: never;
+    url: '/bindings/{group_id}';
+};
+
+export type DeleteBindingErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteBindingError = DeleteBindingErrors[keyof DeleteBindingErrors];
+
+export type DeleteBindingResponses = {
+    /**
+     * Response Delete Binding
+     *
+     * Successful Response
+     */
+    200: Array<GroupBindingOut>;
+};
+
+export type DeleteBindingResponse = DeleteBindingResponses[keyof DeleteBindingResponses];
+
+export type ListFgoGroupsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/fgo/groups';
+};
+
+export type ListFgoGroupsResponses = {
+    /**
+     * Response List Fgo Groups
+     *
+     * Successful Response
+     */
+    200: Array<FgoPushGroup>;
+};
+
+export type ListFgoGroupsResponse = ListFgoGroupsResponses[keyof ListFgoGroupsResponses];
+
+export type AddFgoGroupData = {
+    body: BodyAddFgoGroup;
+    path?: never;
+    query?: never;
+    url: '/fgo/groups';
+};
+
+export type AddFgoGroupErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AddFgoGroupError = AddFgoGroupErrors[keyof AddFgoGroupErrors];
+
+export type AddFgoGroupResponses = {
+    /**
+     * Response Add Fgo Group
+     *
+     * Successful Response
+     */
+    200: Array<FgoPushGroup>;
+};
+
+export type AddFgoGroupResponse = AddFgoGroupResponses[keyof AddFgoGroupResponses];
+
+export type RemoveFgoGroupData = {
+    body?: never;
+    path: {
+        /**
+         * Group Id
+         */
+        group_id: number;
+    };
+    query?: never;
+    url: '/fgo/groups/{group_id}';
+};
+
+export type RemoveFgoGroupErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RemoveFgoGroupError = RemoveFgoGroupErrors[keyof RemoveFgoGroupErrors];
+
+export type RemoveFgoGroupResponses = {
+    /**
+     * Response Remove Fgo Group
+     *
+     * Successful Response
+     */
+    200: Array<FgoPushGroup>;
+};
+
+export type RemoveFgoGroupResponse = RemoveFgoGroupResponses[keyof RemoveFgoGroupResponses];
+
+export type ListMemoriesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Q
+         *
+         * 用户 id 或档案内容里的字
+         */
+        q?: string | null;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Offset
+         */
+        offset?: number;
+    };
+    url: '/memories';
+};
+
+export type ListMemoriesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListMemoriesError = ListMemoriesErrors[keyof ListMemoriesErrors];
+
+export type ListMemoriesResponses = {
+    /**
+     * Successful Response
+     */
+    200: PageMemorySummary;
+};
+
+export type ListMemoriesResponse = ListMemoriesResponses[keyof ListMemoriesResponses];
+
+export type DeleteMemoryData = {
+    body?: never;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/memories/{user_id}';
+};
+
+export type DeleteMemoryErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteMemoryError = DeleteMemoryErrors[keyof DeleteMemoryErrors];
+
+export type DeleteMemoryResponses = {
+    /**
+     * Successful Response
+     */
+    200: Ok;
+};
+
+export type DeleteMemoryResponse = DeleteMemoryResponses[keyof DeleteMemoryResponses];
+
+export type GetMemoryDetailData = {
+    body?: never;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/memories/{user_id}';
+};
+
+export type GetMemoryDetailErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetMemoryDetailError = GetMemoryDetailErrors[keyof GetMemoryDetailErrors];
+
+export type GetMemoryDetailResponses = {
+    /**
+     * Successful Response
+     */
+    200: MemoryDetail;
+};
+
+export type GetMemoryDetailResponse = GetMemoryDetailResponses[keyof GetMemoryDetailResponses];
+
+export type PutMemoryData = {
+    body: BodyPutMemory;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/memories/{user_id}';
+};
+
+export type PutMemoryErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PutMemoryError = PutMemoryErrors[keyof PutMemoryErrors];
+
+export type PutMemoryResponses = {
+    /**
+     * Successful Response
+     */
+    200: MemoryDetail;
+};
+
+export type PutMemoryResponse = PutMemoryResponses[keyof PutMemoryResponses];

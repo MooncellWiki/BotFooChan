@@ -242,7 +242,9 @@ async def test_model(alias: str) -> ModelTestResult:
     if (endpoint := _endpoint_of(model)) is None:
         return ModelTestResult(ok=False, latency_ms=0, error="服务商不存在")
     endpoint = endpoint.model_copy(update={"alias": alias, "provider": model.provider})
-    agent = create_agent(endpoint, settings=ModelSettings(timeout=30, max_tokens=64))
+    agent = create_agent(
+        endpoint, settings=ModelSettings(timeout=30, max_tokens=64), task="webui_test"
+    )
     started = time.perf_counter()
     try:
         result = await agent.run("只回复两个字：在的")

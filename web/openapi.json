@@ -962,6 +962,1291 @@
           }
         }
       }
+    },
+    "/invocations": {
+      "get": {
+        "tags": [
+          "invocations"
+        ],
+        "summary": "List Invocations",
+        "description": "调用记录，新的在前",
+        "operationId": "list_invocations",
+        "parameters": [
+          {
+            "name": "task",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Task"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "模型别名或模型名",
+              "title": "Model"
+            },
+            "description": "模型别名或模型名"
+          },
+          {
+            "name": "session",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "会话 id 里包含的字符串",
+              "title": "Session"
+            },
+            "description": "会话 id 里包含的字符串"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_InvocationSummary_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/invocations/filters": {
+      "get": {
+        "tags": [
+          "invocations"
+        ],
+        "summary": "Get Invocation Filters",
+        "description": "筛选下拉框的候选值",
+        "operationId": "get_invocation_filters",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvocationFilters"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/invocations/stats": {
+      "get": {
+        "tags": [
+          "invocations"
+        ],
+        "summary": "Get Invocation Stats",
+        "description": "最近几天的调用量、token 和错误",
+        "operationId": "get_invocation_stats",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 90,
+              "minimum": 1,
+              "default": 14,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvocationStats"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/invocations/{invocation_id}": {
+      "get": {
+        "tags": [
+          "invocations"
+        ],
+        "summary": "Get Invocation",
+        "description": "一次调用的详情和对话回放",
+        "operationId": "get_invocation",
+        "parameters": [
+          {
+            "name": "invocation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Invocation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvocationDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logs": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Get Logs",
+        "description": "最近的日志（内存里最多留 2000 条，重启清空），按 id 增量拉",
+        "operationId": "get_logs",
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "After"
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "INFO",
+                "SUCCESS",
+                "WARNING",
+                "ERROR",
+                "CRITICAL"
+              ],
+              "type": "string",
+              "default": "INFO",
+              "title": "Level"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "只看包含这段文字的",
+              "title": "Q"
+            },
+            "description": "只看包含这段文字的"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 2000,
+              "minimum": 1,
+              "default": 500,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogBatch"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plugins": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "List Plugins",
+        "description": "已加载的插件和它们的事件响应器",
+        "operationId": "list_plugins",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PluginInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Plugins"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scheduler/jobs": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "List Jobs",
+        "description": "定时任务",
+        "operationId": "list_jobs",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/JobInfo"
+                  },
+                  "type": "array",
+                  "title": "Response List Jobs"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scheduler/jobs/{job_id}/{action}": {
+      "post": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Control Job",
+        "description": "立即执行、暂停或恢复一个定时任务",
+        "operationId": "control_job",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "run",
+                "pause",
+                "resume"
+              ],
+              "type": "string",
+              "title": "Action"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobInfo"
+                  },
+                  "title": "Response Control Job"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/torappu/versions": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "List Torappu Versions",
+        "description": "最近的版本，新的在前",
+        "operationId": "list_torappu_versions",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TorappuVersion"
+                  },
+                  "title": "Response List Torappu Versions"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/torappu/relaunch": {
+      "post": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Relaunch Torappu",
+        "description": "发起 torappu 重跑（等同 /重跑）",
+        "operationId": "relaunch_torappu",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RelaunchIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelaunchResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bison": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get Bison",
+        "description": "订阅、平台和 Cookie（不含 Cookie 内容）",
+        "operationId": "get_bison",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BisonOverview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bison/subscriptions": {
+      "post": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Add Bison Subscription",
+        "description": "给一个已有的会话添加订阅",
+        "operationId": "add_bison_subscription",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BisonSubscriptionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BisonOverview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bison/subscriptions/{subscription_id}": {
+      "put": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Update Bison Subscription",
+        "description": "改订阅的分类和标签",
+        "operationId": "update_bison_subscription",
+        "parameters": [
+          {
+            "name": "subscription_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Subscription Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BisonSubscriptionPatch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BisonOverview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Delete Bison Subscription",
+        "description": "取消订阅",
+        "operationId": "delete_bison_subscription",
+        "parameters": [
+          {
+            "name": "subscription_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Subscription Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BisonOverview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bison/cookies/{cookie_id}": {
+      "delete": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Delete Bison Cookie",
+        "description": "删除 Cookie（还关联着订阅对象时不让删）",
+        "operationId": "delete_bison_cookie",
+        "parameters": [
+          {
+            "name": "cookie_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Cookie Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BisonOverview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/github": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get Github",
+        "description": "群绑定的仓库、仓库订阅、已授权的用户（不含 token）",
+        "operationId": "get_github",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitHubOverview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/github/groups/{group_id}": {
+      "delete": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Unbind Github Group",
+        "description": "解除群绑定的仓库",
+        "operationId": "unbind_github_group",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Group Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitHubOverview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/github/subscriptions/{subscription_id}": {
+      "delete": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Delete Github Subscription",
+        "description": "删除仓库订阅",
+        "operationId": "delete_github_subscription",
+        "parameters": [
+          {
+            "name": "subscription_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Subscription Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitHubOverview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/github/users/{user_id}": {
+      "delete": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Unauth Github User",
+        "description": "撤销用户的 GitHub 授权（删掉存着的 token）",
+        "operationId": "unauth_github_user",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitHubOverview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bindings": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "List Bindings",
+        "description": "群号和 QQ 官方机器人 group_openid 的绑定。\n\n新增要在群里 @ 官方机器人发 /官q 绑定",
+        "operationId": "list_bindings",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GroupBindingOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Bindings"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bindings/{group_id}": {
+      "delete": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Delete Binding",
+        "description": "删除群号绑定",
+        "operationId": "delete_binding",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Group Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GroupBindingOut"
+                  },
+                  "title": "Response Delete Binding"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fgo/groups": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "List Fgo Groups",
+        "description": "接收 FGO 维护推送的群",
+        "operationId": "list_fgo_groups",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FgoPushGroup"
+                  },
+                  "type": "array",
+                  "title": "Response List Fgo Groups"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Add Fgo Group",
+        "description": "开启某个群的维护推送",
+        "operationId": "add_fgo_group",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_add_fgo_group"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FgoPushGroup"
+                  },
+                  "type": "array",
+                  "title": "Response Add Fgo Group"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fgo/groups/{group_id}": {
+      "delete": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Remove Fgo Group",
+        "description": "关闭某个群的维护推送",
+        "operationId": "remove_fgo_group",
+        "parameters": [
+          {
+            "name": "group_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Group Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FgoPushGroup"
+                  },
+                  "title": "Response Remove Fgo Group"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/memories": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "List Memories",
+        "description": "有档案的群友，最近更新的在前",
+        "operationId": "list_memories",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "用户 id 或档案内容里的字",
+              "title": "Q"
+            },
+            "description": "用户 id 或档案内容里的字"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_MemorySummary_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/memories/{user_id}": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get Memory Detail",
+        "description": "一位群友的档案全文",
+        "operationId": "get_memory_detail",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Put Memory",
+        "description": "整份改写档案（超长时照常会被压缩）",
+        "operationId": "put_memory",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_put_memory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Delete Memory",
+        "description": "清空档案",
+        "operationId": "delete_memory",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ok"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1078,6 +2363,277 @@
         ],
         "title": "AuditEntry"
       },
+      "BisonCookie": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "site_name": {
+            "type": "string",
+            "title": "Site Name"
+          },
+          "cookie_name": {
+            "type": "string",
+            "title": "Cookie Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "last_usage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Usage"
+          },
+          "is_universal": {
+            "type": "boolean",
+            "title": "Is Universal"
+          },
+          "is_anonymous": {
+            "type": "boolean",
+            "title": "Is Anonymous"
+          },
+          "targets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Targets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "site_name",
+          "cookie_name",
+          "status",
+          "last_usage",
+          "is_universal",
+          "is_anonymous",
+          "targets"
+        ],
+        "title": "BisonCookie"
+      },
+      "BisonOverview": {
+        "properties": {
+          "platforms": {
+            "items": {
+              "$ref": "#/components/schemas/BisonPlatform"
+            },
+            "type": "array",
+            "title": "Platforms"
+          },
+          "subscriptions": {
+            "items": {
+              "$ref": "#/components/schemas/BisonSubscription"
+            },
+            "type": "array",
+            "title": "Subscriptions"
+          },
+          "cookies": {
+            "items": {
+              "$ref": "#/components/schemas/BisonCookie"
+            },
+            "type": "array",
+            "title": "Cookies"
+          }
+        },
+        "type": "object",
+        "required": [
+          "platforms",
+          "subscriptions",
+          "cookies"
+        ],
+        "title": "BisonOverview"
+      },
+      "BisonPlatform": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "has_target": {
+            "type": "boolean",
+            "title": "Has Target"
+          },
+          "enable_tag": {
+            "type": "boolean",
+            "title": "Enable Tag"
+          },
+          "categories": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Categories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "display_name",
+          "has_target",
+          "enable_tag",
+          "categories"
+        ],
+        "title": "BisonPlatform"
+      },
+      "BisonSubscription": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_target": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "User Target"
+          },
+          "user_label": {
+            "type": "string",
+            "title": "User Label"
+          },
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "target_name": {
+            "type": "string",
+            "title": "Target Name"
+          },
+          "categories": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_target",
+          "user_label",
+          "platform",
+          "target",
+          "target_name",
+          "categories",
+          "tags"
+        ],
+        "title": "BisonSubscription"
+      },
+      "BisonSubscriptionIn": {
+        "properties": {
+          "user_target": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "User Target"
+          },
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target",
+            "default": ""
+          },
+          "categories": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_target",
+          "platform"
+        ],
+        "title": "BisonSubscriptionIn"
+      },
+      "BisonSubscriptionPatch": {
+        "properties": {
+          "categories": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "categories",
+          "tags"
+        ],
+        "title": "BisonSubscriptionPatch"
+      },
+      "Body_add_fgo_group": {
+        "properties": {
+          "group_id": {
+            "type": "integer",
+            "title": "Group Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "group_id"
+        ],
+        "title": "Body_add_fgo_group"
+      },
+      "Body_put_memory": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "maxLength": 20000,
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "Body_put_memory"
+      },
       "Body_put_prompt": {
         "properties": {
           "value": {
@@ -1150,6 +2706,284 @@
         ],
         "title": "Component"
       },
+      "DailyStat": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "ok": {
+            "type": "integer",
+            "title": "Ok",
+            "default": 0
+          },
+          "error": {
+            "type": "integer",
+            "title": "Error",
+            "default": 0
+          },
+          "input_tokens": {
+            "type": "integer",
+            "title": "Input Tokens",
+            "default": 0
+          },
+          "output_tokens": {
+            "type": "integer",
+            "title": "Output Tokens",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "ok",
+          "error",
+          "input_tokens",
+          "output_tokens"
+        ],
+        "title": "DailyStat"
+      },
+      "FgoPushGroup": {
+        "properties": {
+          "group_id": {
+            "type": "integer",
+            "title": "Group Id"
+          },
+          "bound": {
+            "type": "boolean",
+            "title": "Bound"
+          }
+        },
+        "type": "object",
+        "required": [
+          "group_id",
+          "bound"
+        ],
+        "title": "FgoPushGroup"
+      },
+      "GitHubGroup": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "group": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Group"
+          },
+          "bind_repo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bind Repo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "group",
+          "bind_repo"
+        ],
+        "title": "GitHubGroup"
+      },
+      "GitHubOverview": {
+        "properties": {
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/GitHubGroup"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "subscriptions": {
+            "items": {
+              "$ref": "#/components/schemas/GitHubSubscription"
+            },
+            "type": "array",
+            "title": "Subscriptions"
+          },
+          "users": {
+            "items": {
+              "$ref": "#/components/schemas/GitHubUser"
+            },
+            "type": "array",
+            "title": "Users"
+          }
+        },
+        "type": "object",
+        "required": [
+          "groups",
+          "subscriptions",
+          "users"
+        ],
+        "title": "GitHubOverview"
+      },
+      "GitHubSubscription": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "subscriber": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Subscriber"
+          },
+          "repo": {
+            "type": "string",
+            "title": "Repo"
+          },
+          "event": {
+            "type": "string",
+            "title": "Event"
+          },
+          "action": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "subscriber",
+          "repo",
+          "event",
+          "action"
+        ],
+        "title": "GitHubSubscription"
+      },
+      "GitHubUser": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "user": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "User"
+          },
+          "authorized": {
+            "type": "boolean",
+            "title": "Authorized"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "user",
+          "authorized"
+        ],
+        "title": "GitHubUser"
+      },
+      "GroupBindingOut": {
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "title": "Group Id"
+          },
+          "group_openid": {
+            "type": "string",
+            "title": "Group Openid"
+          },
+          "bot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bot Id"
+          },
+          "online": {
+            "type": "boolean",
+            "title": "Online"
+          },
+          "fgo_push": {
+            "type": "boolean",
+            "title": "Fgo Push"
+          }
+        },
+        "type": "object",
+        "required": [
+          "group_id",
+          "group_openid",
+          "bot_id",
+          "online",
+          "fgo_push"
+        ],
+        "title": "GroupBindingOut"
+      },
+      "GroupStat": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "default": 0
+          },
+          "errors": {
+            "type": "integer",
+            "title": "Errors",
+            "default": 0
+          },
+          "tokens": {
+            "type": "integer",
+            "title": "Tokens",
+            "default": 0
+          },
+          "avg_latency_ms": {
+            "type": "integer",
+            "title": "Avg Latency Ms",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "count",
+          "errors",
+          "tokens",
+          "avg_latency_ms"
+        ],
+        "title": "GroupStat"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1201,6 +3035,449 @@
         ],
         "title": "HistoryEntry"
       },
+      "InvocationDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "task": {
+            "type": "string",
+            "title": "Task"
+          },
+          "adapter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adapter"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "model_alias": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Alias"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "api_type": {
+            "type": "string",
+            "title": "Api Type"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "latency_ms": {
+            "type": "integer",
+            "title": "Latency Ms"
+          },
+          "input_tokens": {
+            "type": "integer",
+            "title": "Input Tokens"
+          },
+          "output_tokens": {
+            "type": "integer",
+            "title": "Output Tokens"
+          },
+          "cache_read_tokens": {
+            "type": "integer",
+            "title": "Cache Read Tokens"
+          },
+          "requests": {
+            "type": "integer",
+            "title": "Requests"
+          },
+          "tool_calls": {
+            "type": "integer",
+            "title": "Tool Calls"
+          },
+          "web_search": {
+            "type": "boolean",
+            "title": "Web Search"
+          },
+          "output_preview": {
+            "type": "string",
+            "title": "Output Preview"
+          },
+          "has_messages": {
+            "type": "boolean",
+            "title": "Has Messages"
+          },
+          "bot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bot Id"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            },
+            "type": "array",
+            "title": "Sections"
+          },
+          "sections_error": {
+            "type": "string",
+            "title": "Sections Error",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "created_at",
+          "task",
+          "adapter",
+          "session_id",
+          "user_id",
+          "model_alias",
+          "provider",
+          "model_name",
+          "api_type",
+          "status",
+          "error",
+          "latency_ms",
+          "input_tokens",
+          "output_tokens",
+          "cache_read_tokens",
+          "requests",
+          "tool_calls",
+          "web_search",
+          "output_preview",
+          "has_messages",
+          "bot_id",
+          "sections"
+        ],
+        "title": "InvocationDetail"
+      },
+      "InvocationFilters": {
+        "properties": {
+          "tasks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tasks"
+          },
+          "models": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Models"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tasks",
+          "models"
+        ],
+        "title": "InvocationFilters"
+      },
+      "InvocationStats": {
+        "properties": {
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DailyStat"
+            },
+            "type": "array",
+            "title": "Days"
+          },
+          "by_task": {
+            "items": {
+              "$ref": "#/components/schemas/GroupStat"
+            },
+            "type": "array",
+            "title": "By Task"
+          },
+          "by_model": {
+            "items": {
+              "$ref": "#/components/schemas/GroupStat"
+            },
+            "type": "array",
+            "title": "By Model"
+          },
+          "last_24h": {
+            "$ref": "#/components/schemas/GroupStat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "days",
+          "by_task",
+          "by_model",
+          "last_24h"
+        ],
+        "title": "InvocationStats"
+      },
+      "InvocationSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "task": {
+            "type": "string",
+            "title": "Task"
+          },
+          "adapter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adapter"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "model_alias": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Alias"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "api_type": {
+            "type": "string",
+            "title": "Api Type"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "latency_ms": {
+            "type": "integer",
+            "title": "Latency Ms"
+          },
+          "input_tokens": {
+            "type": "integer",
+            "title": "Input Tokens"
+          },
+          "output_tokens": {
+            "type": "integer",
+            "title": "Output Tokens"
+          },
+          "cache_read_tokens": {
+            "type": "integer",
+            "title": "Cache Read Tokens"
+          },
+          "requests": {
+            "type": "integer",
+            "title": "Requests"
+          },
+          "tool_calls": {
+            "type": "integer",
+            "title": "Tool Calls"
+          },
+          "web_search": {
+            "type": "boolean",
+            "title": "Web Search"
+          },
+          "output_preview": {
+            "type": "string",
+            "title": "Output Preview"
+          },
+          "has_messages": {
+            "type": "boolean",
+            "title": "Has Messages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "created_at",
+          "task",
+          "adapter",
+          "session_id",
+          "user_id",
+          "model_alias",
+          "provider",
+          "model_name",
+          "api_type",
+          "status",
+          "error",
+          "latency_ms",
+          "input_tokens",
+          "output_tokens",
+          "cache_read_tokens",
+          "requests",
+          "tool_calls",
+          "web_search",
+          "output_preview",
+          "has_messages"
+        ],
+        "title": "InvocationSummary"
+      },
+      "JobInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "func": {
+            "type": "string",
+            "title": "Func"
+          },
+          "trigger": {
+            "type": "string",
+            "title": "Trigger"
+          },
+          "next_run_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Run Time"
+          },
+          "pending": {
+            "type": "boolean",
+            "title": "Pending"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "func",
+          "trigger",
+          "next_run_time",
+          "pending"
+        ],
+        "title": "JobInfo"
+      },
       "LLMOverview": {
         "properties": {
           "providers": {
@@ -1233,6 +3510,92 @@
         ],
         "title": "LLMOverview"
       },
+      "LogBatch": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LogLine"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "last_id": {
+            "type": "integer",
+            "title": "Last Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "last_id"
+        ],
+        "title": "LogBatch"
+      },
+      "LogLine": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "time",
+          "level",
+          "name",
+          "message"
+        ],
+        "title": "LogLine"
+      },
+      "MatcherInfo": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "priority": {
+            "type": "integer",
+            "title": "Priority"
+          },
+          "block": {
+            "type": "boolean",
+            "title": "Block"
+          },
+          "rules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Rules"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "priority",
+          "block",
+          "rules"
+        ],
+        "title": "MatcherInfo"
+      },
       "Me": {
         "properties": {
           "login": {
@@ -1260,6 +3623,66 @@
           "environment"
         ],
         "title": "Me"
+      },
+      "MemoryDetail": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "updated_at",
+          "content"
+        ],
+        "title": "MemoryDetail"
+      },
+      "MemorySummary": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "length": {
+            "type": "integer",
+            "title": "Length"
+          },
+          "preview": {
+            "type": "string",
+            "title": "Preview"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "updated_at",
+          "length",
+          "preview"
+        ],
+        "title": "MemorySummary"
       },
       "ModelIn": {
         "properties": {
@@ -1540,6 +3963,125 @@
         ],
         "title": "Page[AuditEntry]"
       },
+      "Page_InvocationSummary_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/InvocationSummary"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "Page[InvocationSummary]"
+      },
+      "Page_MemorySummary_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MemorySummary"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "Page[MemorySummary]"
+      },
+      "PluginInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "usage": {
+            "type": "string",
+            "title": "Usage"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "homepage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Homepage"
+          },
+          "module": {
+            "type": "string",
+            "title": "Module"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent"
+          },
+          "matchers": {
+            "items": {
+              "$ref": "#/components/schemas/MatcherInfo"
+            },
+            "type": "array",
+            "title": "Matchers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "usage",
+          "type",
+          "homepage",
+          "module",
+          "parent",
+          "matchers"
+        ],
+        "title": "PluginInfo"
+      },
       "Prompt": {
         "properties": {
           "id": {
@@ -1732,6 +4274,72 @@
         ],
         "title": "ProviderOut"
       },
+      "RelaunchIn": {
+        "properties": {
+          "version_id": {
+            "type": "integer",
+            "title": "Version Id"
+          },
+          "prev_version_id": {
+            "type": "integer",
+            "title": "Prev Version Id"
+          },
+          "include": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Include"
+          },
+          "exclude": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exclude"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version_id",
+          "prev_version_id"
+        ],
+        "title": "RelaunchIn"
+      },
+      "RelaunchResult": {
+        "properties": {
+          "container_name": {
+            "type": "string",
+            "title": "Container Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Raw"
+          }
+        },
+        "type": "object",
+        "required": [
+          "container_name",
+          "status",
+          "raw"
+        ],
+        "title": "RelaunchResult"
+      },
       "RemoteModels": {
         "properties": {
           "models": {
@@ -1831,6 +4439,25 @@
           "model"
         ],
         "title": "RouteIn"
+      },
+      "Section": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "data"
+        ],
+        "title": "Section"
       },
       "SectionDetail": {
         "properties": {
@@ -1978,6 +4605,35 @@
           "restart_fields"
         ],
         "title": "SectionSummary"
+      },
+      "TorappuVersion": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "client_version": {
+            "type": "string",
+            "title": "Client Version"
+          },
+          "res_version": {
+            "type": "string",
+            "title": "Res Version"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Raw"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "client_version",
+          "res_version",
+          "raw"
+        ],
+        "title": "TorappuVersion"
       },
       "ValidationError": {
         "properties": {

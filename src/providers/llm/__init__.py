@@ -24,7 +24,7 @@ import httpx2
 from nonebot import logger
 from pydantic_ai import Agent
 from pydantic_ai.agent import AgentRunResult
-from pydantic_ai.capabilities import NativeTool
+from pydantic_ai.capabilities import AbstractCapability, NativeTool
 from pydantic_ai.messages import ModelMessage, ModelResponse, ThinkingPart
 from pydantic_ai.models import Model
 from pydantic_ai.models.anthropic import AnthropicModel
@@ -46,6 +46,7 @@ from .config import list_models as list_models
 from .config import llm_config as llm_config
 from .config import require_endpoint as require_endpoint
 from .config import resolve_endpoint as resolve_endpoint
+from .records import RecordingCapability
 
 _model_cache: dict[tuple[str | None, ...], Model] = {}
 
@@ -110,8 +111,12 @@ def create_agent[OutputT](
     settings: ModelSettings | None = None,
     retries: int = 1,
     web_search: bool = False,
+    task: str | None = None,
 ) -> Agent[None, OutputT]:
     """按端点创建 pydantic-ai Agent。
+
+    每次运行都会记一条调用记录（见 :mod:`.records`）；task 是记录里的功能名，
+    缺省时取发起调用的插件名，不在事件处理里调用时最好传上。
 
     web_search 启用服务商内置的联网搜索（服务端执行），只有 Anthropic 协议能用，
     对应 tools=[{"type": "web_search_20250305"}]，响应里带回 server_tool_use 与
@@ -121,11 +126,13 @@ def create_agent[OutputT](
     原样回显——但实测从不执行，模型的思维链里明说「没有提供 web search 工具」，
     而且不报错，静默降级成瞎编来源。所以这里当作不支持，免得配了以为在联网。
     """
-    capabilities = None
+    capabilities: list[AbstractCapability[Any]] = [
+        RecordingCapability(endpoint, task=task, web_search=web_search)
+    ]
     if web_search:
         api_type = endpoint.resolved_api_type
         if api_type == "anthropic":
-            capabilities = [NativeTool(WebSearchTool())]
+            capabilities.append(NativeTool(WebSearchTool()))
         else:
             logger.warning(
                 f"模型 {endpoint.name} 走 {api_type} 协议，不支持内置联网搜索，"

@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddAdminData, AddAdminErrors, AddAdminResponses, DeleteModelData, DeleteModelErrors, DeleteModelResponses, DeleteProviderData, DeleteProviderErrors, DeleteProviderResponses, GetLlmData, GetLlmResponses, GetMeData, GetMeResponses, GetOverviewData, GetOverviewResponses, GetSettingsData, GetSettingsErrors, GetSettingsHistoryData, GetSettingsHistoryErrors, GetSettingsHistoryResponses, GetSettingsResponses, ListAdminsData, ListAdminsResponses, ListAuditData, ListAuditErrors, ListAuditResponses, ListPromptsData, ListPromptsResponses, ListRemoteModelsData, ListRemoteModelsErrors, ListRemoteModelsResponses, ListRoutesData, ListRoutesResponses, ListSettingsData, ListSettingsResponses, LogoutData, LogoutResponses, PutModelData, PutModelErrors, PutModelResponses, PutPromptData, PutPromptErrors, PutPromptResponses, PutProviderData, PutProviderErrors, PutProviderResponses, PutRouteData, PutRouteErrors, PutRouteResponses, PutSettingsData, PutSettingsErrors, PutSettingsResponses, RemoveAdminData, RemoveAdminErrors, RemoveAdminResponses, TestModelData, TestModelErrors, TestModelResponses } from './types.gen';
+import type { AddAdminData, AddAdminErrors, AddAdminResponses, AddBisonSubscriptionData, AddBisonSubscriptionErrors, AddBisonSubscriptionResponses, AddFgoGroupData, AddFgoGroupErrors, AddFgoGroupResponses, ControlJobData, ControlJobErrors, ControlJobResponses, DeleteBindingData, DeleteBindingErrors, DeleteBindingResponses, DeleteBisonCookieData, DeleteBisonCookieErrors, DeleteBisonCookieResponses, DeleteBisonSubscriptionData, DeleteBisonSubscriptionErrors, DeleteBisonSubscriptionResponses, DeleteGithubSubscriptionData, DeleteGithubSubscriptionErrors, DeleteGithubSubscriptionResponses, DeleteMemoryData, DeleteMemoryErrors, DeleteMemoryResponses, DeleteModelData, DeleteModelErrors, DeleteModelResponses, DeleteProviderData, DeleteProviderErrors, DeleteProviderResponses, GetBisonData, GetBisonResponses, GetGithubData, GetGithubResponses, GetInvocationData, GetInvocationErrors, GetInvocationFiltersData, GetInvocationFiltersResponses, GetInvocationResponses, GetInvocationStatsData, GetInvocationStatsErrors, GetInvocationStatsResponses, GetLlmData, GetLlmResponses, GetLogsData, GetLogsErrors, GetLogsResponses, GetMeData, GetMemoryDetailData, GetMemoryDetailErrors, GetMemoryDetailResponses, GetMeResponses, GetOverviewData, GetOverviewResponses, GetSettingsData, GetSettingsErrors, GetSettingsHistoryData, GetSettingsHistoryErrors, GetSettingsHistoryResponses, GetSettingsResponses, ListAdminsData, ListAdminsResponses, ListAuditData, ListAuditErrors, ListAuditResponses, ListBindingsData, ListBindingsResponses, ListFgoGroupsData, ListFgoGroupsResponses, ListInvocationsData, ListInvocationsErrors, ListInvocationsResponses, ListJobsData, ListJobsResponses, ListMemoriesData, ListMemoriesErrors, ListMemoriesResponses, ListPluginsData, ListPluginsResponses, ListPromptsData, ListPromptsResponses, ListRemoteModelsData, ListRemoteModelsErrors, ListRemoteModelsResponses, ListRoutesData, ListRoutesResponses, ListSettingsData, ListSettingsResponses, ListTorappuVersionsData, ListTorappuVersionsErrors, ListTorappuVersionsResponses, LogoutData, LogoutResponses, PutMemoryData, PutMemoryErrors, PutMemoryResponses, PutModelData, PutModelErrors, PutModelResponses, PutPromptData, PutPromptErrors, PutPromptResponses, PutProviderData, PutProviderErrors, PutProviderResponses, PutRouteData, PutRouteErrors, PutRouteResponses, PutSettingsData, PutSettingsErrors, PutSettingsResponses, RelaunchTorappuData, RelaunchTorappuErrors, RelaunchTorappuResponses, RemoveAdminData, RemoveAdminErrors, RemoveAdminResponses, RemoveFgoGroupData, RemoveFgoGroupErrors, RemoveFgoGroupResponses, TestModelData, TestModelErrors, TestModelResponses, UnauthGithubUserData, UnauthGithubUserErrors, UnauthGithubUserResponses, UnbindGithubGroupData, UnbindGithubGroupErrors, UnbindGithubGroupResponses, UpdateBisonSubscriptionData, UpdateBisonSubscriptionErrors, UpdateBisonSubscriptionResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -213,3 +213,236 @@ export const removeAdmin = <ThrowOnError extends boolean = false>(options: Optio
  * 审计记录，新的在前
  */
 export const listAudit = <ThrowOnError extends boolean = false>(options?: Options<ListAuditData, ThrowOnError>): RequestResult<ListAuditResponses, ListAuditErrors, ThrowOnError> => (options?.client ?? client).get<ListAuditResponses, ListAuditErrors, ThrowOnError>({ url: '/audit', ...options });
+
+/**
+ * List Invocations
+ *
+ * 调用记录，新的在前
+ */
+export const listInvocations = <ThrowOnError extends boolean = false>(options?: Options<ListInvocationsData, ThrowOnError>): RequestResult<ListInvocationsResponses, ListInvocationsErrors, ThrowOnError> => (options?.client ?? client).get<ListInvocationsResponses, ListInvocationsErrors, ThrowOnError>({ url: '/invocations', ...options });
+
+/**
+ * Get Invocation Filters
+ *
+ * 筛选下拉框的候选值
+ */
+export const getInvocationFilters = <ThrowOnError extends boolean = false>(options?: Options<GetInvocationFiltersData, ThrowOnError>): RequestResult<GetInvocationFiltersResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetInvocationFiltersResponses, unknown, ThrowOnError>({ url: '/invocations/filters', ...options });
+
+/**
+ * Get Invocation Stats
+ *
+ * 最近几天的调用量、token 和错误
+ */
+export const getInvocationStats = <ThrowOnError extends boolean = false>(options?: Options<GetInvocationStatsData, ThrowOnError>): RequestResult<GetInvocationStatsResponses, GetInvocationStatsErrors, ThrowOnError> => (options?.client ?? client).get<GetInvocationStatsResponses, GetInvocationStatsErrors, ThrowOnError>({ url: '/invocations/stats', ...options });
+
+/**
+ * Get Invocation
+ *
+ * 一次调用的详情和对话回放
+ */
+export const getInvocation = <ThrowOnError extends boolean = false>(options: Options<GetInvocationData, ThrowOnError>): RequestResult<GetInvocationResponses, GetInvocationErrors, ThrowOnError> => (options.client ?? client).get<GetInvocationResponses, GetInvocationErrors, ThrowOnError>({ url: '/invocations/{invocation_id}', ...options });
+
+/**
+ * Get Logs
+ *
+ * 最近的日志（内存里最多留 2000 条，重启清空），按 id 增量拉
+ */
+export const getLogs = <ThrowOnError extends boolean = false>(options?: Options<GetLogsData, ThrowOnError>): RequestResult<GetLogsResponses, GetLogsErrors, ThrowOnError> => (options?.client ?? client).get<GetLogsResponses, GetLogsErrors, ThrowOnError>({ url: '/logs', ...options });
+
+/**
+ * List Plugins
+ *
+ * 已加载的插件和它们的事件响应器
+ */
+export const listPlugins = <ThrowOnError extends boolean = false>(options?: Options<ListPluginsData, ThrowOnError>): RequestResult<ListPluginsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListPluginsResponses, unknown, ThrowOnError>({ url: '/plugins', ...options });
+
+/**
+ * List Jobs
+ *
+ * 定时任务
+ */
+export const listJobs = <ThrowOnError extends boolean = false>(options?: Options<ListJobsData, ThrowOnError>): RequestResult<ListJobsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListJobsResponses, unknown, ThrowOnError>({ url: '/scheduler/jobs', ...options });
+
+/**
+ * Control Job
+ *
+ * 立即执行、暂停或恢复一个定时任务
+ */
+export const controlJob = <ThrowOnError extends boolean = false>(options: Options<ControlJobData, ThrowOnError>): RequestResult<ControlJobResponses, ControlJobErrors, ThrowOnError> => (options.client ?? client).post<ControlJobResponses, ControlJobErrors, ThrowOnError>({ url: '/scheduler/jobs/{job_id}/{action}', ...options });
+
+/**
+ * List Torappu Versions
+ *
+ * 最近的版本，新的在前
+ */
+export const listTorappuVersions = <ThrowOnError extends boolean = false>(options?: Options<ListTorappuVersionsData, ThrowOnError>): RequestResult<ListTorappuVersionsResponses, ListTorappuVersionsErrors, ThrowOnError> => (options?.client ?? client).get<ListTorappuVersionsResponses, ListTorappuVersionsErrors, ThrowOnError>({ url: '/torappu/versions', ...options });
+
+/**
+ * Relaunch Torappu
+ *
+ * 发起 torappu 重跑（等同 /重跑）
+ */
+export const relaunchTorappu = <ThrowOnError extends boolean = false>(options: Options<RelaunchTorappuData, ThrowOnError>): RequestResult<RelaunchTorappuResponses, RelaunchTorappuErrors, ThrowOnError> => (options.client ?? client).post<RelaunchTorappuResponses, RelaunchTorappuErrors, ThrowOnError>({
+    url: '/torappu/relaunch',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get Bison
+ *
+ * 订阅、平台和 Cookie（不含 Cookie 内容）
+ */
+export const getBison = <ThrowOnError extends boolean = false>(options?: Options<GetBisonData, ThrowOnError>): RequestResult<GetBisonResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetBisonResponses, unknown, ThrowOnError>({ url: '/bison', ...options });
+
+/**
+ * Add Bison Subscription
+ *
+ * 给一个已有的会话添加订阅
+ */
+export const addBisonSubscription = <ThrowOnError extends boolean = false>(options: Options<AddBisonSubscriptionData, ThrowOnError>): RequestResult<AddBisonSubscriptionResponses, AddBisonSubscriptionErrors, ThrowOnError> => (options.client ?? client).post<AddBisonSubscriptionResponses, AddBisonSubscriptionErrors, ThrowOnError>({
+    url: '/bison/subscriptions',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete Bison Subscription
+ *
+ * 取消订阅
+ */
+export const deleteBisonSubscription = <ThrowOnError extends boolean = false>(options: Options<DeleteBisonSubscriptionData, ThrowOnError>): RequestResult<DeleteBisonSubscriptionResponses, DeleteBisonSubscriptionErrors, ThrowOnError> => (options.client ?? client).delete<DeleteBisonSubscriptionResponses, DeleteBisonSubscriptionErrors, ThrowOnError>({ url: '/bison/subscriptions/{subscription_id}', ...options });
+
+/**
+ * Update Bison Subscription
+ *
+ * 改订阅的分类和标签
+ */
+export const updateBisonSubscription = <ThrowOnError extends boolean = false>(options: Options<UpdateBisonSubscriptionData, ThrowOnError>): RequestResult<UpdateBisonSubscriptionResponses, UpdateBisonSubscriptionErrors, ThrowOnError> => (options.client ?? client).put<UpdateBisonSubscriptionResponses, UpdateBisonSubscriptionErrors, ThrowOnError>({
+    url: '/bison/subscriptions/{subscription_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete Bison Cookie
+ *
+ * 删除 Cookie（还关联着订阅对象时不让删）
+ */
+export const deleteBisonCookie = <ThrowOnError extends boolean = false>(options: Options<DeleteBisonCookieData, ThrowOnError>): RequestResult<DeleteBisonCookieResponses, DeleteBisonCookieErrors, ThrowOnError> => (options.client ?? client).delete<DeleteBisonCookieResponses, DeleteBisonCookieErrors, ThrowOnError>({ url: '/bison/cookies/{cookie_id}', ...options });
+
+/**
+ * Get Github
+ *
+ * 群绑定的仓库、仓库订阅、已授权的用户（不含 token）
+ */
+export const getGithub = <ThrowOnError extends boolean = false>(options?: Options<GetGithubData, ThrowOnError>): RequestResult<GetGithubResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetGithubResponses, unknown, ThrowOnError>({ url: '/github', ...options });
+
+/**
+ * Unbind Github Group
+ *
+ * 解除群绑定的仓库
+ */
+export const unbindGithubGroup = <ThrowOnError extends boolean = false>(options: Options<UnbindGithubGroupData, ThrowOnError>): RequestResult<UnbindGithubGroupResponses, UnbindGithubGroupErrors, ThrowOnError> => (options.client ?? client).delete<UnbindGithubGroupResponses, UnbindGithubGroupErrors, ThrowOnError>({ url: '/github/groups/{group_id}', ...options });
+
+/**
+ * Delete Github Subscription
+ *
+ * 删除仓库订阅
+ */
+export const deleteGithubSubscription = <ThrowOnError extends boolean = false>(options: Options<DeleteGithubSubscriptionData, ThrowOnError>): RequestResult<DeleteGithubSubscriptionResponses, DeleteGithubSubscriptionErrors, ThrowOnError> => (options.client ?? client).delete<DeleteGithubSubscriptionResponses, DeleteGithubSubscriptionErrors, ThrowOnError>({ url: '/github/subscriptions/{subscription_id}', ...options });
+
+/**
+ * Unauth Github User
+ *
+ * 撤销用户的 GitHub 授权（删掉存着的 token）
+ */
+export const unauthGithubUser = <ThrowOnError extends boolean = false>(options: Options<UnauthGithubUserData, ThrowOnError>): RequestResult<UnauthGithubUserResponses, UnauthGithubUserErrors, ThrowOnError> => (options.client ?? client).delete<UnauthGithubUserResponses, UnauthGithubUserErrors, ThrowOnError>({ url: '/github/users/{user_id}', ...options });
+
+/**
+ * List Bindings
+ *
+ * 群号和 QQ 官方机器人 group_openid 的绑定。
+ *
+ * 新增要在群里 @ 官方机器人发 /官q 绑定
+ */
+export const listBindings = <ThrowOnError extends boolean = false>(options?: Options<ListBindingsData, ThrowOnError>): RequestResult<ListBindingsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListBindingsResponses, unknown, ThrowOnError>({ url: '/bindings', ...options });
+
+/**
+ * Delete Binding
+ *
+ * 删除群号绑定
+ */
+export const deleteBinding = <ThrowOnError extends boolean = false>(options: Options<DeleteBindingData, ThrowOnError>): RequestResult<DeleteBindingResponses, DeleteBindingErrors, ThrowOnError> => (options.client ?? client).delete<DeleteBindingResponses, DeleteBindingErrors, ThrowOnError>({ url: '/bindings/{group_id}', ...options });
+
+/**
+ * List Fgo Groups
+ *
+ * 接收 FGO 维护推送的群
+ */
+export const listFgoGroups = <ThrowOnError extends boolean = false>(options?: Options<ListFgoGroupsData, ThrowOnError>): RequestResult<ListFgoGroupsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListFgoGroupsResponses, unknown, ThrowOnError>({ url: '/fgo/groups', ...options });
+
+/**
+ * Add Fgo Group
+ *
+ * 开启某个群的维护推送
+ */
+export const addFgoGroup = <ThrowOnError extends boolean = false>(options: Options<AddFgoGroupData, ThrowOnError>): RequestResult<AddFgoGroupResponses, AddFgoGroupErrors, ThrowOnError> => (options.client ?? client).post<AddFgoGroupResponses, AddFgoGroupErrors, ThrowOnError>({
+    url: '/fgo/groups',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Remove Fgo Group
+ *
+ * 关闭某个群的维护推送
+ */
+export const removeFgoGroup = <ThrowOnError extends boolean = false>(options: Options<RemoveFgoGroupData, ThrowOnError>): RequestResult<RemoveFgoGroupResponses, RemoveFgoGroupErrors, ThrowOnError> => (options.client ?? client).delete<RemoveFgoGroupResponses, RemoveFgoGroupErrors, ThrowOnError>({ url: '/fgo/groups/{group_id}', ...options });
+
+/**
+ * List Memories
+ *
+ * 有档案的群友，最近更新的在前
+ */
+export const listMemories = <ThrowOnError extends boolean = false>(options?: Options<ListMemoriesData, ThrowOnError>): RequestResult<ListMemoriesResponses, ListMemoriesErrors, ThrowOnError> => (options?.client ?? client).get<ListMemoriesResponses, ListMemoriesErrors, ThrowOnError>({ url: '/memories', ...options });
+
+/**
+ * Delete Memory
+ *
+ * 清空档案
+ */
+export const deleteMemory = <ThrowOnError extends boolean = false>(options: Options<DeleteMemoryData, ThrowOnError>): RequestResult<DeleteMemoryResponses, DeleteMemoryErrors, ThrowOnError> => (options.client ?? client).delete<DeleteMemoryResponses, DeleteMemoryErrors, ThrowOnError>({ url: '/memories/{user_id}', ...options });
+
+/**
+ * Get Memory Detail
+ *
+ * 一位群友的档案全文
+ */
+export const getMemoryDetail = <ThrowOnError extends boolean = false>(options: Options<GetMemoryDetailData, ThrowOnError>): RequestResult<GetMemoryDetailResponses, GetMemoryDetailErrors, ThrowOnError> => (options.client ?? client).get<GetMemoryDetailResponses, GetMemoryDetailErrors, ThrowOnError>({ url: '/memories/{user_id}', ...options });
+
+/**
+ * Put Memory
+ *
+ * 整份改写档案（超长时照常会被压缩）
+ */
+export const putMemory = <ThrowOnError extends boolean = false>(options: Options<PutMemoryData, ThrowOnError>): RequestResult<PutMemoryResponses, PutMemoryErrors, ThrowOnError> => (options.client ?? client).put<PutMemoryResponses, PutMemoryErrors, ThrowOnError>({
+    url: '/memories/{user_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});

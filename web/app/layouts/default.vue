@@ -8,12 +8,28 @@ const toast = useToast()
 const nav: NavigationMenuItem[][] = [
   [
     { label: '概览', icon: 'i-lucide-gauge', to: '/' },
+    { label: '日志', icon: 'i-lucide-scroll', to: '/logs' },
   ],
   [
     { label: 'LLM', type: 'label' },
     { label: '模型', icon: 'i-lucide-brain-circuit', to: '/llm/models' },
     { label: '模型路由', icon: 'i-lucide-route', to: '/llm/routes' },
     { label: '提示词', icon: 'i-lucide-message-square-text', to: '/llm/prompts' },
+    { label: '调用记录', icon: 'i-lucide-history', to: '/llm/invocations' },
+  ],
+  [
+    { label: '数据', type: 'label' },
+    { label: '订阅推送', icon: 'i-lucide-rss', to: '/data/bison' },
+    { label: 'GitHub', icon: 'i-lucide-github', to: '/data/github' },
+    { label: '群号绑定', icon: 'i-lucide-link', to: '/data/bindings' },
+    { label: 'FGO 维护推送', icon: 'i-lucide-bell-ring', to: '/data/fgo' },
+    { label: '群友记忆', icon: 'i-lucide-notebook-text', to: '/data/memory' },
+  ],
+  [
+    { label: '运维', type: 'label' },
+    { label: '插件', icon: 'i-lucide-puzzle', to: '/ops/plugins' },
+    { label: '定时任务', icon: 'i-lucide-calendar-clock', to: '/ops/scheduler' },
+    { label: 'Torappu 重跑', icon: 'i-lucide-rotate-cw', to: '/ops/torappu' },
   ],
   [
     { label: '配置', type: 'label' },

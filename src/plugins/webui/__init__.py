@@ -24,6 +24,7 @@ from .config import (
     oauth_credentials,
     webui_config,
 )
+from .logs import install as install_log_buffer
 from .spa import mount_spa
 
 __plugin_meta__ = PluginMetadata(
@@ -51,6 +52,7 @@ if reason := _disabled_reason():
 else:
     if not webui_config.admins and dev_admin() is None:
         logger.warning("WEBUI__ADMINS 是空的：后台里也没加过管理员的话，谁也登录不了")
+    install_log_buffer()
     app: FastAPI = nonebot.get_app()
     app.mount(API_PATH, build_api())
     mount_spa(app, Path(webui_config.dist))

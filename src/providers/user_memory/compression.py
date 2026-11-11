@@ -57,6 +57,7 @@ async def compress(content: str) -> str:
         endpoint,
         instructions=INSTRUCTIONS.format(target=target),
         settings=ModelSettings(timeout=memory_config.timeout),
+        task="user_memory",
     )
     try:
         result = await agent.run(prompt)
