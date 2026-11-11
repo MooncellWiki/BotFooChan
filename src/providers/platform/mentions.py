@@ -44,6 +44,10 @@ def at_targets(bot: Bot, event: Event, msg: UniMessage) -> set[str]:
     不能只看 msg：适配器判定 to_me 时，做的正是把开头/结尾那个「@机器人」从消息
     里删掉。QQ 把原文留在 ``original_message`` 里（群 @ 事件会补回一个 @ 自己），
     飞书没留原文、但另存了一份 mentions，两处都翻一遍。
+
+    QQ 群消息的 ``original_message`` 也不全：回复别人时客户端自动带上的那个 @，
+    适配器在认「回复的是谁」时就删了，之后才存原文。好在事件上还有原样的
+    mentions，@ 到自己的那条带 ``is_you``（给的 id 不是 ``self_info.id``，对不上号）。
     """
     if (raw := getattr(event, "original_message", None)) is not None:
         try:
@@ -55,6 +59,12 @@ def at_targets(bot: Bot, event: Event, msg: UniMessage) -> set[str]:
     message = getattr(getattr(event, "event", None), "message", None)
     for mention in getattr(message, "mentions", None) or []:
         targets |= ids_of(getattr(mention, "id", None))
+    # @全体成员 的 is_you 恒为真，不算
+    for mention in getattr(event, "mentions", None) or []:
+        if getattr(mention, "scope", None) == "single" and getattr(
+            mention, "is_you", False
+        ):
+            targets |= bot_ids(bot)
     return targets
 
 
