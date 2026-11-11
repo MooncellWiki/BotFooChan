@@ -49,6 +49,17 @@ zssm = on_alconna(
 )
 
 
+async def _react(emoji: str, msg_id: str, event: Event, bot: Bot) -> None:
+    """用表情回应标记处理进度。
+
+    这几个是 QQ 的表情 id，飞书、Discord 不认，发不出去也不该打断解释本身。
+    """
+    try:
+        await message_reaction(emoji, msg_id, event, bot)
+    except Exception as e:
+        logger.opt(exception=e).debug("发送消息表情回应失败")
+
+
 @zssm.handle()
 async def handle(
     msg_id: MsgId,
@@ -140,7 +151,7 @@ async def handle(
             reply_to=Reply(msg_id)
         )
 
-    await message_reaction("424", msg_id, event, bot)
+    await _react("424", msg_id, event, bot)
 
     # 处理图片, 最多2张
     if len(image_list) > 2:
@@ -217,7 +228,7 @@ async def handle(
 
     # 如果处理了URL/PDF或图片, 更新反应
     if msg_urls or image_list:
-        await message_reaction("314", msg_id, event, bot)
+        await _react("314", msg_id, event, bot)
 
     # 附带被解释内容之前的几条聊天，更早的交给模型用工具自己翻。
     # 回复了某条就锚在那条上，否则锚在命令本身之前
@@ -248,5 +259,5 @@ async def handle(
             reply_to=Reply(msg_id)
         )
 
-    await message_reaction("144", msg_id, event, bot)
+    await _react("144", msg_id, event, bot)
     await send_answer(response, tracker, window, reply_to=reply)

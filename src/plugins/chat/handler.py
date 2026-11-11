@@ -129,6 +129,9 @@ def _receipt_id(receipt: Receipt) -> str:
     """
     for raw in getattr(receipt, "msg_ids", None) or []:
         if isinstance(raw, dict):
+            # 飞书的回执是整个响应体，消息 id 在 data 里
+            if isinstance(data := raw.get("data"), dict):
+                raw = data
             for key in ("message_id", "id", "msg_id"):
                 if (value := raw.get(key)) is not None:
                     return str(value)

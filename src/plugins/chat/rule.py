@@ -23,7 +23,13 @@ from nonebot import get_bots
 from nonebot.adapters import Bot, Event
 from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor
-from nonebot_plugin_alconna.uniseg import Reply, UniMessage, UniMsg, get_target
+from nonebot_plugin_alconna.uniseg import (
+    Reply,
+    UniMessage,
+    UniMsg,
+    get_target,
+    reply_fetch,
+)
 
 from src.providers.chat_history import recorder, scope_id
 from src.providers.platform.mentions import bot_ids, ids_of, mentions_bot
@@ -68,8 +74,11 @@ def is_ignored(user_id: str) -> bool:
     return user_id in ignored_ids()
 
 
-def _replied_to_self(bot: Bot, event: Event, msg: UniMessage) -> bool:
-    reply = next((seg for seg in msg if isinstance(seg, Reply)), None)
+async def _replied_to_self(bot: Bot, event: Event, msg: UniMessage) -> bool:
+    # 飞书、Discord 收到的消息里没有引用段，适配器把被回复的消息另外放在事件上
+    reply = next(
+        (seg for seg in msg if isinstance(seg, Reply)), None
+    ) or await reply_fetch(event, bot)
     if reply is None:
         return False
 
@@ -97,4 +106,4 @@ async def should_reply(bot: Bot, event: Event, msg: UniMsg) -> bool:
     except Exception:  # 认不出会话类型就按群聊处理，宁可不接话
         pass
 
-    return mentions_bot(bot, event, msg) or _replied_to_self(bot, event, msg)
+    return mentions_bot(bot, event, msg) or await _replied_to_self(bot, event, msg)
