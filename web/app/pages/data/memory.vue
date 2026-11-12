@@ -82,9 +82,9 @@ const columns: TableColumn<MemorySummary>[] = [
         </template>
       </UTable>
       <template #footer>
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-3">
           <span class="text-xs text-muted">共 {{ data.total }} 份</span>
-          <UPagination v-model:page="page" :total="data.total" :items-per-page="PAGE_SIZE" size="sm" />
+          <UPagination v-model:page="page" :total="data.total" :items-per-page="PAGE_SIZE" :sibling-count="1" :show-edges="false" size="sm" />
         </div>
       </template>
     </UCard>

@@ -76,12 +76,12 @@ function updateChild(key: string, value: unknown) {
 </script>
 
 <template>
-  <div v-if="kind === 'object'" class="grid gap-4 rounded-md border border-default p-4">
+  <div v-if="kind === 'object'" class="grid min-w-0 gap-4 rounded-md border border-default p-3 sm:p-4">
     <div>
-      <p class="font-mono text-sm font-medium">
+      <p class="font-mono text-sm font-medium [overflow-wrap:anywhere]">
         {{ name }}
       </p>
-      <p v-if="description" class="whitespace-pre-line text-xs text-muted">
+      <p v-if="description" class="whitespace-pre-line text-xs text-muted [overflow-wrap:anywhere]">
         {{ description }}
       </p>
     </div>
@@ -120,10 +120,10 @@ function updateChild(key: string, value: unknown) {
       v-model="numberText"
       type="number"
       :placeholder="nullable ? '不设置' : undefined"
-      class="w-48"
+      class="w-full max-w-full sm:w-48"
     />
 
-    <USelect v-else-if="kind === 'enum'" v-model="enumValue" :items="enumItems" class="w-64" />
+    <USelect v-else-if="kind === 'enum'" v-model="enumValue" :items="enumItems" class="w-full max-w-full sm:w-64" />
 
     <UInputTags
       v-else-if="kind === 'tags'"
@@ -139,7 +139,7 @@ function updateChild(key: string, value: unknown) {
         type="password"
         autocomplete="new-password"
         :placeholder="hasOriginal && !cleared ? '已设置，留空表示不改' : '未设置'"
-        class="w-full max-w-md"
+        class="min-w-0 flex-1 max-w-md"
       />
       <UButton v-if="hasOriginal && !cleared" label="清除" color="neutral" variant="ghost" size="sm" @click="clearSecret" />
     </div>

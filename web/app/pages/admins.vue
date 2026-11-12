@@ -41,7 +41,7 @@ const columns: TableColumn<AdminOut>[] = [
         <UFormField label="GitHub 用户名">
           <UInput v-model="form.login" placeholder="octocat" />
         </UFormField>
-        <UFormField label="备注" class="min-w-64 flex-1">
+        <UFormField label="备注" class="min-w-0 basis-64 flex-1">
           <UInput v-model="form.note" placeholder="可选" class="w-full" />
         </UFormField>
         <UButton label="添加" icon="i-lucide-user-plus" :loading="pending" :disabled="!form.login.trim()" @click="add" />

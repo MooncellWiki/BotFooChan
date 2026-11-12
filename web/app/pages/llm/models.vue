@@ -247,7 +247,7 @@ const modelColumns: TableColumn<ModelOut>[] = [
               class="w-full"
             />
           </UFormField>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid gap-4 sm:grid-cols-2">
             <UFormField label="协议">
               <USelect v-model="providerForm.api_type" :items="apiTypeItems" class="w-full" />
             </UFormField>
@@ -291,7 +291,7 @@ const modelColumns: TableColumn<ModelOut>[] = [
               <UButton label="拉取列表" icon="i-lucide-download" color="neutral" variant="outline" :loading="fetchingRemote" :disabled="!modelForm.provider" @click="fetchRemote" />
             </div>
           </UFormField>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid gap-4 sm:grid-cols-2">
             <UFormField label="协议" description="覆写服务商的设置">
               <USelect v-model="modelForm.api_type" :items="apiTypeItems" class="w-full" />
             </UFormField>

@@ -42,9 +42,9 @@ const shown = computed(() => {
           <summary class="cursor-pointer text-xs text-muted">
             详情
           </summary>
-          <pre v-if="plugin.usage" class="mt-2 text-xs whitespace-pre-wrap">{{ plugin.usage }}</pre>
+          <pre v-if="plugin.usage" class="mt-2 text-xs whitespace-pre-wrap [overflow-wrap:anywhere]">{{ plugin.usage }}</pre>
           <ul class="mt-2 grid gap-1 text-xs">
-            <li v-for="(m, i) in plugin.matchers" :key="i" class="font-mono">
+            <li v-for="(m, i) in plugin.matchers" :key="i" class="font-mono [overflow-wrap:anywhere]">
               <UBadge :label="m.type || 'any'" color="neutral" variant="outline" size="sm" />
               优先级 {{ m.priority }}{{ m.block ? ' · 阻断' : '' }}
               <span v-if="m.rules.length" class="text-dimmed">· {{ m.rules.join(', ') }}</span>

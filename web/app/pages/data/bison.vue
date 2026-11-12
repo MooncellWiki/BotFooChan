@@ -100,13 +100,13 @@ const cookieColumns: TableColumn<BisonCookie>[] = [
     <UCard v-for="[label, subs] in groups" :key="label" :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <div class="flex items-center justify-between gap-2">
-          <h2 class="font-mono text-sm font-semibold">
+          <h2 class="min-w-0 font-mono text-sm font-semibold [overflow-wrap:anywhere]">
             {{ label }}
           </h2>
-          <UButton label="添加" icon="i-lucide-plus" size="xs" color="neutral" variant="ghost" @click="openAdd(label)" />
+          <UButton label="添加" icon="i-lucide-plus" size="xs" color="neutral" variant="ghost" class="shrink-0" @click="openAdd(label)" />
         </div>
       </template>
-      <UTable :data="subs" :columns="subColumns">
+      <UTable :data="subs" :columns="subColumns" :ui="{ base: 'min-w-[40rem]' }">
         <template #platform-cell="{ row }">
           {{ platformName(row.original.platform) }}
         </template>
